@@ -3,3 +3,4 @@ bin
 obj
 *.vsix
 node_modules
+*.pem

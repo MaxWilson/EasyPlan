@@ -2,11 +2,12 @@
     "manifestVersion": 1,
     "id": "EasyPlan",
     "publisher": "MaxWilson",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "EasyPlan",
     "description": "A sample Visual Studio Services extension",
     "public": false,
     "categories": ["Azure Repos"],
+    "baseUri": "https://localhost:44300",
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
