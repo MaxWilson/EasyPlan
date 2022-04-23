@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <OtherFlags></OtherFlags>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Scratch\NameMaker.fsx" />
+    <None Include="Scratch\Encounters.fsx" />
+    <None Include="Scratch\ScenarioScratch.fsx" />
+    <None Include="Scratch\Script1.fsx" />
+    <None Include="Scratch\Script2.fsx" />
+    <None Include="Scratch\Script3.fsx" />
+    <None Include="Scratch\HOASExpressions.fsx" />
+    <None Include="Scratch\GameLoop.fsx" />
+    <None Include="Scratch\RibbitFromScratch.fsx" />
+    <None Include="Scratch\RibberFromScratch2.fsx" />
+    <None Include="Scratch\RibberFromScratch3.fsx" />
+    <Compile Include="Optics.fs" />
+    <Compile Include="Common.fs" />
+    <Compile Include="Parsing.fs" />
+    <Compile Include="DerivedTraits.fs" />
+    <Compile Include="Onomastikon.fs" />
+    <Compile Include="Character.fs" />
+    <Compile Include="Ribbit\Types.fs" />
+    <Compile Include="Ribbit\Operations.fs" />
+    <Compile Include="Ribbit\Rules2e.fs" />
+    <Compile Include="Ribbit\Rules5e.fs" />
+    <Compile Include="Adventure.fs" />
+    <PackageReference Include="FSharp.Core" Version="5.0.0" />
+  </ItemGroup>
+</Project>
