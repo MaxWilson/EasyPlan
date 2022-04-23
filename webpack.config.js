@@ -118,7 +118,7 @@ module.exports = {
     // Configuration for webpack-dev-server
     devServer: {
         publicPath: "/",
-        contentBase: resolve(CONFIG.assetsDir),
+        contentBase: ".",
         port: CONFIG.devServerPort,
         proxy: CONFIG.devServerProxy,
         hot: true,
