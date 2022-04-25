@@ -7,8 +7,8 @@ open Fable.Core.JS
 
 module TfvcClient =
     module Tfvc = ___Tfvc_Tfvc
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract TfvcRestClient: TfvcRestClientStatic

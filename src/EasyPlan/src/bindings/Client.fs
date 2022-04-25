@@ -4,13 +4,11 @@ open System
 open Fable.Core
 open Fable.Core.JS
 
+type IVssRestClientOptions = Context.IVssRestClientOptions
 
-module Client =
-    type IVssRestClientOptions = Context.IVssRestClientOptions
+type [<AllowNullLiteral>] IExports =
+    abstract getClient: clientClass: RestClientFactory<'T> * ?clientOptions: IVssRestClientOptions -> 'T
 
-    type [<AllowNullLiteral>] IExports =
-        abstract getClient: clientClass: RestClientFactory<'T> * ?clientOptions: IVssRestClientOptions -> 'T
-
-    type [<AllowNullLiteral>] RestClientFactory<'T> =
-        [<Emit "new $0($1...)">] abstract Create: options: IVssRestClientOptions -> obj
-        abstract RESOURCE_AREA_ID: string option with get, set
+type [<AllowNullLiteral>] RestClientFactory<'T> =
+    [<Emit "new $0($1...)">] abstract Create: options: IVssRestClientOptions -> obj
+    abstract RESOURCE_AREA_ID: string option with get, set

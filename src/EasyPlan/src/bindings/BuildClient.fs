@@ -6,10 +6,8 @@ open Fable.Core.JS
 
 
 module BuildClient =
-    module Build = ___Build_Build
-    module WebApi = ___WebApi_WebApi
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract BuildRestClient: BuildRestClientStatic

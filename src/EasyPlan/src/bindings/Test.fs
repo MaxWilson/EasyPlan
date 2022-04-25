@@ -2390,7 +2390,7 @@ module Test =
     type [<AllowNullLiteral>] TestResultSummary =
         abstract aggregatedResultsAnalysis: AggregatedResultsAnalysis with get, set
         abstract noConfigRunsCount: float with get, set
-        abstract teamProject: TfsCore.TeamProjectReference with get, set
+        abstract teamProject: Core.TeamProjectReference with get, set
         abstract testFailures: TestFailuresAnalysis with get, set
         abstract testResultsContext: TestResultsContext with get, set
         abstract totalRunsCount: float with get, set

@@ -8,8 +8,8 @@ open Fable.Core.JS
 module TestClient =
     module TfsCore = ___Core_Core
     module Test = ___Test_Test
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract TestRestClient: TestRestClientStatic
@@ -362,7 +362,7 @@ module TestClient =
         /// <summary>Create a test session</summary>
         /// <param name="testSession">- Test session details for creation</param>
         /// <param name="teamContext">- The team context for the operation</param>
-        abstract createTestSession: testSession: Test.TestSession * teamContext: TfsCore.TeamContext -> Promise<Test.TestSession>
+        abstract createTestSession: testSession: Test.TestSession * teamContext: Core.TeamContext -> Promise<Test.TestSession>
         /// <summary>Get a list of test sessions</summary>
         /// <param name="teamContext">- The team context for the operation</param>
         /// <param name="period">- Period in days from now, for which test sessions are fetched.</param>
@@ -370,11 +370,11 @@ module TestClient =
         /// <param name="includeAllProperties">- If true, it returns all properties of the test sessions. Otherwise, it returns the skinny version.</param>
         /// <param name="source">- Source of the test session.</param>
         /// <param name="includeOnlyCompletedSessions">- If true, it returns test sessions in completed state. Otherwise, it returns test sessions for all states</param>
-        abstract getTestSessions: teamContext: TfsCore.TeamContext * ?period: float * ?allSessions: bool * ?includeAllProperties: bool * ?source: Test.TestSessionSource * ?includeOnlyCompletedSessions: bool -> Promise<ResizeArray<Test.TestSession>>
+        abstract getTestSessions: teamContext: Core.TeamContext * ?period: float * ?allSessions: bool * ?includeAllProperties: bool * ?source: Test.TestSessionSource * ?includeOnlyCompletedSessions: bool -> Promise<ResizeArray<Test.TestSession>>
         /// <summary>Update a test session</summary>
         /// <param name="testSession">- Test session details for update</param>
         /// <param name="teamContext">- The team context for the operation</param>
-        abstract updateTestSession: testSession: Test.TestSession * teamContext: TfsCore.TeamContext -> Promise<Test.TestSession>
+        abstract updateTestSession: testSession: Test.TestSession * teamContext: Core.TeamContext -> Promise<Test.TestSession>
         /// <param name="project">- Project ID or project name</param>
         /// <param name="sharedParameterId">-</param>
         abstract deleteSharedParameter: project: string * sharedParameterId: float -> Promise<unit>

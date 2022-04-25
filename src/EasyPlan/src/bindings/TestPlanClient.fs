@@ -7,8 +7,8 @@ open Fable.Core.JS
 
 module TestPlanClient =
     module TestPlan = ___TestPlan_TestPlan
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract TestPlanRestClient: TestPlanRestClientStatic

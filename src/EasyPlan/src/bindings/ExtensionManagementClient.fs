@@ -8,8 +8,8 @@ open Fable.Core.JS
 module ExtensionManagementClient =
     module ExtensionManagement = ___ExtensionManagement_ExtensionManagement
     module Gallery = ___Gallery_Gallery
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract ExtensionManagementRestClient: ExtensionManagementRestClientStatic

@@ -9,8 +9,8 @@ module ServiceHooksClient =
     module FormInput = ___FormInput_FormInput
     module Notification = ___Notification_Notification
     module ServiceHooks = ___ServiceHooks_ServiceHooks
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract ServiceHooksRestClient: ServiceHooksRestClientStatic

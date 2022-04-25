@@ -178,7 +178,7 @@ module TestPlan =
     type [<AllowNullLiteral>] SourceTestplanResponse =
         inherit TestPlanReference
         /// project reference
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
         /// Id of suites to be cloned inside source Test Plan
         abstract suiteIds: ResizeArray<float> with get, set
 
@@ -227,7 +227,7 @@ module TestPlan =
         /// List of Points associated with the Test Case
         abstract pointAssignments: ResizeArray<PointAssignment> with get, set
         /// Project under which the Test Case is
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
         /// Test Plan under which the Test Case is
         abstract testPlan: TestPlanReference with get, set
         /// Test Suite under which the Test Case is
@@ -273,7 +273,7 @@ module TestPlan =
         /// Id of the configuration
         abstract id: float with get, set
         /// Id of the test configuration variable
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
 
     /// Test Configuration Create or Update Parameters
     type [<AllowNullLiteral>] TestConfigurationCreateUpdateParameters =
@@ -305,7 +305,7 @@ module TestPlan =
         /// Previous build Id associated with the test plan
         abstract previousBuildId: float with get, set
         /// Project which contains the test plan.
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
         /// Root test suite of the test plan.
         abstract rootSuite: TestSuiteReference with get, set
         /// Identity Reference for the last update of the test plan
@@ -408,7 +408,7 @@ module TestPlan =
         /// Reference links
         abstract links: obj option with get, set
         /// Project under which the Test Point is
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
         /// Results associated to the Test Point
         abstract results: TestPointResults with get, set
         /// Test Case Reference
@@ -490,7 +490,7 @@ module TestPlan =
         /// Test plan to which the test suite belongs.
         abstract plan: TestPlanReference with get, set
         /// Test suite project shallow reference.
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
         /// Test suite revision.
         abstract revision: float with get, set
 
@@ -528,7 +528,7 @@ module TestPlan =
     type [<AllowNullLiteral>] TestSuiteReferenceWithProject =
         inherit TestSuiteReference
         /// Reference of destination Project
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
 
     type [<RequireQualifiedAccess>] TestSuiteType =
         | None = 0
@@ -548,7 +548,7 @@ module TestPlan =
         /// Id of the test variable
         abstract id: float with get, set
         /// Id of the test variable
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
 
     /// Test Variable Create or Update Parameters
     type [<AllowNullLiteral>] TestVariableCreateUpdateParameters =

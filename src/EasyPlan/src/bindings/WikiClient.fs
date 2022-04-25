@@ -10,8 +10,8 @@ module WikiClient =
     module Git = ___Git_Git
     module WebApi = ___WebApi_WebApi
     module Wiki = ___Wiki_Wiki
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract WikiRestClient: WikiRestClientStatic

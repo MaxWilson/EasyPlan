@@ -9,8 +9,8 @@ module CoreClient =
     module Core = ___Core_Core
     module Operations = ___Operations_Operations
     module WebApi = ___WebApi_WebApi
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract CoreRestClient: CoreRestClientStatic

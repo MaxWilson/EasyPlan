@@ -6,12 +6,6 @@ open Fable.Core.JS
 
 
 module Build =
-    module TfsCore = ___Core_Core
-    module DistributedTaskCommon = ___DistributedTaskCommon_DistributedTaskCommon
-    module Git = ___Git_Git
-    module Test = ___Test_Test
-    module WebApi = ___WebApi_WebApi
-
     /// Represents a queue for running builds.
     type [<AllowNullLiteral>] AgentPoolQueue =
         abstract _links: obj option with get, set
@@ -126,7 +120,7 @@ module Build =
         /// The build's priority.
         abstract priority: QueuePriority with get, set
         /// The team project.
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
         abstract properties: obj option with get, set
         /// The quality of the xaml build (good, bad, etc.)
         abstract quality: string with get, set
@@ -785,12 +779,12 @@ module Build =
 
     type [<AllowNullLiteral>] ContinuousDeploymentDefinition =
         /// The connected service associated with the continuous deployment
-        abstract connectedService: TfsCore.WebApiConnectedServiceRef with get, set
+        abstract connectedService: Core.WebApiConnectedServiceRef with get, set
         /// The definition associated with the continuous deployment
         abstract definition: XamlDefinitionReference with get, set
         abstract gitBranch: string with get, set
         abstract hostedServiceName: string with get, set
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
         abstract repositoryId: string with get, set
         abstract storageAccountName: string with get, set
         abstract subscriptionId: string with get, set
@@ -844,7 +838,7 @@ module Build =
         /// The folder path of the definition.
         abstract path: string with get, set
         /// A reference to the project.
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
         /// A value that indicates whether builds can be queued against this definition.
         abstract queueStatus: DefinitionQueueStatus with get, set
         /// The definition revision number.
@@ -958,7 +952,7 @@ module Build =
         /// The full path.
         abstract path: string with get, set
         /// The project.
-        abstract project: TfsCore.TeamProjectReference with get, set
+        abstract project: Core.TeamProjectReference with get, set
 
     type [<RequireQualifiedAccess>] FolderQueryOrder =
         | None = 0

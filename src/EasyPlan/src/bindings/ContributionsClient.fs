@@ -6,9 +6,9 @@ open Fable.Core.JS
 
 
 module ContributionsClient =
-    module Contributions = ___Contributions_Contributions
-    type IVssRestClientOptions = _____Common_Context.IVssRestClientOptions
-    type RestClientBase = _____Common_RestClientBase.RestClientBase
+    open Contributions
+    type IVssRestClientOptions = Context.IVssRestClientOptions
+    type RestClientBase = RestClientBase.RestClientBase
 
     type [<AllowNullLiteral>] IExports =
         abstract ContributionsRestClient: ContributionsRestClientStatic
