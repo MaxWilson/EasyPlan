@@ -1,1 +1,1 @@
-pushd %~dp0src && dotnet fable yarn-start
+npx tfx-cli extension create
