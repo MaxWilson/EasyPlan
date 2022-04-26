@@ -46,7 +46,7 @@ console.log("Bundling for " + (isProduction ? "production" : "development") + ".
 // and automatically injects <script> or <link> tags for generated bundles.
 var commonPlugins = [
     new HtmlWebpackPlugin({
-        filename: 'index.html',
+        filename: 'easyPlan.html',
         template: resolve(CONFIG.indexHtmlTemplate)
     }),
 
