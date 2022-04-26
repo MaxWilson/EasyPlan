@@ -115,12 +115,15 @@ module.exports = {
     },
     // Configuration for webpack-dev-server
     devServer: {
-        publicPath: "/",
-        contentBase: resolve(CONFIG.assetsDir),
+        static: {
+          directory: resolve(CONFIG.assetsDir),
+        },
+        devMiddleware: {
+          publicPath: "/",
+        },        
         port: CONFIG.devServerPort,
         proxy: CONFIG.devServerProxy,
         hot: true,
-        inline: true,
         https: {
           key: './localhost-key.pem',
           cert: './localhost.pem',
