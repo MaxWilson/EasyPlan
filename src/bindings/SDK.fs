@@ -105,3 +105,6 @@ type [<AllowNullLiteral>] IExtensionContext =
     abstract extensionId: string with get, set
     /// Version of the extension
     abstract version: string with get, set
+
+[<ImportAll("azure-devops-extension-sdk")>]
+let sdk: SDK.IExports = jsNative
