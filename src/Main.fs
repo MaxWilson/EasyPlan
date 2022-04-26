@@ -26,18 +26,27 @@ let view (model: Model) dispatch =
         Html.button [prop.text "+"; prop.ariaValueText "Increment counter"; prop.onClick(thunk1 dispatch (Delta +1))]
         ]
 
+let sdk = SDK.sdk;
+
 Program.mkSimple init update view
 |> Program.withSubscription(fun m -> Cmd.ofSub(fun dispatch ->
     Browser.Dom.window.onerror <-
         fun msg ->
             if msg.ToString().Contains "SocketProtocolError" = false then
                 Browser.Dom.window.alert ("Unhandled Exception: " + msg.ToString())
-                //Message $"Error: {msg}" |> dispatch
+                Message $"Error: {msg}" |> dispatch
     promise {
         Message "Initializing..." |> dispatch
-        //do! SDK.sdk.init()
-        Message "OK, ready to go" |> dispatch
-        } |> Promise.start
+        try
+            let p = SDK.sdk.init()
+            let p2 = Promise.catch(fun err -> Message $"Oops, error! {err}" |> dispatch) p
+            do! p2
+            Message "OK, ready to go." |> dispatch
+        with exn ->
+            Message $"Oops, error! {exn}" |> dispatch
+        }
+        |> Promise.catch (fun exn -> Message $"Oops, error! {exn}" |> dispatch)
+        |> Promise.start
         ))
 |> Program.withReactBatched "feliz-app"
 |> Program.run
