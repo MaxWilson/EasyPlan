@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "EasyPlan",
     "publisher": "MaxWilson",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "name": "EasyPlan",
     "description": "Track events important to your team, view and manage days off, quickly see when sprints start and end, and more.",
     "public": false,
@@ -16,14 +16,14 @@
     ],
     "contributions": [
         {
-            "id": "my-hub",
+            "id": "EasyPlan",
             "type": "ms.vss-web.hub",
             "targets": [
-                "ms.vss-code-web.code-hub-group"
+                "ms.vss-work-web.work-hub-group"
             ],
             "properties": {
-                "name": "My Hub",
-                "uri": "my-hub.html"
+                "name": "EasyPlan",
+                "uri": "easyPlan.html"
             }
         }
     ],
