@@ -6,7 +6,7 @@
     "name": "EasyPlan",
     "description": "Track events important to your team, view and manage days off, quickly see when sprints start and end, and more.",
     "public": false,
-    "categories": ["Azure Repos"],
+    "categories": ["Azure Boards"],
     "baseUri": "https://localhost:44300",
     "scopes": ["vso.work_write","vso.workitems_write"],
     "targets": [
