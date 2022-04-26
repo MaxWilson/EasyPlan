@@ -206,5 +206,5 @@ out
 *.fs.js.map
 
 *.pem
-node_modules
 *.vsix
+dist

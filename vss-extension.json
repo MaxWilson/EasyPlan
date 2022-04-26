@@ -2,12 +2,13 @@
     "manifestVersion": 1,
     "id": "EasyPlan",
     "publisher": "MaxWilson",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "EasyPlan",
-    "description": "A sample Visual Studio Services extension",
+    "description": "Track events important to your team, view and manage days off, quickly see when sprints start and end, and more.",
     "public": false,
     "categories": ["Azure Repos"],
     "baseUri": "https://localhost:44300",
+    "scopes": ["vso.work_write","vso.workitems_write"],
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
@@ -28,13 +29,8 @@
     ],
     "files": [
         {
-            "path": "my-hub.html",
+            "path": "dist",
             "addressable": true
-        },
-        {
-            "path": "node_modules/vss-web-extension-sdk/lib",
-            "addressable": true,
-            "packagePath": "lib"
         }
     ]
 }
