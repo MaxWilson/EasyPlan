@@ -3,6 +3,7 @@ module rec DistributedTaskCommon
 open System
 open Fable.Core
 open Fable.Core.JS
+
 type [<AllowNullLiteral>] AuthorizationHeader =
     abstract name: string with get, set
     abstract value: string with get, set

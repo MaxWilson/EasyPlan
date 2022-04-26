@@ -1,12 +1,25 @@
-# Feliz Template
+# EasyPlan
 
-This template gets you up and running with a simple web app using [Fable](http://fable.io/), [Elmish](https://fable-elmish.github.io/) and [Feliz](https://github.com/Zaid-Ajaj/Feliz).
+An Azure Devops Services extension for visualizing workflow.
+
+Written using [Fable](http://fable.io/), [Elmish](https://fable-elmish.github.io/) and [Feliz](https://github.com/Zaid-Ajaj/Feliz).
+
+## Dev reference of useful commands and URLs
+
+choco install mkcert
+mkcert -install
+mkcert localhost
+npm install -g tfx-cli
+npx tfx-cli extension create
+https://marketplace.visualstudio.com/manage/publishers/maxwilson
+https://aka.ms/vsmarketplace-manage
+https://dev.azure.com/maxw0485/maxw
+npm start
 
 ## Requirements
 
 * [dotnet SDK](https://www.microsoft.com/net/download/core) 2.0.0 or higher
 * [node.js](https://nodejs.org) 10.0.0 or higher
-
 
 ## Editor
 
