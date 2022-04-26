@@ -18,11 +18,10 @@ const isDevelopment = !isProduction && process.env.NODE_ENV !== 'production';
 var CONFIG = {
     // The tags to include the generated JS and CSS will be automatically injected in the HTML template
     // See https://github.com/jantimon/html-webpack-plugin
-    //indexHtmlTemplate: "./src/ShiningSword/UI/index.html",
-    indexHtmlTemplate: './my-hub.html',
-    fsharpEntry: "./src/ShiningSword/UI/App.fs.js",
+    indexHtmlTemplate: "./src/index.html",
+    fsharpEntry: "./src/Main.fs.js",
     outputDir: "./dist",
-    assetsDir: "./src/ShiningSword/public",
+    assetsDir: "./public",
     devServerPort: 44300,
     // When using webpack-dev-server, you may need to redirect some calls
     // to a external API server. See https://webpack.js.org/configuration/dev-server/#devserver-proxy
@@ -62,8 +61,7 @@ module.exports = {
     // In development, bundle styles together with the code so they can also
     // trigger hot reloads. In production, put them in a separate CSS file.
     entry: {
-        //app: [resolve(CONFIG.fsharpEntry)]
-        app: './server.js'
+        app: [resolve(CONFIG.fsharpEntry)]
     },
     // Add a hash to the output file name in production
     // to prevent browser caching if code changes
@@ -118,7 +116,7 @@ module.exports = {
     // Configuration for webpack-dev-server
     devServer: {
         publicPath: "/",
-        contentBase: ".",
+        contentBase: resolve(CONFIG.assetsDir),
         port: CONFIG.devServerPort,
         proxy: CONFIG.devServerProxy,
         hot: true,
@@ -133,11 +131,6 @@ module.exports = {
     // - file-loader: Moves files referenced in the code (fonts, images) into output folder
     module: {
         rules: [
-            {
-                test: /\.js$/,
-                enforce: "pre",
-                use: ["source-map-loader"],
-            },
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
