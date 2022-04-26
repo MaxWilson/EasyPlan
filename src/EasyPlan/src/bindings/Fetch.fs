@@ -55,7 +55,8 @@ type [<AllowNullLiteral>] IPostRequestEvent =
 /// as a request that made it to the server, and the server successfully responded
 /// with a failure. This will be any status return that is not a status code in
 /// the success range (200-299).
-type [<AllowNullLiteral>] VssServerError =
+type [<ImportMember("Common/Fetch"); AllowNullLiteral; AbstractClass>] VssServerError =
+    inherit System.Exception
     /// The status code returned from the server.
     abstract status: float with get, set
     /// The raw text that was returned from the server. If any is available.
