@@ -24,7 +24,7 @@ type [<AllowNullLiteral>] ContributedFeature =
     /// The friendly name of the feature
     abstract name: string with get, set
     /// Suggested order to display feature in.
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// Rules for overriding a feature value. These rules are run before explicit user/host state values are checked. They are evaluated in order until a rule returns an Enabled or Disabled state (not Undefined)
     abstract overrideRules: ResizeArray<ContributedFeatureValueRule> with get, set
     /// The scopes/levels at which settings can set the enabled/disabled state of this feature

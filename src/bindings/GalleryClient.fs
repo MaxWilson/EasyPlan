@@ -72,14 +72,14 @@ type [<AllowNullLiteral>] GalleryRestClient =
     /// <param name="productVersion">-</param>
     /// <param name="skus">-</param>
     /// <param name="subSkus">-</param>
-    abstract getCategoryTree: product: string * categoryId: string * ?lcid: float * ?source: string * ?productVersion: string * ?skus: string * ?subSkus: string -> Promise<Gallery.ProductCategory>
+    abstract getCategoryTree: product: string * categoryId: string * ?lcid: int * ?source: string * ?productVersion: string * ?skus: string * ?subSkus: string -> Promise<Gallery.ProductCategory>
     /// <param name="product">-</param>
     /// <param name="lcid">-</param>
     /// <param name="source">-</param>
     /// <param name="productVersion">-</param>
     /// <param name="skus">-</param>
     /// <param name="subSkus">-</param>
-    abstract getRootCategories: product: string * ?lcid: float * ?source: string * ?productVersion: string * ?skus: string * ?subSkus: string -> Promise<Gallery.ProductCategoriesResult>
+    abstract getRootCategories: product: string * ?lcid: int * ?source: string * ?productVersion: string * ?skus: string * ?subSkus: string -> Promise<Gallery.ProductCategoriesResult>
     /// <param name="publisherName">-</param>
     /// <param name="extensionName">-</param>
     /// <param name="version">-</param>
@@ -142,7 +142,7 @@ type [<AllowNullLiteral>] GalleryRestClient =
     /// <param name="afterDate">- Fetch events that occurred on or after this date</param>
     /// <param name="include">- Filter options. Supported values: install, uninstall, review, acquisition, sales. Default is to fetch all types of events</param>
     /// <param name="includeProperty">- Event properties to include. Currently only 'lastContactDetails' is supported for uninstall events</param>
-    abstract getExtensionEvents: publisherName: string * extensionName: string * ?count: float * ?afterDate: DateTime * ?``include``: string * ?includeProperty: string -> Promise<Gallery.ExtensionEvents>
+    abstract getExtensionEvents: publisherName: string * extensionName: string * ?count: int * ?afterDate: DateTime * ?``include``: string * ?includeProperty: string -> Promise<Gallery.ExtensionEvents>
     /// <summary>API endpoint to publish extension install/uninstall events. This is meant to be invoked by EMS only for sending us data related to install/uninstall of an extension.</summary>
     /// <param name="extensionEvents">-</param>
     abstract publishExtensionEvents: extensionEvents: ResizeArray<Gallery.ExtensionEvents> -> Promise<unit>
@@ -239,7 +239,7 @@ type [<AllowNullLiteral>] GalleryRestClient =
     abstract deletePublisher: publisherName: string -> Promise<unit>
     /// <param name="publisherName">-</param>
     /// <param name="flags">-</param>
-    abstract getPublisher: publisherName: string * ?flags: float -> Promise<Gallery.Publisher>
+    abstract getPublisher: publisherName: string * ?flags: int -> Promise<Gallery.Publisher>
     /// <param name="publisher">-</param>
     /// <param name="publisherName">-</param>
     abstract updatePublisher: publisher: Gallery.Publisher * publisherName: string -> Promise<Gallery.Publisher>
@@ -254,13 +254,13 @@ type [<AllowNullLiteral>] GalleryRestClient =
     /// <param name="count">- Number of questions to retrieve (defaults to 10).</param>
     /// <param name="page">- Page number from which set of questions are to be retrieved.</param>
     /// <param name="afterDate">- If provided, results questions are returned which were posted after this date</param>
-    abstract getQuestions: publisherName: string * extensionName: string * ?count: float * ?page: float * ?afterDate: DateTime -> Promise<Gallery.QuestionsResult>
+    abstract getQuestions: publisherName: string * extensionName: string * ?count: int * ?page: int * ?afterDate: DateTime -> Promise<Gallery.QuestionsResult>
     /// <summary>Flags a concern with an existing question for an extension.</summary>
     /// <param name="concern">- User reported concern with a question for the extension.</param>
     /// <param name="pubName">- Name of the publisher who published the extension.</param>
     /// <param name="extName">- Name of the extension.</param>
     /// <param name="questionId">- Identifier of the question to be updated for the extension.</param>
-    abstract reportQuestion: concern: Gallery.Concern * pubName: string * extName: string * questionId: float -> Promise<Gallery.Concern>
+    abstract reportQuestion: concern: Gallery.Concern * pubName: string * extName: string * questionId: int -> Promise<Gallery.Concern>
     /// <summary>Creates a new question for an extension.</summary>
     /// <param name="question">- Question to be created for the extension.</param>
     /// <param name="publisherName">- Name of the publisher who published the extension.</param>
@@ -270,39 +270,39 @@ type [<AllowNullLiteral>] GalleryRestClient =
     /// <param name="publisherName">- Name of the publisher who published the extension.</param>
     /// <param name="extensionName">- Name of the extension.</param>
     /// <param name="questionId">- Identifier of the question to be deleted for the extension.</param>
-    abstract deleteQuestion: publisherName: string * extensionName: string * questionId: float -> Promise<unit>
+    abstract deleteQuestion: publisherName: string * extensionName: string * questionId: int -> Promise<unit>
     /// <summary>Updates an existing question for an extension.</summary>
     /// <param name="question">- Updated question to be set for the extension.</param>
     /// <param name="publisherName">- Name of the publisher who published the extension.</param>
     /// <param name="extensionName">- Name of the extension.</param>
     /// <param name="questionId">- Identifier of the question to be updated for the extension.</param>
-    abstract updateQuestion: question: Gallery.Question * publisherName: string * extensionName: string * questionId: float -> Promise<Gallery.Question>
+    abstract updateQuestion: question: Gallery.Question * publisherName: string * extensionName: string * questionId: int -> Promise<Gallery.Question>
     /// <summary>Creates a new response for a given question for an extension.</summary>
     /// <param name="response">- Response to be created for the extension.</param>
     /// <param name="publisherName">- Name of the publisher who published the extension.</param>
     /// <param name="extensionName">- Name of the extension.</param>
     /// <param name="questionId">- Identifier of the question for which response is to be created for the extension.</param>
-    abstract createResponse: response: Gallery.Response * publisherName: string * extensionName: string * questionId: float -> Promise<Gallery.Response>
+    abstract createResponse: response: Gallery.Response * publisherName: string * extensionName: string * questionId: int -> Promise<Gallery.Response>
     /// <summary>Deletes a response for an extension. (soft delete)</summary>
     /// <param name="publisherName">- Name of the publisher who published the extension.</param>
     /// <param name="extensionName">- Name of the extension.</param>
     /// <param name="questionId">- Identifies the question whose response is to be deleted.</param>
     /// <param name="responseId">- Identifies the response to be deleted.</param>
-    abstract deleteResponse: publisherName: string * extensionName: string * questionId: float * responseId: float -> Promise<unit>
+    abstract deleteResponse: publisherName: string * extensionName: string * questionId: int * responseId: int -> Promise<unit>
     /// <summary>Updates an existing response for a given question for an extension.</summary>
     /// <param name="response">- Updated response to be set for the extension.</param>
     /// <param name="publisherName">- Name of the publisher who published the extension.</param>
     /// <param name="extensionName">- Name of the extension.</param>
     /// <param name="questionId">- Identifier of the question for which response is to be updated for the extension.</param>
     /// <param name="responseId">- Identifier of the response which has to be updated.</param>
-    abstract updateResponse: response: Gallery.Response * publisherName: string * extensionName: string * questionId: float * responseId: float -> Promise<Gallery.Response>
+    abstract updateResponse: response: Gallery.Response * publisherName: string * extensionName: string * questionId: int * responseId: int -> Promise<Gallery.Response>
     /// <summary>Returns extension reports</summary>
     /// <param name="publisherName">- Name of the publisher who published the extension</param>
     /// <param name="extensionName">- Name of the extension</param>
     /// <param name="days">- Last n days report. If afterDate and days are specified, days will take priority</param>
     /// <param name="count">- Number of events to be returned</param>
     /// <param name="afterDate">- Use if you want to fetch events newer than the specified date</param>
-    abstract getExtensionReports: publisherName: string * extensionName: string * ?days: float * ?count: float * ?afterDate: DateTime -> Promise<obj option>
+    abstract getExtensionReports: publisherName: string * extensionName: string * ?days: int * ?count: int * ?afterDate: DateTime -> Promise<obj option>
     /// <summary>Returns a list of reviews associated with an extension</summary>
     /// <param name="publisherName">- Name of the publisher who published the extension</param>
     /// <param name="extensionName">- Name of the extension</param>
@@ -310,7 +310,7 @@ type [<AllowNullLiteral>] GalleryRestClient =
     /// <param name="filterOptions">- FilterOptions to filter out empty reviews etcetera, defaults to none</param>
     /// <param name="beforeDate">- Use if you want to fetch reviews older than the specified date, defaults to null</param>
     /// <param name="afterDate">- Use if you want to fetch reviews newer than the specified date, defaults to null</param>
-    abstract getReviews: publisherName: string * extensionName: string * ?count: float * ?filterOptions: Gallery.ReviewFilterOptions * ?beforeDate: DateTime * ?afterDate: DateTime -> Promise<Gallery.ReviewsResult>
+    abstract getReviews: publisherName: string * extensionName: string * ?count: int * ?filterOptions: Gallery.ReviewFilterOptions * ?beforeDate: DateTime * ?afterDate: DateTime -> Promise<Gallery.ReviewsResult>
     /// <summary>Returns a summary of the reviews</summary>
     /// <param name="pubName">- Name of the publisher who published the extension</param>
     /// <param name="extName">- Name of the extension</param>
@@ -326,13 +326,13 @@ type [<AllowNullLiteral>] GalleryRestClient =
     /// <param name="pubName">- Name of the pubilsher who published the extension</param>
     /// <param name="extName">- Name of the extension</param>
     /// <param name="reviewId">- Id of the review which needs to be updated</param>
-    abstract deleteReview: pubName: string * extName: string * reviewId: float -> Promise<unit>
+    abstract deleteReview: pubName: string * extName: string * reviewId: int -> Promise<unit>
     /// <summary>Updates or Flags a review</summary>
     /// <param name="reviewPatch">- ReviewPatch object which contains the changes to be applied to the review</param>
     /// <param name="pubName">- Name of the pubilsher who published the extension</param>
     /// <param name="extName">- Name of the extension</param>
     /// <param name="reviewId">- Id of the review which needs to be updated</param>
-    abstract updateReview: reviewPatch: Gallery.ReviewPatch * pubName: string * extName: string * reviewId: float -> Promise<Gallery.ReviewPatch>
+    abstract updateReview: reviewPatch: Gallery.ReviewPatch * pubName: string * extName: string * reviewId: int -> Promise<Gallery.ReviewPatch>
     /// <param name="category">-</param>
     abstract createCategory: category: Gallery.ExtensionCategory -> Promise<Gallery.ExtensionCategory>
     /// <summary>Get all setting entries for the given user/all-users scope</summary>
@@ -345,7 +345,7 @@ type [<AllowNullLiteral>] GalleryRestClient =
     abstract setGalleryUserSettings: entries: GalleryRestClientSetGalleryUserSettingsEntries * userScope: string -> Promise<unit>
     /// <param name="keyType">-</param>
     /// <param name="expireCurrentSeconds">-</param>
-    abstract generateKey: keyType: string * ?expireCurrentSeconds: float -> Promise<unit>
+    abstract generateKey: keyType: string * ?expireCurrentSeconds: int -> Promise<unit>
     /// <param name="keyType">-</param>
     abstract getSigningKey: keyType: string -> Promise<string>
     /// <param name="extensionStatisticsUpdate">-</param>
@@ -357,7 +357,7 @@ type [<AllowNullLiteral>] GalleryRestClient =
     /// <param name="days">-</param>
     /// <param name="aggregate">-</param>
     /// <param name="afterDate">-</param>
-    abstract getExtensionDailyStats: publisherName: string * extensionName: string * ?days: float * ?aggregate: Gallery.ExtensionStatsAggregateType * ?afterDate: DateTime -> Promise<Gallery.ExtensionDailyStats>
+    abstract getExtensionDailyStats: publisherName: string * extensionName: string * ?days: int * ?aggregate: Gallery.ExtensionStatsAggregateType * ?afterDate: DateTime -> Promise<Gallery.ExtensionDailyStats>
     /// <summary>This route/location id only supports HTTP POST anonymously, so that the page view daily stat can be incremented from Marketplace client. Trying to call GET on this route should result in an exception. Without this explicit implementation, calling GET on this public route invokes the above GET implementation GetExtensionDailyStats.</summary>
     /// <param name="publisherName">- Name of the publisher</param>
     /// <param name="extensionName">- Name of the extension</param>

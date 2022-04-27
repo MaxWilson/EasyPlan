@@ -79,13 +79,13 @@ type [<AllowNullLiteral>] InputValidation =
     /// Gets or sets if this is a required field.
     abstract isRequired: bool with get, set
     /// Gets or sets the maximum length of this descriptor.
-    abstract maxLength: float with get, set
+    abstract maxLength: int with get, set
     /// Gets or sets the minimum value for this descriptor.
-    abstract maxValue: float with get, set
+    abstract maxValue: int with get, set
     /// Gets or sets the minimum length of this descriptor.
-    abstract minLength: float with get, set
+    abstract minLength: int with get, set
     /// Gets or sets the minimum value for this descriptor.
-    abstract minValue: float with get, set
+    abstract minValue: int with get, set
     /// Gets or sets the pattern to validate.
     abstract pattern: string with get, set
     /// Gets or sets the error on pattern mismatch.

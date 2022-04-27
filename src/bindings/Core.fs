@@ -60,13 +60,13 @@ type [<AllowNullLiteral>] ProjectInfo =
     /// A set of name-value pairs storing additional property data related to the project.
     abstract properties: ResizeArray<ProjectProperty> with get, set
     /// The current revision of the project.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// The current state of the project.
     abstract state: obj option with get, set
     /// A Uri that can be used to refer to this project.
     abstract uri: string with get, set
     /// The version number of the project.
-    abstract version: float with get, set
+    abstract version: int with get, set
     /// Indicates whom the project is visible to.
     abstract visibility: ProjectVisibility with get, set
 
@@ -179,7 +179,7 @@ type [<AllowNullLiteral>] TeamProjectReference =
     /// Project name.
     abstract name: string with get, set
     /// Project revision.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Project state.
     abstract state: obj option with get, set
     /// Url to the full version of the object.
@@ -196,7 +196,7 @@ type [<AllowNullLiteral>] TemporaryDataCreatedDTO =
 
 /// A data transfer object that stores the metadata associated with the temporary data.
 type [<AllowNullLiteral>] TemporaryDataDTO =
-    abstract expirationSeconds: float with get, set
+    abstract expirationSeconds: int with get, set
     abstract origin: string with get, set
     abstract value: obj option with get, set
 

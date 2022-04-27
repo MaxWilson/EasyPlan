@@ -124,7 +124,7 @@ type [<AllowNullLiteral>] Notification =
     /// The event id associated with this notification
     abstract eventId: string with get, set
     /// The notification id
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets date and time that this result was last modified.
     abstract modifiedDate: DateTime with get, set
     /// Result of the notification
@@ -167,9 +167,9 @@ type [<AllowNullLiteral>] NotificationDetails =
     /// Gets or sets this notification detail's request.
     abstract request: string with get, set
     /// Number of requests attempted to be sent to the consumer
-    abstract requestAttempts: float with get, set
+    abstract requestAttempts: int with get, set
     /// Duration of the request to the consumer in seconds
-    abstract requestDuration: float with get, set
+    abstract requestDuration: int with get, set
     /// Gets or sets this notification detail's response.
     abstract response: string with get, set
 
@@ -182,7 +182,7 @@ type [<RequireQualifiedAccess>] NotificationResult =
 /// Summary of a particular result and count.
 type [<AllowNullLiteral>] NotificationResultsSummaryDetail =
     /// Count of notification sent out with a matching result.
-    abstract notificationCount: float with get, set
+    abstract notificationCount: int with get, set
     /// Result of the notification
     abstract result: NotificationResult with get, set
 
@@ -195,9 +195,9 @@ type [<AllowNullLiteral>] NotificationsQuery =
     /// Optional maximum date at which the notification was created
     abstract maxCreatedDate: DateTime with get, set
     /// Optional maximum number of overall results to include
-    abstract maxResults: float with get, set
+    abstract maxResults: int with get, set
     /// Optional maximum number of results for each subscription. Only takes effect when a list of subscription ids is supplied in the query.
-    abstract maxResultsPerSubscription: float with get, set
+    abstract maxResultsPerSubscription: int with get, set
     /// Optional minimum date at which the notification was created
     abstract minCreatedDate: DateTime with get, set
     /// Optional publisher id to restrict the results to
@@ -307,7 +307,7 @@ type [<AllowNullLiteral>] Subscription =
     abstract id: string with get, set
     abstract modifiedBy: WebApi.IdentityRef with get, set
     abstract modifiedDate: DateTime with get, set
-    abstract probationRetries: float with get, set
+    abstract probationRetries: int with get, set
     abstract publisherId: string with get, set
     /// Publisher input values
     abstract publisherInputs: NotificationDetailsConsumerInputs with get, set

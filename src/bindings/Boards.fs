@@ -95,7 +95,7 @@ type [<AllowNullLiteral>] BoardItem =
     /// Links to other related objects.
     abstract _links: obj option with get, set
     /// Board id for this item.
-    abstract boardId: float with get, set
+    abstract boardId: int with get, set
     /// Board column id for this item.
     abstract columnId: string with get, set
     /// Next board item id.
@@ -237,7 +237,7 @@ type [<AllowNullLiteral>] BoardItemStateSyncUpdate =
 type [<AllowNullLiteral>] BoardReference =
     inherit EntityReference
     /// Id of the resource.
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 /// Response for board column actions.
 type [<AllowNullLiteral>] BoardResponse =
@@ -337,7 +337,7 @@ type [<AllowNullLiteral>] PredicateAndAction =
 /// Base type for real time board events. All board events should inherit from this class.
 type [<AllowNullLiteral>] RealtimeBoardEvent =
     /// The Board ID of the event
-    abstract boardId: float with get, set
+    abstract boardId: int with get, set
     /// A unique ID for events, used for logging and tracing.
     abstract eventId: string with get, set
     /// The Project ID of the board.

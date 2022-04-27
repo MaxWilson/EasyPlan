@@ -47,13 +47,13 @@ type [<AllowNullLiteral>] ServiceHooksRestClient =
     /// <summary>Get a specific notification for a subscription.</summary>
     /// <param name="subscriptionId">- ID for a subscription.</param>
     /// <param name="notificationId">-</param>
-    abstract getNotification: subscriptionId: string * notificationId: float -> Promise<ServiceHooks.Notification>
+    abstract getNotification: subscriptionId: string * notificationId: int -> Promise<ServiceHooks.Notification>
     /// <summary>Get a list of notifications for a specific subscription. A notification includes details about the event, the request to and the response from the consumer service.</summary>
     /// <param name="subscriptionId">- ID for a subscription.</param>
     /// <param name="maxResults">- Maximum number of notifications to return. Default is **100**.</param>
     /// <param name="status">- Get only notifications with this status.</param>
     /// <param name="result">- Get only notifications with this result type.</param>
-    abstract getNotifications: subscriptionId: string * ?maxResults: float * ?status: ServiceHooks.NotificationStatus * ?result: ServiceHooks.NotificationResult -> Promise<ResizeArray<ServiceHooks.Notification>>
+    abstract getNotifications: subscriptionId: string * ?maxResults: int * ?status: ServiceHooks.NotificationStatus * ?result: ServiceHooks.NotificationResult -> Promise<ResizeArray<ServiceHooks.Notification>>
     /// <summary>Query for notifications. A notification includes details about the event, the request to and the response from the consumer service.</summary>
     /// <param name="query">-</param>
     abstract queryNotifications: query: ServiceHooks.NotificationsQuery -> Promise<ServiceHooks.NotificationsQuery>

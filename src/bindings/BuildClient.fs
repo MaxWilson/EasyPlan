@@ -17,33 +17,33 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="artifact">- The artifact.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
-    abstract createArtifact: artifact: Build.BuildArtifact * project: string * buildId: float -> Promise<Build.BuildArtifact>
+    abstract createArtifact: artifact: Build.BuildArtifact * project: string * buildId: int -> Promise<Build.BuildArtifact>
     /// <summary>Gets a specific artifact for a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="artifactName">- The name of the artifact.</param>
-    abstract getArtifact: project: string * buildId: float * artifactName: string -> Promise<Build.BuildArtifact>
+    abstract getArtifact: project: string * buildId: int * artifactName: string -> Promise<Build.BuildArtifact>
     /// <summary>Gets a specific artifact for a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="artifactName">- The name of the artifact.</param>
-    abstract getArtifactContentZip: project: string * buildId: float * artifactName: string -> Promise<ArrayBuffer>
+    abstract getArtifactContentZip: project: string * buildId: int * artifactName: string -> Promise<ArrayBuffer>
     /// <summary>Gets all artifacts for a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
-    abstract getArtifacts: project: string * buildId: float -> Promise<ResizeArray<Build.BuildArtifact>>
+    abstract getArtifacts: project: string * buildId: int -> Promise<ResizeArray<Build.BuildArtifact>>
     /// <summary>Gets a file from the build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="artifactName">- The name of the artifact.</param>
     /// <param name="fileId">- The primary key for the file.</param>
     /// <param name="fileName">- The name that the file will be set to.</param>
-    abstract getFile: project: string * buildId: float * artifactName: string * fileId: string * fileName: string -> Promise<ArrayBuffer>
+    abstract getFile: project: string * buildId: int * artifactName: string * fileId: string * fileName: string -> Promise<ArrayBuffer>
     /// <summary>Gets the list of attachments of a specific type that are associated with a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="type">- The type of attachment.</param>
-    abstract getAttachments: project: string * buildId: float * ``type``: string -> Promise<ResizeArray<Build.Attachment>>
+    abstract getAttachments: project: string * buildId: int * ``type``: string -> Promise<ResizeArray<Build.Attachment>>
     /// <summary>Gets a specific attachment.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
@@ -51,7 +51,7 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="recordId">- The ID of the timeline record.</param>
     /// <param name="type">- The type of the attachment.</param>
     /// <param name="name">- The name of the attachment.</param>
-    abstract getAttachment: project: string * buildId: float * timelineId: string * recordId: string * ``type``: string * name: string -> Promise<ArrayBuffer>
+    abstract getAttachment: project: string * buildId: int * timelineId: string * recordId: string * ``type``: string * name: string -> Promise<ArrayBuffer>
     /// <param name="resources">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract authorizeProjectResources: resources: ResizeArray<Build.DefinitionResourceReference> * project: string -> Promise<ResizeArray<Build.DefinitionResourceReference>>
@@ -63,7 +63,7 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="project">- The project ID or name.</param>
     /// <param name="definitionId">- The ID of the definition.</param>
     /// <param name="branchName">- The name of the branch.</param>
-    abstract getBadge: project: string * definitionId: float * ?branchName: string -> Promise<string>
+    abstract getBadge: project: string * definitionId: int * ?branchName: string -> Promise<string>
     /// <summary>Gets a list of branches for the given source code repository.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="providerName">- The name of the source provider.</param>
@@ -86,12 +86,12 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <summary>Deletes a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
-    abstract deleteBuild: project: string * buildId: float -> Promise<unit>
+    abstract deleteBuild: project: string * buildId: int -> Promise<unit>
     /// <summary>Gets a build</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="propertyFilters">-</param>
-    abstract getBuild: project: string * buildId: float * ?propertyFilters: string -> Promise<Build.Build>
+    abstract getBuild: project: string * buildId: int * ?propertyFilters: string -> Promise<Build.Build>
     /// <summary>Gets a list of builds.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitions">- A comma-delimited list of definition IDs. If specified, filters to builds for these definitions.</param>
@@ -114,20 +114,20 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="buildIds">- A comma-delimited list that specifies the IDs of builds to retrieve.</param>
     /// <param name="repositoryId">- If specified, filters to builds that built from this repository.</param>
     /// <param name="repositoryType">- If specified, filters to builds that built from repositories of this type.</param>
-    abstract getBuilds: project: string * ?definitions: ResizeArray<float> * ?queues: ResizeArray<float> * ?buildNumber: string * ?minTime: DateTime * ?maxTime: DateTime * ?requestedFor: string * ?reasonFilter: Build.BuildReason * ?statusFilter: Build.BuildStatus * ?resultFilter: Build.BuildResult * ?tagFilters: ResizeArray<string> * ?properties: ResizeArray<string> * ?top: float * ?continuationToken: string * ?maxBuildsPerDefinition: float * ?deletedFilter: Build.QueryDeletedOption * ?queryOrder: Build.BuildQueryOrder * ?branchName: string * ?buildIds: ResizeArray<float> * ?repositoryId: string * ?repositoryType: string -> Promise<ResizeArray<Build.Build>>
+    abstract getBuilds: project: string * ?definitions: ResizeArray<float> * ?queues: ResizeArray<float> * ?buildNumber: string * ?minTime: DateTime * ?maxTime: DateTime * ?requestedFor: string * ?reasonFilter: Build.BuildReason * ?statusFilter: Build.BuildStatus * ?resultFilter: Build.BuildResult * ?tagFilters: ResizeArray<string> * ?properties: ResizeArray<string> * ?top: int * ?continuationToken: string * ?maxBuildsPerDefinition: int * ?deletedFilter: Build.QueryDeletedOption * ?queryOrder: Build.BuildQueryOrder * ?branchName: string * ?buildIds: ResizeArray<float> * ?repositoryId: string * ?repositoryType: string -> Promise<ResizeArray<Build.Build>>
     /// <summary>Queues a build</summary>
     /// <param name="build">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="ignoreWarnings">-</param>
     /// <param name="checkInTicket">-</param>
     /// <param name="sourceBuildId">-</param>
-    abstract queueBuild: build: Build.Build * project: string * ?ignoreWarnings: bool * ?checkInTicket: string * ?sourceBuildId: float -> Promise<Build.Build>
+    abstract queueBuild: build: Build.Build * project: string * ?ignoreWarnings: bool * ?checkInTicket: string * ?sourceBuildId: int -> Promise<Build.Build>
     /// <summary>Updates a build.</summary>
     /// <param name="build">- The build.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="retry">-</param>
-    abstract updateBuild: build: Build.Build * project: string * buildId: float * ?retry: bool -> Promise<Build.Build>
+    abstract updateBuild: build: Build.Build * project: string * buildId: int * ?retry: bool -> Promise<Build.Build>
     /// <summary>Updates multiple builds.</summary>
     /// <param name="builds">- The builds to update.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -138,16 +138,16 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="continuationToken">-</param>
     /// <param name="top">- The maximum number of changes to return</param>
     /// <param name="includeSourceChange">-</param>
-    abstract getBuildChanges: project: string * buildId: float * ?continuationToken: string * ?top: float * ?includeSourceChange: bool -> Promise<ResizeArray<Build.Change>>
+    abstract getBuildChanges: project: string * buildId: int * ?continuationToken: string * ?top: int * ?includeSourceChange: bool -> Promise<ResizeArray<Build.Change>>
     /// <summary>Gets the changes made to the repository between two given builds.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="fromBuildId">- The ID of the first build.</param>
     /// <param name="toBuildId">- The ID of the last build.</param>
     /// <param name="top">- The maximum number of changes to return.</param>
-    abstract getChangesBetweenBuilds: project: string * ?fromBuildId: float * ?toBuildId: float * ?top: float -> Promise<ResizeArray<Build.Change>>
+    abstract getChangesBetweenBuilds: project: string * ?fromBuildId: int * ?toBuildId: int * ?top: int -> Promise<ResizeArray<Build.Change>>
     /// <summary>Gets a controller</summary>
     /// <param name="controllerId">-</param>
-    abstract getBuildController: controllerId: float -> Promise<Build.BuildController>
+    abstract getBuildController: controllerId: int -> Promise<Build.BuildController>
     /// <summary>Gets controller, optionally filtered by name</summary>
     /// <param name="name">-</param>
     abstract getBuildControllers: ?name: string -> Promise<ResizeArray<Build.BuildController>>
@@ -156,11 +156,11 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionToCloneId">-</param>
     /// <param name="definitionToCloneRevision">-</param>
-    abstract createDefinition: definition: Build.BuildDefinition * project: string * ?definitionToCloneId: float * ?definitionToCloneRevision: float -> Promise<Build.BuildDefinition>
+    abstract createDefinition: definition: Build.BuildDefinition * project: string * ?definitionToCloneId: int * ?definitionToCloneRevision: int -> Promise<Build.BuildDefinition>
     /// <summary>Deletes a definition and all associated builds.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
-    abstract deleteDefinition: project: string * definitionId: float -> Promise<unit>
+    abstract deleteDefinition: project: string * definitionId: int -> Promise<unit>
     /// <summary>Gets a definition, optionally at a specific revision.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
@@ -168,7 +168,7 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="minMetricsTime">- If specified, indicates the date from which metrics should be included.</param>
     /// <param name="propertyFilters">- A comma-delimited list of properties to include in the results.</param>
     /// <param name="includeLatestBuilds">-</param>
-    abstract getDefinition: project: string * definitionId: float * ?revision: float * ?minMetricsTime: DateTime * ?propertyFilters: ResizeArray<string> * ?includeLatestBuilds: bool -> Promise<Build.BuildDefinition>
+    abstract getDefinition: project: string * definitionId: int * ?revision: int * ?minMetricsTime: DateTime * ?propertyFilters: ResizeArray<string> * ?includeLatestBuilds: bool -> Promise<Build.BuildDefinition>
     /// <summary>Gets a list of definitions.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="name">- If specified, filters to definitions whose names match this pattern.</param>
@@ -187,19 +187,19 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="taskIdFilter">- If specified, filters to definitions that use the specified task.</param>
     /// <param name="processType">- If specified, filters to definitions with the given process type.</param>
     /// <param name="yamlFilename">- If specified, filters to YAML definitions that match the given filename.</param>
-    abstract getDefinitions: project: string * ?name: string * ?repositoryId: string * ?repositoryType: string * ?queryOrder: Build.DefinitionQueryOrder * ?top: float * ?continuationToken: string * ?minMetricsTime: DateTime * ?definitionIds: ResizeArray<float> * ?path: string * ?builtAfter: DateTime * ?notBuiltAfter: DateTime * ?includeAllProperties: bool * ?includeLatestBuilds: bool * ?taskIdFilter: string * ?processType: float * ?yamlFilename: string -> Promise<ResizeArray<Build.BuildDefinitionReference>>
+    abstract getDefinitions: project: string * ?name: string * ?repositoryId: string * ?repositoryType: string * ?queryOrder: Build.DefinitionQueryOrder * ?top: int * ?continuationToken: string * ?minMetricsTime: DateTime * ?definitionIds: ResizeArray<float> * ?path: string * ?builtAfter: DateTime * ?notBuiltAfter: DateTime * ?includeAllProperties: bool * ?includeLatestBuilds: bool * ?taskIdFilter: string * ?processType: int * ?yamlFilename: string -> Promise<ResizeArray<Build.BuildDefinitionReference>>
     /// <summary>Restores a deleted definition</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The identifier of the definition to restore.</param>
     /// <param name="deleted">- When false, restores a deleted definition.</param>
-    abstract restoreDefinition: project: string * definitionId: float * deleted: bool -> Promise<Build.BuildDefinition>
+    abstract restoreDefinition: project: string * definitionId: int * deleted: bool -> Promise<Build.BuildDefinition>
     /// <summary>Updates an existing definition.</summary>
     /// <param name="definition">- The new version of the defintion.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
     /// <param name="secretsSourceDefinitionId">-</param>
     /// <param name="secretsSourceDefinitionRevision">-</param>
-    abstract updateDefinition: definition: Build.BuildDefinition * project: string * definitionId: float * ?secretsSourceDefinitionId: float * ?secretsSourceDefinitionRevision: float -> Promise<Build.BuildDefinition>
+    abstract updateDefinition: definition: Build.BuildDefinition * project: string * definitionId: int * ?secretsSourceDefinitionId: int * ?secretsSourceDefinitionRevision: int -> Promise<Build.BuildDefinition>
     /// <summary>Gets the contents of a file in the given source code repository.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="providerName">- The name of the source provider.</param>
@@ -238,29 +238,29 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="logId">- The ID of the log file.</param>
     /// <param name="startLine">- The start line.</param>
     /// <param name="endLine">- The end line.</param>
-    abstract getBuildLog: project: string * buildId: float * logId: float * ?startLine: float * ?endLine: float -> Promise<string>
+    abstract getBuildLog: project: string * buildId: int * logId: int * ?startLine: int * ?endLine: int -> Promise<string>
     /// <summary>Gets an individual log file for a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="logId">- The ID of the log file.</param>
     /// <param name="startLine">- The start line.</param>
     /// <param name="endLine">- The end line.</param>
-    abstract getBuildLogLines: project: string * buildId: float * logId: float * ?startLine: float * ?endLine: float -> Promise<ResizeArray<string>>
+    abstract getBuildLogLines: project: string * buildId: int * logId: int * ?startLine: int * ?endLine: int -> Promise<ResizeArray<string>>
     /// <summary>Gets the logs for a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
-    abstract getBuildLogs: project: string * buildId: float -> Promise<ResizeArray<Build.BuildLog>>
+    abstract getBuildLogs: project: string * buildId: int -> Promise<ResizeArray<Build.BuildLog>>
     /// <summary>Gets the logs for a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
-    abstract getBuildLogsZip: project: string * buildId: float -> Promise<ArrayBuffer>
+    abstract getBuildLogsZip: project: string * buildId: int -> Promise<ArrayBuffer>
     /// <summary>Gets an individual log file for a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="logId">- The ID of the log file.</param>
     /// <param name="startLine">- The start line.</param>
     /// <param name="endLine">- The end line.</param>
-    abstract getBuildLogZip: project: string * buildId: float * logId: float * ?startLine: float * ?endLine: float -> Promise<ArrayBuffer>
+    abstract getBuildLogZip: project: string * buildId: int * logId: int * ?startLine: int * ?endLine: int -> Promise<ArrayBuffer>
     /// <summary>Gets build metrics for a project.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="metricAggregationType">- The aggregation type to use (hourly, daily).</param>
@@ -270,7 +270,7 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
     /// <param name="minMetricsTime">- The date from which to calculate metrics.</param>
-    abstract getDefinitionMetrics: project: string * definitionId: float * ?minMetricsTime: DateTime -> Promise<ResizeArray<Build.BuildMetric>>
+    abstract getDefinitionMetrics: project: string * definitionId: int * ?minMetricsTime: DateTime -> Promise<ResizeArray<Build.BuildMetric>>
     /// <summary>Gets all build definition options supported by the system.</summary>
     /// <param name="project">- Project ID or project name</param>
     abstract getBuildOptionDefinitions: ?project: string -> Promise<ResizeArray<Build.BuildOptionDefinition>>
@@ -286,22 +286,22 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="filter">- A comma-delimited list of properties. If specified, filters to these specific properties.</param>
-    abstract getBuildProperties: project: string * buildId: float * ?filter: ResizeArray<string> -> Promise<obj option>
+    abstract getBuildProperties: project: string * buildId: int * ?filter: ResizeArray<string> -> Promise<obj option>
     /// <summary>Updates properties for a build.</summary>
     /// <param name="document">- A json-patch document describing the properties to update.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
-    abstract updateBuildProperties: document: WebApi.JsonPatchDocument * project: string * buildId: float -> Promise<obj option>
+    abstract updateBuildProperties: document: WebApi.JsonPatchDocument * project: string * buildId: int -> Promise<obj option>
     /// <summary>Gets properties for a definition.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
     /// <param name="filter">- A comma-delimited list of properties. If specified, filters to these specific properties.</param>
-    abstract getDefinitionProperties: project: string * definitionId: float * ?filter: ResizeArray<string> -> Promise<obj option>
+    abstract getDefinitionProperties: project: string * definitionId: int * ?filter: ResizeArray<string> -> Promise<obj option>
     /// <summary>Updates properties for a definition.</summary>
     /// <param name="document">- A json-patch document describing the properties to update.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
-    abstract updateDefinitionProperties: document: WebApi.JsonPatchDocument * project: string * definitionId: float -> Promise<obj option>
+    abstract updateDefinitionProperties: document: WebApi.JsonPatchDocument * project: string * definitionId: int -> Promise<obj option>
     /// <summary>Gets a pull request object from source provider.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="providerName">- The name of the source provider.</param>
@@ -313,12 +313,12 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="type">-</param>
-    abstract getBuildReport: project: string * buildId: float * ?``type``: string -> Promise<Build.BuildReportMetadata>
+    abstract getBuildReport: project: string * buildId: int * ?``type``: string -> Promise<Build.BuildReportMetadata>
     /// <summary>Gets a build report.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="type">-</param>
-    abstract getBuildReportHtmlContent: project: string * buildId: float * ?``type``: string -> Promise<obj option>
+    abstract getBuildReportHtmlContent: project: string * buildId: int * ?``type``: string -> Promise<obj option>
     /// <summary>Gets a list of source code repositories.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="providerName">- The name of the source provider.</param>
@@ -331,10 +331,10 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="resources">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">-</param>
-    abstract authorizeDefinitionResources: resources: ResizeArray<Build.DefinitionResourceReference> * project: string * definitionId: float -> Promise<ResizeArray<Build.DefinitionResourceReference>>
+    abstract authorizeDefinitionResources: resources: ResizeArray<Build.DefinitionResourceReference> * project: string * definitionId: int -> Promise<ResizeArray<Build.DefinitionResourceReference>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">-</param>
-    abstract getDefinitionResources: project: string * definitionId: float -> Promise<ResizeArray<Build.DefinitionResourceReference>>
+    abstract getDefinitionResources: project: string * definitionId: int -> Promise<ResizeArray<Build.DefinitionResourceReference>>
     /// Gets information about build resources in the system.
     abstract getResourceUsage: unit -> Promise<Build.BuildResourceUsage>
     /// <summary>Gets the project's retention settings.</summary>
@@ -347,7 +347,7 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <summary>Gets all revisions of a definition.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
-    abstract getDefinitionRevisions: project: string * definitionId: float -> Promise<ResizeArray<Build.BuildDefinitionRevision>>
+    abstract getDefinitionRevisions: project: string * definitionId: int -> Promise<ResizeArray<Build.BuildDefinitionRevision>>
     /// <summary>Gets the build settings.</summary>
     /// <param name="project">- Project ID or project name</param>
     abstract getBuildSettings: ?project: string -> Promise<Build.BuildSettings>
@@ -363,7 +363,7 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="buildId">-</param>
     /// <param name="stageRefName">-</param>
     /// <param name="project">- Project ID or project name</param>
-    abstract updateStage: updateParameters: Build.UpdateStageParameters * buildId: float * stageRefName: string * ?project: string -> Promise<unit>
+    abstract updateStage: updateParameters: Build.UpdateStageParameters * buildId: int * stageRefName: string * ?project: string -> Promise<unit>
     /// <summary>\<p\>Gets the build status for a definition, optionally scoped to a specific branch, stage, job, and configuration.\</p\> \<p\>If there are more than one, then it is required to pass in a stageName value when specifying a jobName, and the same rule then applies for both if passing a configuration parameter.\</p\></summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definition">- Either the definition name with optional leading folder path, or the definition id.</param>
@@ -377,41 +377,41 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="tag">- The tag to add.</param>
-    abstract addBuildTag: project: string * buildId: float * tag: string -> Promise<ResizeArray<string>>
+    abstract addBuildTag: project: string * buildId: int * tag: string -> Promise<ResizeArray<string>>
     /// <summary>Adds tags to a build.</summary>
     /// <param name="tags">- The tags to add.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
-    abstract addBuildTags: tags: ResizeArray<string> * project: string * buildId: float -> Promise<ResizeArray<string>>
+    abstract addBuildTags: tags: ResizeArray<string> * project: string * buildId: int -> Promise<ResizeArray<string>>
     /// <summary>Removes a tag from a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="tag">- The tag to remove.</param>
-    abstract deleteBuildTag: project: string * buildId: float * tag: string -> Promise<ResizeArray<string>>
+    abstract deleteBuildTag: project: string * buildId: int * tag: string -> Promise<ResizeArray<string>>
     /// <summary>Gets the tags for a build.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
-    abstract getBuildTags: project: string * buildId: float -> Promise<ResizeArray<string>>
+    abstract getBuildTags: project: string * buildId: int -> Promise<ResizeArray<string>>
     /// <summary>Adds a tag to a definition</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
     /// <param name="tag">- The tag to add.</param>
-    abstract addDefinitionTag: project: string * definitionId: float * tag: string -> Promise<ResizeArray<string>>
+    abstract addDefinitionTag: project: string * definitionId: int * tag: string -> Promise<ResizeArray<string>>
     /// <summary>Adds multiple tags to a definition.</summary>
     /// <param name="tags">- The tags to add.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
-    abstract addDefinitionTags: tags: ResizeArray<string> * project: string * definitionId: float -> Promise<ResizeArray<string>>
+    abstract addDefinitionTags: tags: ResizeArray<string> * project: string * definitionId: int -> Promise<ResizeArray<string>>
     /// <summary>Removes a tag from a definition.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
     /// <param name="tag">- The tag to remove.</param>
-    abstract deleteDefinitionTag: project: string * definitionId: float * tag: string -> Promise<ResizeArray<string>>
+    abstract deleteDefinitionTag: project: string * definitionId: int * tag: string -> Promise<ResizeArray<string>>
     /// <summary>Gets the tags for a definition.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- The ID of the definition.</param>
     /// <param name="revision">- The definition revision number. If not specified, uses the latest revision of the definition.</param>
-    abstract getDefinitionTags: project: string * definitionId: float * ?revision: float -> Promise<ResizeArray<string>>
+    abstract getDefinitionTags: project: string * definitionId: int * ?revision: int -> Promise<ResizeArray<string>>
     /// <summary>Removes a tag from builds, definitions, and from the tag store</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="tag">- The tag to remove.</param>
@@ -441,7 +441,7 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="timelineId">-</param>
     /// <param name="changeId">-</param>
     /// <param name="planId">-</param>
-    abstract getBuildTimeline: project: string * buildId: float * ?timelineId: string * ?changeId: float * ?planId: string -> Promise<Build.Timeline>
+    abstract getBuildTimeline: project: string * buildId: int * ?timelineId: string * ?changeId: int * ?planId: string -> Promise<Build.Timeline>
     /// <summary>Recreates the webhooks for the specified triggers in the given source code repository.</summary>
     /// <param name="triggerTypes">- The types of triggers to restore webhooks for.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -459,19 +459,19 @@ type [<AllowNullLiteral>] BuildRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="top">- The maximum number of work items to return.</param>
-    abstract getBuildWorkItemsRefs: project: string * buildId: float * ?top: float -> Promise<ResizeArray<WebApi.ResourceRef>>
+    abstract getBuildWorkItemsRefs: project: string * buildId: int * ?top: int -> Promise<ResizeArray<WebApi.ResourceRef>>
     /// <summary>Gets the work items associated with a build, filtered to specific commits.</summary>
     /// <param name="commitIds">- A comma-delimited list of commit IDs.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- The ID of the build.</param>
     /// <param name="top">- The maximum number of work items to return, or the number of commits to consider if no commit IDs are specified.</param>
-    abstract getBuildWorkItemsRefsFromCommits: commitIds: ResizeArray<string> * project: string * buildId: float * ?top: float -> Promise<ResizeArray<WebApi.ResourceRef>>
+    abstract getBuildWorkItemsRefsFromCommits: commitIds: ResizeArray<string> * project: string * buildId: int * ?top: int -> Promise<ResizeArray<WebApi.ResourceRef>>
     /// <summary>Gets all the work items between two builds.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="fromBuildId">- The ID of the first build.</param>
     /// <param name="toBuildId">- The ID of the last build.</param>
     /// <param name="top">- The maximum number of work items to return.</param>
-    abstract getWorkItemsBetweenBuilds: project: string * fromBuildId: float * toBuildId: float * ?top: float -> Promise<ResizeArray<WebApi.ResourceRef>>
+    abstract getWorkItemsBetweenBuilds: project: string * fromBuildId: int * toBuildId: int * ?top: int -> Promise<ResizeArray<WebApi.ResourceRef>>
 
 type [<AllowNullLiteral>] BuildRestClientStatic =
     [<Emit "new $0($1...)">] abstract Create: options: IVssRestClientOptions -> BuildRestClient

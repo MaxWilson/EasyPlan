@@ -5,7 +5,7 @@ open Fable.Core
 open Fable.Core.JS
 
 type [<AllowNullLiteral>] Activity =
-    abstract capacityPerDay: float with get, set
+    abstract capacityPerDay: int with get, set
     abstract name: string with get, set
 
 type [<AllowNullLiteral>] attribute =
@@ -13,7 +13,7 @@ type [<AllowNullLiteral>] attribute =
 
 type [<AllowNullLiteral>] BacklogColumn =
     abstract columnFieldReference: WorkItemTracking.WorkItemFieldReference with get, set
-    abstract width: float with get, set
+    abstract width: int with get, set
 
 type [<AllowNullLiteral>] BacklogConfiguration =
     /// Behavior/type field mapping
@@ -65,11 +65,11 @@ type [<AllowNullLiteral>] BacklogLevelConfiguration =
     /// Backlog Name
     abstract name: string with get, set
     /// Backlog Rank (Taskbacklog is 0)
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// The type of this backlog level
     abstract ``type``: BacklogType with get, set
     /// Max number of work items to show in the given backlog
-    abstract workItemCountLimit: float with get, set
+    abstract workItemCountLimit: int with get, set
     /// Work Item types participating in this backlog as known by the project/Process, can be overridden by team settings for bugs
     abstract workItemTypes: ResizeArray<WorkItemTracking.WorkItemTypeReference> with get, set
 
@@ -91,7 +91,7 @@ type [<AllowNullLiteral>] Board =
     abstract columns: ResizeArray<BoardColumn> with get, set
     abstract fields: BoardFields with get, set
     abstract isValid: bool with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     abstract rows: ResizeArray<BoardRow> with get, set
 
 /// Represents a board badge.
@@ -132,7 +132,7 @@ type [<AllowNullLiteral>] BoardColumn =
     abstract description: string with get, set
     abstract id: string with get, set
     abstract isSplit: bool with get, set
-    abstract itemLimit: float with get, set
+    abstract itemLimit: int with get, set
     abstract name: string with get, set
     abstract stateMappings: BacklogFieldsTypeFields with get, set
 
@@ -240,7 +240,7 @@ type [<AllowNullLiteral>] DeliveryViewData =
     /// The end date of the delivery view data
     abstract endDate: DateTime with get, set
     /// Max number of teams can be configured for a delivery plan.
-    abstract maxExpandedTeams: float with get, set
+    abstract maxExpandedTeams: int with get, set
     /// The start date for the delivery view data
     abstract startDate: DateTime with get, set
     /// All the team data
@@ -289,15 +289,15 @@ type [<RequireQualifiedAccess>] FieldType =
 
 type [<AllowNullLiteral>] FilterClause =
     abstract fieldName: string with get, set
-    abstract index: float with get, set
+    abstract index: int with get, set
     abstract logicalOperator: string with get, set
     abstract operator: string with get, set
     abstract value: string with get, set
 
 type [<AllowNullLiteral>] FilterGroup =
-    abstract ``end``: float with get, set
-    abstract level: float with get, set
-    abstract start: float with get, set
+    abstract ``end``: int with get, set
+    abstract level: int with get, set
+    abstract start: int with get, set
 
 type [<RequireQualifiedAccess>] IdentityDisplayFormat =
     | AvatarOnly = 0
@@ -332,7 +332,7 @@ type [<AllowNullLiteral>] Member =
 
 type [<AllowNullLiteral>] ParentChildWIMap =
     abstract childWorkItemIds: ResizeArray<float> with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract title: string with get, set
 
 /// Data contract for the plan definition
@@ -354,7 +354,7 @@ type [<AllowNullLiteral>] Plan =
     /// The PlanPropertyCollection instance associated with the plan. These are dependent on the type of the plan. For example, DeliveryTimelineView, it would be of type DeliveryViewPropertyCollection.
     abstract properties: obj option with get, set
     /// Revision of the plan. Used to safeguard users from overwriting each other's changes.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Type of the plan
     abstract ``type``: PlanType with get, set
     /// The resource url to locate the plan via rest api
@@ -387,7 +387,7 @@ type [<RequireQualifiedAccess>] PlanUserPermissions =
 /// Base class for plan view data contracts. Anything common goes here.
 type [<AllowNullLiteral>] PlanViewData =
     abstract id: string with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 /// Represents a single pre-defined query.
 type [<AllowNullLiteral>] PredefinedQuery =
@@ -425,18 +425,18 @@ type [<AllowNullLiteral>] ReorderOperation =
     /// IterationPath for reorder operation. This is only used when we reorder from the Iteration Backlog
     abstract iterationPath: string with get, set
     /// ID of the work item that should be after the reordered items. Can use 0 to specify the end of the list.
-    abstract nextId: float with get, set
+    abstract nextId: int with get, set
     /// Parent ID for all of the work items involved in this operation. Can use 0 to indicate the items don't have a parent.
-    abstract parentId: float with get, set
+    abstract parentId: int with get, set
     /// ID of the work item that should be before the reordered items. Can use 0 to specify the beginning of the list.
-    abstract previousId: float with get, set
+    abstract previousId: int with get, set
 
 /// Represents a reorder result for a work item.
 type [<AllowNullLiteral>] ReorderResult =
     /// The ID of the work item that was reordered.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The updated order value of the work item that was reordered.
-    abstract order: float with get, set
+    abstract order: int with get, set
 
 type [<AllowNullLiteral>] Rule =
     abstract clauses: ResizeArray<FilterClause> with get, set
@@ -454,7 +454,7 @@ type [<AllowNullLiteral>] TaskboardColumn =
     /// Column name
     abstract name: string with get, set
     /// Column position relative to other columns in the same board
-    abstract order: float with get, set
+    abstract order: int with get, set
 
 /// Represents the state to column mapping per work item type This allows auto state update when the column changes
 type [<AllowNullLiteral>] TaskboardColumnMapping =
@@ -481,7 +481,7 @@ type [<AllowNullLiteral>] TaskboardWorkItemColumn =
     /// Work Item state value
     abstract state: string with get, set
     /// Work item id
-    abstract workItemId: float with get, set
+    abstract workItemId: int with get, set
 
 /// Mapping of teams to the corresponding work item category
 type [<AllowNullLiteral>] TeamBacklogMapping =
@@ -670,7 +670,7 @@ type [<AllowNullLiteral>] UpdatePlan =
     /// Plan properties.
     abstract properties: obj option with get, set
     /// Revision of the plan that was updated - the value used here should match the one the server gave the client in the Plan.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Type of the plan
     abstract ``type``: PlanType with get, set
 
@@ -682,7 +682,7 @@ type [<AllowNullLiteral>] UpdateTaskboardColumn =
     /// Column name is required
     abstract name: string with get, set
     /// Column position relative to other columns in the same board
-    abstract order: float with get, set
+    abstract order: int with get, set
 
 type [<AllowNullLiteral>] UpdateTaskboardWorkItemColumn =
     abstract newColumn: string with get, set
@@ -718,7 +718,7 @@ type [<AllowNullLiteral>] BoardChartSettings =
     [<Emit "$0[$1]{{=$2}}">] abstract Item: key: string -> obj option with get, set
 
 type [<AllowNullLiteral>] DeliveryViewDataChildIdToParentIdMap =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> float with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> float with get, set
 
 type [<AllowNullLiteral>] ProcessConfigurationTypeFields =
     [<Emit "$0[$1]{{=$2}}">] abstract Item: key: string -> WorkItemTracking.WorkItemFieldReference with get, set

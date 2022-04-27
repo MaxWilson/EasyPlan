@@ -43,9 +43,9 @@ type [<AllowNullLiteral>] DiagnosticIdentity =
     abstract id: string with get, set
 
 type [<AllowNullLiteral>] DiagnosticNotification =
-    abstract eventId: float with get, set
+    abstract eventId: int with get, set
     abstract eventType: string with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract messages: ResizeArray<NotificationDiagnosticLogMessage> with get, set
     abstract recipients: DiagnosticNotificationRecipients with get, set
     abstract result: string with get, set
@@ -83,7 +83,7 @@ type [<AllowNullLiteral>] EventBacklogStatus =
     abstract lastJobProcessedTime: DateTime with get, set
     abstract oldestPendingEventTime: DateTime with get, set
     abstract publisher: string with get, set
-    abstract unprocessedEvents: float with get, set
+    abstract unprocessedEvents: int with get, set
 
 type [<AllowNullLiteral>] EventBatch =
     abstract endTime: obj option with get, set
@@ -109,9 +109,9 @@ type [<RequireQualifiedAccess>] EventPublisherQueryFlags =
 /// Encapsulates events result properties. It defines the total number of events used and the number of matched events.
 type [<AllowNullLiteral>] EventsEvaluationResult =
     /// Count of events evaluated.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Count of matched events.
-    abstract matchedCount: float with get, set
+    abstract matchedCount: int with get, set
 
 /// A transform request specify the properties of a notification event to be transformed.
 type [<AllowNullLiteral>] EventTransformRequest =
@@ -144,7 +144,7 @@ type [<AllowNullLiteral>] ExpressionFilter =
 type [<AllowNullLiteral>] ExpressionFilterClause =
     abstract fieldName: string with get, set
     /// The order in which this clause appeared in the filter query
-    abstract index: float with get, set
+    abstract index: int with get, set
     /// Logical Operator 'AND', 'OR' or NULL (only for the first clause in the filter)
     abstract logicalOperator: string with get, set
     abstract operator: string with get, set
@@ -153,11 +153,11 @@ type [<AllowNullLiteral>] ExpressionFilterClause =
 /// Represents a hierarchy of SubscritionFilterClauses that have been grouped together through either adding a group in the WebUI or using parethesis in the Subscription condition string
 type [<AllowNullLiteral>] ExpressionFilterGroup =
     /// The index of the last FilterClause in this group
-    abstract ``end``: float with get, set
+    abstract ``end``: int with get, set
     /// Level of the group, since groups can be nested for each nested group the level will increase by 1
-    abstract level: float with get, set
+    abstract level: int with get, set
     /// The index of the first FilterClause in this group
-    abstract start: float with get, set
+    abstract start: int with get, set
 
 type [<AllowNullLiteral>] ExpressionFilterModel =
     /// Flat list of clauses in this subscription
@@ -165,7 +165,7 @@ type [<AllowNullLiteral>] ExpressionFilterModel =
     /// Grouping of clauses in the subscription
     abstract groups: ResizeArray<ExpressionFilterGroup> with get, set
     /// Max depth of the Subscription tree
-    abstract maxGroupLevel: float with get, set
+    abstract maxGroupLevel: int with get, set
 
 type [<AllowNullLiteral>] FieldInputValues =
     inherit FormInput.InputValues
@@ -237,11 +237,11 @@ type [<AllowNullLiteral>] NotificationBacklogStatus =
     abstract publisher: string with get, set
     /// Null status is unprocessed
     abstract status: string with get, set
-    abstract unprocessedNotifications: float with get, set
+    abstract unprocessedNotifications: int with get, set
 
 type [<AllowNullLiteral>] NotificationBatch =
     abstract endTime: obj option with get, set
-    abstract notificationCount: float with get, set
+    abstract notificationCount: int with get, set
     abstract notificationIds: string with get, set
     abstract problematicNotifications: ResizeArray<DiagnosticNotification> with get, set
     abstract startTime: obj option with get, set
@@ -256,7 +256,7 @@ type [<AllowNullLiteral>] NotificationDiagnosticLog =
     abstract activityId: string with get, set
     abstract description: string with get, set
     abstract endTime: DateTime with get, set
-    abstract errors: float with get, set
+    abstract errors: int with get, set
     /// Unique instance identifier.
     abstract id: string with get, set
     abstract logType: string with get, set
@@ -265,11 +265,11 @@ type [<AllowNullLiteral>] NotificationDiagnosticLog =
     /// This identifier depends on the logType.  For notification jobs, this will be the job Id. For subscription tracing, this will be a special root Guid with the subscription Id encoded.
     abstract source: string with get, set
     abstract startTime: DateTime with get, set
-    abstract warnings: float with get, set
+    abstract warnings: int with get, set
 
 type [<AllowNullLiteral>] NotificationDiagnosticLogMessage =
     /// Corresponds to .Net TraceLevel enumeration
-    abstract level: float with get, set
+    abstract level: int with get, set
     abstract message: string with get, set
     abstract time: obj option with get, set
 
@@ -387,11 +387,11 @@ type [<RequireQualifiedAccess>] NotificationReasonType =
 /// Encapsulates notifications result properties. It defines the number of notifications and the recipients of notifications.
 type [<AllowNullLiteral>] NotificationsEvaluationResult =
     /// Count of generated notifications
-    abstract count: float with get, set
+    abstract count: int with get, set
 
 type [<AllowNullLiteral>] NotificationStatistic =
     abstract date: DateTime with get, set
-    abstract hitCount: float with get, set
+    abstract hitCount: int with get, set
     abstract path: string with get, set
     abstract ``type``: NotificationStatisticType with get, set
     abstract user: WebApi.IdentityRef with get, set
@@ -401,7 +401,7 @@ type [<AllowNullLiteral>] NotificationStatisticsQuery =
 
 type [<AllowNullLiteral>] NotificationStatisticsQueryConditions =
     abstract endDate: DateTime with get, set
-    abstract hitCountMinimum: float with get, set
+    abstract hitCountMinimum: int with get, set
     abstract path: string with get, set
     abstract startDate: DateTime with get, set
     abstract ``type``: NotificationStatisticType with get, set
@@ -553,7 +553,7 @@ type [<AllowNullLiteral>] ProcessedEvent =
     abstract deliveryIdentities: ProcessingIdentities with get, set
     /// Evaluations for each user
     abstract evaluations: ProcessedEventEvaluations with get, set
-    abstract eventId: float with get, set
+    abstract eventId: int with get, set
     /// Which members were excluded from evaluation (only applies to ActorMatcher subscriptions)
     abstract exclusions: ResizeArray<WebApi.EventActor> with get, set
     /// Which members were included for evaluation (only applies to ActorMatcher subscriptions)
@@ -624,7 +624,7 @@ type [<AllowNullLiteral>] SubscriptionEvaluation =
 
 type [<AllowNullLiteral>] SubscriptionEvaluationClause =
     abstract clause: string with get, set
-    abstract order: float with get, set
+    abstract order: int with get, set
     abstract result: bool with get, set
 
 /// Encapsulates the properties of a SubscriptionEvaluationRequest. It defines the subscription to be evaluated and time interval for events used in evaluation.
@@ -650,11 +650,11 @@ type [<AllowNullLiteral>] SubscriptionEvaluationSettings =
     /// Indicates whether subscription evaluation before saving is enabled or not
     abstract enabled: bool with get, set
     /// Time interval to check on subscription evaluation job in seconds
-    abstract interval: float with get, set
+    abstract interval: int with get, set
     /// Threshold on the number of notifications for considering a subscription too noisy
-    abstract threshold: float with get, set
+    abstract threshold: int with get, set
     /// Time out for the subscription evaluation check in seconds
-    abstract timeOut: float with get, set
+    abstract timeOut: int with get, set
 
 type [<RequireQualifiedAccess>] SubscriptionFieldType =
     | String = 1
@@ -782,11 +782,11 @@ type [<AllowNullLiteral>] SubscriptionTracing =
     /// Trace until the specified end date.
     abstract endDate: DateTime with get, set
     /// The maximum number of result details to trace.
-    abstract maxTracedEntries: float with get, set
+    abstract maxTracedEntries: int with get, set
     /// The date and time tracing started.
     abstract startDate: DateTime with get, set
     /// Trace until remaining count reaches 0.
-    abstract tracedEntries: float with get, set
+    abstract tracedEntries: int with get, set
 
 /// User-managed settings for a group subscription.
 type [<AllowNullLiteral>] SubscriptionUserSettings =
@@ -853,4 +853,4 @@ type [<AllowNullLiteral>] ProcessingIdentitiesExcludedIdentities =
     [<Emit "$0[$1]{{=$2}}">] abstract Item: key: string -> ProcessingDiagnosticIdentity with get, set
 
 type [<AllowNullLiteral>] SubscriptionTraceEventProcessingLogProcessedEvents =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> ProcessedEvent with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> ProcessedEvent with get, set

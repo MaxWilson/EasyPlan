@@ -46,7 +46,7 @@ type [<ImportMember("azure-devops-extension-sdk/SDK")>] [<AllowNullLiteral>] IEx
     /// <summary>Requests the parent window to resize the container for this extension based on the current extension size.</summary>
     /// <param name="width">- Optional width, defaults to scrollWidth</param>
     /// <param name="height">- Optional height, defaults to scrollHeight</param>
-    abstract resize: ?width: float * ?height: float -> unit
+    abstract resize: ?width: int * ?height: int -> unit
     /// Applies theme variables to the current document
     abstract applyTheme: themeData: ApplyThemeThemeData -> unit
 

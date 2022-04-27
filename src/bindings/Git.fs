@@ -7,7 +7,7 @@ open Fable.Core.JS
 type [<AllowNullLiteral>] AssociatedWorkItem =
     abstract assignedTo: string with get, set
     /// Id of associated the work item.
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract state: string with get, set
     abstract title: string with get, set
     /// REST Url of the work item.
@@ -16,7 +16,7 @@ type [<AllowNullLiteral>] AssociatedWorkItem =
     abstract workItemType: string with get, set
 
 type [<AllowNullLiteral>] AsyncGitOperationNotification =
-    abstract operationId: float with get, set
+    abstract operationId: int with get, set
 
 type [<AllowNullLiteral>] AsyncRefOperationCommitLevelEventNotification =
     inherit AsyncGitOperationNotification
@@ -34,7 +34,7 @@ type [<AllowNullLiteral>] AsyncRefOperationGeneralFailureNotification =
 
 type [<AllowNullLiteral>] AsyncRefOperationProgressNotification =
     inherit AsyncRefOperationCommitLevelEventNotification
-    abstract progress: float with get, set
+    abstract progress: int with get, set
 
 type [<AllowNullLiteral>] AsyncRefOperationTimeoutNotification =
     inherit AsyncGitOperationNotification
@@ -54,7 +54,7 @@ type [<AllowNullLiteral>] Attachment =
     /// The display name of the attachment. Can't be null or empty.
     abstract displayName: string with get, set
     /// Id of the attachment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Extended properties.
     abstract properties: obj option with get, set
     /// The url to download the content of the attachment.
@@ -118,11 +118,11 @@ type [<AllowNullLiteral>] ChangeListSearchCriteria =
     /// Version of the items to search
     abstract itemVersion: string with get, set
     /// Number of results to skip (used when clicking more...)
-    abstract skip: float with get, set
+    abstract skip: int with get, set
     /// If provided, only include history entries created before this date (string)
     abstract toDate: string with get, set
     /// If provided, the maximum number of history entries to return
-    abstract top: float with get, set
+    abstract top: int with get, set
     /// If provided, a version descriptor for the latest change list to include
     abstract toVersion: string with get, set
     /// Alias or display name of user who made the changes
@@ -143,7 +143,7 @@ type [<AllowNullLiteral>] Comment =
     /// The comment content.
     abstract content: string with get, set
     /// The comment ID. IDs start at 1 and are unique to a pull request.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Whether or not this comment was soft-deleted.
     abstract isDeleted: bool with get, set
     /// The date the comment's content was last updated.
@@ -151,7 +151,7 @@ type [<AllowNullLiteral>] Comment =
     /// The date the comment was last updated.
     abstract lastUpdatedDate: DateTime with get, set
     /// The ID of the parent comment. This is used for replies.
-    abstract parentCommentId: float with get, set
+    abstract parentCommentId: int with get, set
     /// The date the comment was first published.
     abstract publishedDate: DateTime with get, set
     /// A list of the users who have liked this comment.
@@ -160,15 +160,15 @@ type [<AllowNullLiteral>] Comment =
 /// Comment iteration context is used to identify which diff was being viewed when the thread was created.
 type [<AllowNullLiteral>] CommentIterationContext =
     /// The iteration of the file on the left side of the diff when the thread was created. If this value is equal to SecondComparingIteration, then this version is the common commit between the source and target branches of the pull request.
-    abstract firstComparingIteration: float with get, set
+    abstract firstComparingIteration: int with get, set
     /// The iteration of the file on the right side of the diff when the thread was created.
-    abstract secondComparingIteration: float with get, set
+    abstract secondComparingIteration: int with get, set
 
 type [<AllowNullLiteral>] CommentPosition =
     /// The line number of a thread's position. Starts at 1.
-    abstract line: float with get, set
+    abstract line: int with get, set
     /// The character offset of a thread's position inside of a line. Starts at 0.
-    abstract offset: float with get, set
+    abstract offset: int with get, set
 
 /// Represents a comment thread of a pull request. A thread contains meta data about the file it was left on along with one or more comments (an initial comment and the subsequent replies).
 type [<AllowNullLiteral>] CommentThread =
@@ -177,7 +177,7 @@ type [<AllowNullLiteral>] CommentThread =
     /// A list of the comments.
     abstract comments: ResizeArray<Comment> with get, set
     /// The comment thread id.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Set of identities related to this thread
     abstract identities: CommentThreadIdentities with get, set
     /// Specify if the thread is deleted which happens when all comments are deleted.
@@ -217,7 +217,7 @@ type [<RequireQualifiedAccess>] CommentThreadStatus =
 /// Comment tracking criteria is used to identify which iteration context the thread has been tracked to (if any) along with some detail about the original position and filename.
 type [<AllowNullLiteral>] CommentTrackingCriteria =
     /// The iteration of the file on the left side of the diff that the thread will be tracked to. Threads were tracked if this is greater than 0.
-    abstract firstComparingIteration: float with get, set
+    abstract firstComparingIteration: int with get, set
     /// Original filepath the thread was created on before tracking. This will be different than the current thread filepath if the file in question was renamed in a later iteration.
     abstract origFilePath: string with get, set
     /// Original position of last character of the thread's span in left file.
@@ -229,7 +229,7 @@ type [<AllowNullLiteral>] CommentTrackingCriteria =
     /// Original position of first character of the thread's span in right file.
     abstract origRightFileStart: CommentPosition with get, set
     /// The iteration of the file on the right side of the diff that the thread will be tracked to. Threads were tracked if this is greater than 0.
-    abstract secondComparingIteration: float with get, set
+    abstract secondComparingIteration: int with get, set
 
 type [<RequireQualifiedAccess>] CommentType =
     | Unknown = 0
@@ -249,7 +249,7 @@ type [<AllowNullLiteral>] DiscussionsUpdatedEvent =
 
 type [<AllowNullLiteral>] FileContentMetadata =
     abstract contentType: string with get, set
-    abstract encoding: float with get, set
+    abstract encoding: int with get, set
     abstract extension: string with get, set
     abstract fileName: string with get, set
     abstract isBinary: bool with get, set
@@ -319,7 +319,7 @@ type [<AllowNullLiteral>] GitAsyncRefOperationDetail =
     /// Detailed information about why the cherry pick or revert failed to complete.
     abstract failureMessage: string with get, set
     /// A number between 0 and 1 indicating the percent complete of the operation.
-    abstract progress: float with get, set
+    abstract progress: int with get, set
     /// Provides a status code that indicates the reason the cherry pick or revert failed.
     abstract status: GitAsyncRefOperationFailureStatus with get, set
     /// Indicates if the operation went beyond the maximum time allowed for a cherry pick or revert operation.
@@ -354,7 +354,7 @@ type [<AllowNullLiteral>] GitAsyncRefOperationSource =
     /// A list of commits to cherry pick or revert
     abstract commitList: ResizeArray<GitCommitRef> with get, set
     /// Id of the pull request to cherry pick or revert
-    abstract pullRequestId: float with get, set
+    abstract pullRequestId: int with get, set
 
 type [<AllowNullLiteral>] GitBaseVersionDescriptor =
     inherit GitVersionDescriptor
@@ -370,15 +370,15 @@ type [<AllowNullLiteral>] GitBlobRef =
     /// SHA1 hash of git object
     abstract objectId: string with get, set
     /// Size of blob content (in bytes)
-    abstract size: float with get, set
+    abstract size: int with get, set
     abstract url: string with get, set
 
 /// Ahead and behind counts for a particular ref.
 type [<AllowNullLiteral>] GitBranchStats =
     /// Number of commits ahead.
-    abstract aheadCount: float with get, set
+    abstract aheadCount: int with get, set
     /// Number of commits behind.
-    abstract behindCount: float with get, set
+    abstract behindCount: int with get, set
     /// Current commit.
     abstract commit: GitCommitRef with get, set
     /// True if this is the result for the base version.
@@ -389,7 +389,7 @@ type [<AllowNullLiteral>] GitBranchStats =
 type [<AllowNullLiteral>] GitChange =
     inherit Change<GitItem>
     /// ID of the change within the group of changes.
-    abstract changeId: float with get, set
+    abstract changeId: int with get, set
     /// New Content template to be used when pushing new changes.
     abstract newContentTemplate: GitTemplate with get, set
     /// Original path of item if different from current path.
@@ -398,7 +398,7 @@ type [<AllowNullLiteral>] GitChange =
 /// This object is returned from Cherry Pick operations and provides the id and status of the operation
 type [<AllowNullLiteral>] GitCherryPick =
     inherit GitAsyncRefOperation
-    abstract cherryPickId: float with get, set
+    abstract cherryPickId: int with get, set
 
 type [<AllowNullLiteral>] GitCommit =
     inherit GitCommitRef
@@ -409,10 +409,10 @@ type [<AllowNullLiteral>] GitCommitChanges =
     abstract changes: ResizeArray<GitChange> with get, set
 
 type [<AllowNullLiteral>] GitCommitDiffs =
-    abstract aheadCount: float with get, set
+    abstract aheadCount: int with get, set
     abstract allChangesIncluded: bool with get, set
     abstract baseCommit: string with get, set
-    abstract behindCount: float with get, set
+    abstract behindCount: int with get, set
     abstract changeCounts: ChangeListChangeCounts with get, set
     abstract changes: ResizeArray<GitChange> with get, set
     abstract commonCommit: string with get, set
@@ -456,7 +456,7 @@ type [<AllowNullLiteral>] GitCommitToCreate =
 
 type [<AllowNullLiteral>] GitConflict =
     abstract _links: obj option with get, set
-    abstract conflictId: float with get, set
+    abstract conflictId: int with get, set
     abstract conflictPath: string with get, set
     abstract conflictType: GitConflictType with get, set
     abstract mergeBaseCommit: GitCommitRef with get, set
@@ -595,7 +595,7 @@ type [<RequireQualifiedAccess>] GitConflictType =
 
 type [<AllowNullLiteral>] GitConflictUpdateResult =
     /// Conflict ID that was provided by input
-    abstract conflictId: float with get, set
+    abstract conflictId: int with get, set
     /// Reason for failing
     abstract customMessage: string with get, set
     /// New state of the conflict after updating
@@ -628,7 +628,7 @@ type [<AllowNullLiteral>] GitForkOperationStatusDetail =
     /// All valid steps for the forking process
     abstract allSteps: ResizeArray<string> with get, set
     /// Index into AllSteps for the current step
-    abstract currentStep: float with get, set
+    abstract currentStep: int with get, set
     /// Error message if the operation failed.
     abstract errorMessage: string with get, set
 
@@ -644,7 +644,7 @@ type [<AllowNullLiteral>] GitForkSyncRequest =
     abstract _links: obj option with get, set
     abstract detailedStatus: GitForkOperationStatusDetail with get, set
     /// Unique identifier for the operation.
-    abstract operationId: float with get, set
+    abstract operationId: int with get, set
     /// Fully-qualified identifier for the source repository.
     abstract source: GlobalGitRepositoryKey with get, set
     /// If supplied, the set of ref mappings to use when performing a "sync" or create. If missing, all refs will be synchronized.
@@ -685,7 +685,7 @@ type [<AllowNullLiteral>] GitImportRequest =
     /// Detailed status of the import, including the current step and an error message, if applicable.
     abstract detailedStatus: GitImportStatusDetail with get, set
     /// The unique identifier for this import request.
-    abstract importRequestId: float with get, set
+    abstract importRequestId: int with get, set
     /// Parameters for creating the import request.
     abstract parameters: GitImportRequestParameters with get, set
     /// The target repository for this import.
@@ -711,7 +711,7 @@ type [<AllowNullLiteral>] GitImportStatusDetail =
     /// All valid steps for the import process
     abstract allSteps: ResizeArray<string> with get, set
     /// Index into AllSteps for the current step
-    abstract currentStep: float with get, set
+    abstract currentStep: int with get, set
     /// Error message if the operation failed.
     abstract errorMessage: string with get, set
 
@@ -724,7 +724,7 @@ type [<AllowNullLiteral>] GitImportTfvcSource =
     /// Set true to import History, false otherwise
     abstract importHistory: bool with get, set
     /// Get history for last n days (max allowed value is 180 days)
-    abstract importHistoryDurationInDays: float with get, set
+    abstract importHistoryDurationInDays: int with get, set
     /// Path which we want to import (this can be copied from Path Control in Explorer)
     abstract path: string with get, set
 
@@ -784,7 +784,7 @@ type [<AllowNullLiteral>] GitMerge =
     /// Detailed status of the merge operation.
     abstract detailedStatus: GitMergeOperationStatusDetail with get, set
     /// Unique identifier for the merge operation.
-    abstract mergeOperationId: float with get, set
+    abstract mergeOperationId: int with get, set
     /// Status of the merge operation.
     abstract status: GitAsyncOperationStatus with get, set
 
@@ -796,7 +796,7 @@ type [<AllowNullLiteral>] GitMergeOperationStatusDetail =
     abstract mergeCommitId: string with get, set
 
 type [<AllowNullLiteral>] GitMergeOriginRef =
-    abstract pullRequestId: float with get, set
+    abstract pullRequestId: int with get, set
 
 /// Parameters required for performing git merge.
 type [<AllowNullLiteral>] GitMergeParameters =
@@ -857,7 +857,7 @@ type [<AllowNullLiteral>] GitPullRequest =
     /// The date when the pull request was closed (completed, abandoned, or merged externally).
     abstract closedDate: DateTime with get, set
     /// The code review ID of the pull request. Used internally.
-    abstract codeReviewId: float with get, set
+    abstract codeReviewId: int with get, set
     /// The commits contained in the pull request.
     abstract commits: ResizeArray<GitCommitRef> with get, set
     /// Options which affect how the pull request will be merged when it is completed.
@@ -893,7 +893,7 @@ type [<AllowNullLiteral>] GitPullRequest =
     /// The current status of the pull request merge.
     abstract mergeStatus: PullRequestAsyncStatus with get, set
     /// The ID of the pull request.
-    abstract pullRequestId: float with get, set
+    abstract pullRequestId: int with get, set
     /// Used internally.
     abstract remoteUrl: string with get, set
     /// The repository containing the target branch of the pull request.
@@ -919,7 +919,7 @@ type [<AllowNullLiteral>] GitPullRequest =
 type [<AllowNullLiteral>] GitPullRequestChange =
     inherit GitChange
     /// ID used to track files through multiple changes.
-    abstract changeTrackingId: float with get, set
+    abstract changeTrackingId: int with get, set
 
 /// Represents a comment thread of a pull request. A thread contains meta data about the file it was left on (if any) along with one or more comments (an initial comment and the subsequent replies).
 type [<AllowNullLiteral>] GitPullRequestCommentThread =
@@ -930,7 +930,7 @@ type [<AllowNullLiteral>] GitPullRequestCommentThread =
 /// Comment thread context contains details about what diffs were being viewed at the time of thread creation and whether or not the thread has been tracked from that original diff.
 type [<AllowNullLiteral>] GitPullRequestCommentThreadContext =
     /// Used to track a comment across iterations. This value can be found by looking at the iteration's changes list. Must be set for pull requests with iteration support. Otherwise, it's not required for 'legacy' pull requests.
-    abstract changeTrackingId: float with get, set
+    abstract changeTrackingId: int with get, set
     /// The iteration context being viewed when the thread was created.
     abstract iterationContext: CommentIterationContext with get, set
     /// The criteria used to track this thread. If this property is filled out when the thread is returned, then the thread has been tracked from its original location using the given criteria.
@@ -974,7 +974,7 @@ type [<AllowNullLiteral>] GitPullRequestIteration =
     /// Indicates if the Commits property contains a truncated list of commits in this pull request iteration.
     abstract hasMoreCommits: bool with get, set
     /// ID of the pull request iteration. Iterations are created as a result of creating and pushing updates to a pull request.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// If the iteration reason is Retarget, this is the refName of the new target
     abstract newTargetRefName: string with get, set
     /// If the iteration reason is Retarget, this is the original target refName
@@ -995,9 +995,9 @@ type [<AllowNullLiteral>] GitPullRequestIterationChanges =
     /// Changes made in the iteration.
     abstract changeEntries: ResizeArray<GitPullRequestChange> with get, set
     /// Value to specify as skip to get the next page of changes.  This will be zero if there are no more changes.
-    abstract nextSkip: float with get, set
+    abstract nextSkip: int with get, set
     /// Value to specify as top to get the next page of changes.  This will be zero if there are no more changes.
-    abstract nextTop: float with get, set
+    abstract nextTop: int with get, set
 
 /// The options which are used when a pull request merge is created.
 type [<AllowNullLiteral>] GitPullRequestMergeOptions =
@@ -1064,7 +1064,7 @@ type [<AllowNullLiteral>] GitPullRequestSearchCriteria =
 type [<AllowNullLiteral>] GitPullRequestStatus =
     inherit GitStatus
     /// ID of the iteration to associate status with. Minimum value is 1.
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     /// Custom properties of the status.
     abstract properties: obj option with get, set
 
@@ -1086,7 +1086,7 @@ type [<AllowNullLiteral>] GitPushRef =
     abstract date: DateTime with get, set
     abstract pushCorrelationId: string with get, set
     abstract pushedBy: WebApi.IdentityRef with get, set
-    abstract pushId: float with get, set
+    abstract pushId: int with get, set
     abstract url: string with get, set
 
 type [<AllowNullLiteral>] GitPushSearchCriteria =
@@ -1104,9 +1104,9 @@ type [<AllowNullLiteral>] GitQueryBranchStatsCriteria =
 
 type [<AllowNullLiteral>] GitQueryCommitsCriteria =
     /// Number of entries to skip
-    abstract ``$skip``: float with get, set
+    abstract ``$skip``: int with get, set
     /// Maximum number of entries to retrieve
-    abstract ``$top``: float with get, set
+    abstract ``$top``: int with get, set
     /// Alias or display name of the author
     abstract author: string with get, set
     /// Only applicable when ItemVersion specified. If provided, start walking history starting at this commit.
@@ -1165,7 +1165,7 @@ type [<AllowNullLiteral>] GitRef =
 
 type [<AllowNullLiteral>] GitRefFavorite =
     abstract _links: obj option with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract identityId: string with get, set
     abstract name: string with get, set
     abstract repositoryId: string with get, set
@@ -1237,7 +1237,7 @@ type [<AllowNullLiteral>] GitRepository =
     abstract project: Core.TeamProjectReference with get, set
     abstract remoteUrl: string with get, set
     /// Compressed size (bytes) of the repository.
-    abstract size: float with get, set
+    abstract size: int with get, set
     abstract sshUrl: string with get, set
     abstract url: string with get, set
     abstract validRemoteUrls: ResizeArray<string> with get, set
@@ -1261,9 +1261,9 @@ type [<AllowNullLiteral>] GitRepositoryRef =
     abstract url: string with get, set
 
 type [<AllowNullLiteral>] GitRepositoryStats =
-    abstract activePullRequestsCount: float with get, set
-    abstract branchesCount: float with get, set
-    abstract commitsCount: float with get, set
+    abstract activePullRequestsCount: int with get, set
+    abstract branchesCount: int with get, set
+    abstract commitsCount: int with get, set
     abstract repositoryId: string with get, set
 
 type [<AllowNullLiteral>] GitResolution =
@@ -1330,7 +1330,7 @@ type [<RequireQualifiedAccess>] GitResolutionWhichAction =
 
 type [<AllowNullLiteral>] GitRevert =
     inherit GitAsyncRefOperation
-    abstract revertId: float with get, set
+    abstract revertId: int with get, set
 
 /// This class contains the metadata of a service/extension posting a status.
 type [<AllowNullLiteral>] GitStatus =
@@ -1345,7 +1345,7 @@ type [<AllowNullLiteral>] GitStatus =
     /// Status description. Typically describes current state of the status.
     abstract description: string with get, set
     /// Status identifier.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// State of the status.
     abstract state: GitStatusState with get, set
     /// URL with status details.
@@ -1427,7 +1427,7 @@ type [<AllowNullLiteral>] GitTreeEntryRef =
     /// Path relative to parent tree object
     abstract relativePath: string with get, set
     /// Size of content
-    abstract size: float with get, set
+    abstract size: int with get, set
     /// url to retrieve tree or blob
     abstract url: string with get, set
 
@@ -1436,7 +1436,7 @@ type [<AllowNullLiteral>] GitTreeRef =
     /// SHA1 hash of git object
     abstract objectId: string with get, set
     /// Sum of sizes of all children
-    abstract size: float with get, set
+    abstract size: int with get, set
     /// Blobs and trees under this tree
     abstract treeEntries: ResizeArray<GitTreeEntryRef> with get, set
     /// Url to tree
@@ -1498,7 +1498,7 @@ type [<AllowNullLiteral>] IdentityRefWithVote =
     /// URL to retrieve information about this identity
     abstract reviewerUrl: string with get, set
     /// Vote on a pull request:\<br /\> 10 - approved 5 - approved with suggestions 0 - no vote -5 - waiting for author -10 - rejected
-    abstract vote: float with get, set
+    abstract vote: int with get, set
     /// Groups or teams that that this reviewer contributed to. \<br /\> Groups and teams can be reviewers on pull requests but can not vote directly.  When a member of the group or team votes, that vote is rolled up into the group or team vote.  VotedFor is a list of such votes.
     abstract votedFor: ResizeArray<IdentityRefWithVote> with get, set
 
@@ -1559,13 +1559,13 @@ type [<AllowNullLiteral>] LineDiffBlock =
     /// Type of change that was made to the block.
     abstract changeType: LineDiffBlockChangeType with get, set
     /// Line number where this block starts in modified file.
-    abstract modifiedLineNumberStart: float with get, set
+    abstract modifiedLineNumberStart: int with get, set
     /// Count of lines in this block in modified file.
-    abstract modifiedLinesCount: float with get, set
+    abstract modifiedLinesCount: int with get, set
     /// Line number where this block starts in original file.
-    abstract originalLineNumberStart: float with get, set
+    abstract originalLineNumberStart: int with get, set
     /// Count of lines in this block in original file.
-    abstract originalLinesCount: float with get, set
+    abstract originalLinesCount: int with get, set
 
 type [<RequireQualifiedAccess>] LineDiffBlockChangeType =
     | None = 0
@@ -1608,7 +1608,7 @@ type [<RequireQualifiedAccess>] PullRequestStatus =
 
 /// Initial config contract sent to extensions creating tabs on the pull request page
 type [<AllowNullLiteral>] PullRequestTabExtensionConfig =
-    abstract pullRequestId: float with get, set
+    abstract pullRequestId: int with get, set
     abstract repositoryId: string with get, set
 
 /// Base contract for a real time pull request event (SignalR)
@@ -1616,7 +1616,7 @@ type [<AllowNullLiteral>] RealTimePullRequestEvent =
     /// The id of this event. Can be used to track send/receive state between client and server.
     abstract eventId: string with get, set
     /// The id of the pull request this event was generated for.
-    abstract pullRequestId: float with get, set
+    abstract pullRequestId: int with get, set
 
 type [<RequireQualifiedAccess>] RefFavoriteType =
     | Invalid = 0
@@ -1737,7 +1737,7 @@ type [<AllowNullLiteral>] TfvcChange =
     /// List of merge sources in case of rename or branch creation.
     abstract mergeSources: ResizeArray<TfvcMergeSource> with get, set
     /// Version at which a (shelved) change was pended against
-    abstract pendingVersion: float with get, set
+    abstract pendingVersion: int with get, set
 
 /// A collection of changes.
 type [<AllowNullLiteral>] TfvcChangeset =
@@ -1766,7 +1766,7 @@ type [<AllowNullLiteral>] TfvcChangesetRef =
     /// Alias or display name of user.
     abstract author: WebApi.IdentityRef with get, set
     /// Changeset Id.
-    abstract changesetId: float with get, set
+    abstract changesetId: int with get, set
     /// Alias or display name of user.
     abstract checkedInBy: WebApi.IdentityRef with get, set
     /// Comment for the changeset.
@@ -1787,7 +1787,7 @@ type [<AllowNullLiteral>] TfvcChangesetSearchCriteria =
     /// If provided, only include changesets created after this date (string).
     abstract fromDate: string with get, set
     /// If provided, only include changesets after this changesetID.
-    abstract fromId: float with get, set
+    abstract fromId: int with get, set
     /// Whether to include the _links field on the shallow references.
     abstract includeLinks: bool with get, set
     /// Path of item to search under.
@@ -1796,14 +1796,14 @@ type [<AllowNullLiteral>] TfvcChangesetSearchCriteria =
     /// If provided, only include changesets created before this date (string).
     abstract toDate: string with get, set
     /// If provided, a version descriptor for the latest change list to include.
-    abstract toId: float with get, set
+    abstract toId: int with get, set
 
 /// Request body for Get batched changesets.
 type [<AllowNullLiteral>] TfvcChangesetsRequestData =
     /// List of changeset Ids.
     abstract changesetIds: ResizeArray<float> with get, set
     /// Max length of the comment.
-    abstract commentLength: float with get, set
+    abstract commentLength: int with get, set
     /// Whether to include the _links field on the shallow references
     abstract includeLinks: bool with get, set
 
@@ -1814,9 +1814,9 @@ type [<AllowNullLiteral>] TfvcCheckinEventData =
 type [<AllowNullLiteral>] TfvcHistoryEntry =
     inherit HistoryEntry<TfvcItem>
     /// The encoding of the item at this point in history (only relevant for File history, not folders)
-    abstract encoding: float with get, set
+    abstract encoding: int with get, set
     /// The file id of the item at this point in history (only relevant for File history, not folders)
-    abstract fileId: float with get, set
+    abstract fileId: int with get, set
 
 /// Metadata for an item.
 type [<AllowNullLiteral>] TfvcItem =
@@ -1824,9 +1824,9 @@ type [<AllowNullLiteral>] TfvcItem =
     /// Item changed datetime.
     abstract changeDate: DateTime with get, set
     /// Greater than 0 if item is deleted.
-    abstract deletionId: float with get, set
+    abstract deletionId: int with get, set
     /// File encoding from database, -1 represents binary.
-    abstract encoding: float with get, set
+    abstract encoding: int with get, set
     /// MD5 hash as a base 64 string, applies to files only.
     abstract hashValue: string with get, set
     /// True if item is a branch.
@@ -1834,9 +1834,9 @@ type [<AllowNullLiteral>] TfvcItem =
     /// True if there is a change pending.
     abstract isPendingChange: bool with get, set
     /// The size of the file, if applicable.
-    abstract size: float with get, set
+    abstract size: int with get, set
     /// Changeset version Id.
-    abstract version: float with get, set
+    abstract version: int with get, set
 
 /// Item path and Version descriptor properties
 type [<AllowNullLiteral>] TfvcItemDescriptor =
@@ -1878,7 +1878,7 @@ type [<AllowNullLiteral>] TfvcLabelRef =
     /// Label description.
     abstract description: string with get, set
     /// Label Id.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Label scope.
     abstract labelScope: string with get, set
     /// Last modified datetime for the label.
@@ -1895,7 +1895,7 @@ type [<AllowNullLiteral>] TfvcLabelRequestData =
     abstract includeLinks: bool with get, set
     abstract itemLabelFilter: string with get, set
     abstract labelScope: string with get, set
-    abstract maxItemCount: float with get, set
+    abstract maxItemCount: int with get, set
     abstract name: string with get, set
     abstract owner: string with get, set
 
@@ -1912,9 +1912,9 @@ type [<AllowNullLiteral>] TfvcMergeSource =
     /// The server item of the merge source.
     abstract serverItem: string with get, set
     /// Start of the version range.
-    abstract versionFrom: float with get, set
+    abstract versionFrom: int with get, set
     /// End of the version range.
-    abstract versionTo: float with get, set
+    abstract versionTo: int with get, set
 
 /// Policy failure information.
 type [<AllowNullLiteral>] TfvcPolicyFailureInfo =
@@ -1974,9 +1974,9 @@ type [<AllowNullLiteral>] TfvcShelvesetRequestData =
     /// Whether to include workItems
     abstract includeWorkItems: bool with get, set
     /// Max number of changes to include
-    abstract maxChangeCount: float with get, set
+    abstract maxChangeCount: int with get, set
     /// Max length of comment
-    abstract maxCommentLength: float with get, set
+    abstract maxCommentLength: int with get, set
     /// Shelveset name
     abstract name: string with get, set
     /// Owner's ID. Could be a name or a guid.
@@ -1984,9 +1984,9 @@ type [<AllowNullLiteral>] TfvcShelvesetRequestData =
 
 type [<AllowNullLiteral>] TfvcStatistics =
     /// Id of the last changeset the stats are based on.
-    abstract changesetId: float with get, set
+    abstract changesetId: int with get, set
     /// Count of files at the requested scope.
-    abstract fileCountTotal: float with get, set
+    abstract fileCountTotal: int with get, set
 
 /// Version descriptor properties.
 type [<AllowNullLiteral>] TfvcVersionDescriptor =
@@ -2048,7 +2048,7 @@ type [<RequireQualifiedAccess>] VersionControlRecursionType =
     | Full = 120
 
 type [<AllowNullLiteral>] ChangeListChangeCounts =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> float with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> float with get, set
 
 type [<AllowNullLiteral>] CommentThreadIdentities =
     [<Emit "$0[$1]{{=$2}}">] abstract Item: key: string -> WebApi.IdentityRef with get, set

@@ -29,7 +29,7 @@ type [<AllowNullLiteral>] FileContainer =
     /// Description.
     abstract description: string with get, set
     /// Id.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Location of the item resource.
     abstract itemLocation: string with get, set
     /// ItemStore Locator for this container.
@@ -45,12 +45,12 @@ type [<AllowNullLiteral>] FileContainer =
     /// Identifier of the optional encryption key.
     abstract signingKeyId: string with get, set
     /// Total size of the files in bytes.
-    abstract size: float with get, set
+    abstract size: int with get, set
 
 /// Represents an item in a container.
 type [<AllowNullLiteral>] FileContainerItem =
     /// Container Id.
-    abstract containerId: float with get, set
+    abstract containerId: int with get, set
     abstract contentId: ResizeArray<float> with get, set
     /// Download Url for the content of this item.
     abstract contentLocation: string with get, set
@@ -61,15 +61,15 @@ type [<AllowNullLiteral>] FileContainerItem =
     /// Last modified date.
     abstract dateLastModified: DateTime with get, set
     /// Encoding of the file. Zero if not a file.
-    abstract fileEncoding: float with get, set
+    abstract fileEncoding: int with get, set
     /// Hash value of the file. Null if not a file.
     abstract fileHash: ResizeArray<float> with get, set
     /// Id of the file content.
-    abstract fileId: float with get, set
+    abstract fileId: int with get, set
     /// Length of the file. Zero if not of a file.
-    abstract fileLength: float with get, set
+    abstract fileLength: int with get, set
     /// Type of the file. Zero if not a file.
-    abstract fileType: float with get, set
+    abstract fileType: int with get, set
     /// Location of the item resource.
     abstract itemLocation: string with get, set
     /// Type of the item: Folder, File or String.

@@ -16,7 +16,7 @@ type [<AllowNullLiteral>] LocationsRestClient =
     /// <param name="connectOptions">-</param>
     /// <param name="lastChangeId">- Obsolete 32-bit LastChangeId</param>
     /// <param name="lastChangeId64">- Non-truncated 64-bit LastChangeId</param>
-    abstract getConnectionData: ?connectOptions: WebApi.ConnectOptions * ?lastChangeId: float * ?lastChangeId64: float -> Promise<Locations.ConnectionData>
+    abstract getConnectionData: ?connectOptions: WebApi.ConnectOptions * ?lastChangeId: int * ?lastChangeId64: int -> Promise<Locations.ConnectionData>
     /// <param name="areaId">-</param>
     /// <param name="enterpriseName">-</param>
     /// <param name="organizationName">-</param>

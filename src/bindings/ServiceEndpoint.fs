@@ -275,7 +275,7 @@ type [<AllowNullLiteral>] RefreshAuthenticationParameters =
     /// Scope of the token requested. For GitHub marketplace apps, scope contains repository Ids
     abstract scope: ResizeArray<float> with get, set
     /// The requested endpoint authentication should be valid for _ minutes. Authentication params will not be refreshed if the token contained in endpoint already has active token.
-    abstract tokenValidityInMinutes: float with get, set
+    abstract tokenValidityInMinutes: int with get, set
 
 /// Represents template to transform the result data.
 type [<AllowNullLiteral>] ResultTransformationDetails =
@@ -364,7 +364,7 @@ type [<AllowNullLiteral>] ServiceEndpointExecutionData =
     /// Gets the finish time of service endpoint execution.
     abstract finishTime: DateTime with get, set
     /// Gets the Id of service endpoint execution data.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets the owner of service endpoint execution data.
     abstract owner: ServiceEndpointExecutionOwner with get, set
     /// Gets the plan type of service endpoint execution data.
@@ -378,7 +378,7 @@ type [<AllowNullLiteral>] ServiceEndpointExecutionData =
 type [<AllowNullLiteral>] ServiceEndpointExecutionOwner =
     abstract _links: obj option with get, set
     /// Gets or sets the Id of service endpoint execution owner.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets the name of service endpoint execution owner.
     abstract name: string with get, set
 

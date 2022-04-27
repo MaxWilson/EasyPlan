@@ -15,27 +15,27 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="agentCloud">-</param>
     abstract addAgentCloud: agentCloud: TaskAgent.TaskAgentCloud -> Promise<TaskAgent.TaskAgentCloud>
     /// <param name="agentCloudId">-</param>
-    abstract deleteAgentCloud: agentCloudId: float -> Promise<TaskAgent.TaskAgentCloud>
+    abstract deleteAgentCloud: agentCloudId: int -> Promise<TaskAgent.TaskAgentCloud>
     /// <param name="agentCloudId">-</param>
-    abstract getAgentCloud: agentCloudId: float -> Promise<TaskAgent.TaskAgentCloud>
+    abstract getAgentCloud: agentCloudId: int -> Promise<TaskAgent.TaskAgentCloud>
     abstract getAgentClouds: unit -> Promise<ResizeArray<TaskAgent.TaskAgentCloud>>
     /// Get agent cloud types.
     abstract getAgentCloudTypes: unit -> Promise<ResizeArray<TaskAgent.TaskAgentCloudType>>
     /// <param name="queueId">-</param>
     /// <param name="top">-</param>
     /// <param name="continuationToken">-</param>
-    abstract getAgentRequestsForQueue: queueId: float * top: float * ?continuationToken: string -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequestsForQueue: queueId: int * top: int * ?continuationToken: string -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <param name="request">-</param>
     /// <param name="queueId">-</param>
-    abstract queueAgentRequest: request: TaskAgent.TaskAgentJobRequest * queueId: float -> Promise<TaskAgent.TaskAgentJobRequest>
+    abstract queueAgentRequest: request: TaskAgent.TaskAgentJobRequest * queueId: int -> Promise<TaskAgent.TaskAgentJobRequest>
     /// <summary>Adds an agent to a pool.  You probably don't want to call this endpoint directly. Instead, [configure an agent](https://docs.microsoft.com/azure/devops/pipelines/agents/agents) using the agent download package.</summary>
     /// <param name="agent">- Details about the agent being added</param>
     /// <param name="poolId">- The agent pool in which to add the agent</param>
-    abstract addAgent: agent: TaskAgent.TaskAgent * poolId: float -> Promise<TaskAgent.TaskAgent>
+    abstract addAgent: agent: TaskAgent.TaskAgent * poolId: int -> Promise<TaskAgent.TaskAgent>
     /// <summary>Delete an agent.  You probably don't want to call this endpoint directly. Instead, [use the agent configuration script](https://docs.microsoft.com/azure/devops/pipelines/agents/agents) to remove an agent from your organization.</summary>
     /// <param name="poolId">- The pool ID to remove the agent from</param>
     /// <param name="agentId">- The agent ID to remove</param>
-    abstract deleteAgent: poolId: float * agentId: float -> Promise<unit>
+    abstract deleteAgent: poolId: int * agentId: int -> Promise<unit>
     /// <summary>Get information about an agent.</summary>
     /// <param name="poolId">- The agent pool containing the agent</param>
     /// <param name="agentId">- The agent ID to get information about</param>
@@ -43,7 +43,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="includeAssignedRequest">- Whether to include details about the agent's current work</param>
     /// <param name="includeLastCompletedRequest">- Whether to include details about the agents' most recent completed work</param>
     /// <param name="propertyFilters">- Filter which custom properties will be returned</param>
-    abstract getAgent: poolId: float * agentId: float * ?includeCapabilities: bool * ?includeAssignedRequest: bool * ?includeLastCompletedRequest: bool * ?propertyFilters: ResizeArray<string> -> Promise<TaskAgent.TaskAgent>
+    abstract getAgent: poolId: int * agentId: int * ?includeCapabilities: bool * ?includeAssignedRequest: bool * ?includeLastCompletedRequest: bool * ?propertyFilters: ResizeArray<string> -> Promise<TaskAgent.TaskAgent>
     /// <summary>Get a list of agents.</summary>
     /// <param name="poolId">- The agent pool containing the agents</param>
     /// <param name="agentName">- Filter on agent name</param>
@@ -52,17 +52,17 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="includeLastCompletedRequest">- Whether to include details about the agents' most recent completed work</param>
     /// <param name="propertyFilters">- Filter which custom properties will be returned</param>
     /// <param name="demands">- Filter by demands the agents can satisfy</param>
-    abstract getAgents: poolId: float * ?agentName: string * ?includeCapabilities: bool * ?includeAssignedRequest: bool * ?includeLastCompletedRequest: bool * ?propertyFilters: ResizeArray<string> * ?demands: ResizeArray<string> -> Promise<ResizeArray<TaskAgent.TaskAgent>>
+    abstract getAgents: poolId: int * ?agentName: string * ?includeCapabilities: bool * ?includeAssignedRequest: bool * ?includeLastCompletedRequest: bool * ?propertyFilters: ResizeArray<string> * ?demands: ResizeArray<string> -> Promise<ResizeArray<TaskAgent.TaskAgent>>
     /// <summary>Replace an agent.  You probably don't want to call this endpoint directly. Instead, [use the agent configuration script](https://docs.microsoft.com/azure/devops/pipelines/agents/agents) to remove and reconfigure an agent from your organization.</summary>
     /// <param name="agent">- Updated details about the replacing agent</param>
     /// <param name="poolId">- The agent pool to use</param>
     /// <param name="agentId">- The agent to replace</param>
-    abstract replaceAgent: agent: TaskAgent.TaskAgent * poolId: float * agentId: float -> Promise<TaskAgent.TaskAgent>
+    abstract replaceAgent: agent: TaskAgent.TaskAgent * poolId: int * agentId: int -> Promise<TaskAgent.TaskAgent>
     /// <summary>Update agent details.</summary>
     /// <param name="agent">- Updated details about the agent</param>
     /// <param name="poolId">- The agent pool to use</param>
     /// <param name="agentId">- The agent to update</param>
-    abstract updateAgent: agent: TaskAgent.TaskAgent * poolId: float * agentId: float -> Promise<TaskAgent.TaskAgent>
+    abstract updateAgent: agent: TaskAgent.TaskAgent * poolId: int * agentId: int -> Promise<TaskAgent.TaskAgent>
     /// Returns list of azure subscriptions
     abstract getAzureManagementGroups: unit -> Promise<TaskAgent.AzureManagementGroupQueryResult>
     /// Returns list of azure subscriptions
@@ -70,7 +70,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <summary>GET a PAT token for managing (configuring, removing, tagging) deployment targets in a deployment group.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group in which deployment targets are managed.</param>
-    abstract generateDeploymentGroupAccessToken: project: string * deploymentGroupId: float -> Promise<string>
+    abstract generateDeploymentGroupAccessToken: project: string * deploymentGroupId: int -> Promise<string>
     /// <summary>Create a deployment group.</summary>
     /// <param name="deploymentGroup">- Deployment group to create.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -78,13 +78,13 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <summary>Delete a deployment group.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group to be deleted.</param>
-    abstract deleteDeploymentGroup: project: string * deploymentGroupId: float -> Promise<unit>
+    abstract deleteDeploymentGroup: project: string * deploymentGroupId: int -> Promise<unit>
     /// <summary>Get a deployment group by its ID.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group.</param>
     /// <param name="actionFilter">- Get the deployment group only if this action can be performed on it.</param>
     /// <param name="expand">- Include these additional details in the returned object.</param>
-    abstract getDeploymentGroup: project: string * deploymentGroupId: float * ?actionFilter: TaskAgent.DeploymentGroupActionFilter * ?expand: TaskAgent.DeploymentGroupExpands -> Promise<TaskAgent.DeploymentGroup>
+    abstract getDeploymentGroup: project: string * deploymentGroupId: int * ?actionFilter: TaskAgent.DeploymentGroupActionFilter * ?expand: TaskAgent.DeploymentGroupExpands -> Promise<TaskAgent.DeploymentGroup>
     /// <summary>Get a list of deployment groups by name or IDs.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="name">- Name of the deployment group.</param>
@@ -93,34 +93,34 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="continuationToken">- Get deployment groups with names greater than this continuationToken lexicographically.</param>
     /// <param name="top">- Maximum number of deployment groups to return. Default is **1000**.</param>
     /// <param name="ids">- Comma separated list of IDs of the deployment groups.</param>
-    abstract getDeploymentGroups: project: string * ?name: string * ?actionFilter: TaskAgent.DeploymentGroupActionFilter * ?expand: TaskAgent.DeploymentGroupExpands * ?continuationToken: string * ?top: float * ?ids: ResizeArray<float> -> Promise<ResizeArray<TaskAgent.DeploymentGroup>>
+    abstract getDeploymentGroups: project: string * ?name: string * ?actionFilter: TaskAgent.DeploymentGroupActionFilter * ?expand: TaskAgent.DeploymentGroupExpands * ?continuationToken: string * ?top: int * ?ids: ResizeArray<float> -> Promise<ResizeArray<TaskAgent.DeploymentGroup>>
     /// <summary>Update a deployment group.</summary>
     /// <param name="deploymentGroup">- Deployment group to update.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group.</param>
-    abstract updateDeploymentGroup: deploymentGroup: TaskAgent.DeploymentGroupUpdateParameter * project: string * deploymentGroupId: float -> Promise<TaskAgent.DeploymentGroup>
+    abstract updateDeploymentGroup: deploymentGroup: TaskAgent.DeploymentGroupUpdateParameter * project: string * deploymentGroupId: int -> Promise<TaskAgent.DeploymentGroup>
     /// <summary>Get a list of deployment group metrics.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupName">- Name of the deployment group.</param>
     /// <param name="continuationToken">- Get metrics for deployment groups with names greater than this continuationToken lexicographically.</param>
     /// <param name="top">- Maximum number of deployment group metrics to return. Default is **50**.</param>
-    abstract getDeploymentGroupsMetrics: project: string * ?deploymentGroupName: string * ?continuationToken: string * ?top: float -> Promise<ResizeArray<TaskAgent.DeploymentGroupMetrics>>
+    abstract getDeploymentGroupsMetrics: project: string * ?deploymentGroupName: string * ?continuationToken: string * ?top: int -> Promise<ResizeArray<TaskAgent.DeploymentGroupMetrics>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
     /// <param name="machineId">-</param>
     /// <param name="completedRequestCount">-</param>
-    abstract getAgentRequestsForDeploymentMachine: project: string * deploymentGroupId: float * machineId: float * ?completedRequestCount: float -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequestsForDeploymentMachine: project: string * deploymentGroupId: int * machineId: int * ?completedRequestCount: int -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
     /// <param name="machineIds">-</param>
     /// <param name="completedRequestCount">-</param>
-    abstract getAgentRequestsForDeploymentMachines: project: string * deploymentGroupId: float * ?machineIds: ResizeArray<float> * ?completedRequestCount: float -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequestsForDeploymentMachines: project: string * deploymentGroupId: int * ?machineIds: ResizeArray<float> * ?completedRequestCount: int -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
-    abstract refreshDeploymentMachines: project: string * deploymentGroupId: float -> Promise<unit>
+    abstract refreshDeploymentMachines: project: string * deploymentGroupId: int -> Promise<unit>
     /// <summary>GET a PAT token for managing (configuring, removing, tagging) deployment agents in a deployment pool.</summary>
     /// <param name="poolId">- ID of the deployment pool in which deployment agents are managed.</param>
-    abstract generateDeploymentPoolAccessToken: poolId: float -> Promise<string>
+    abstract generateDeploymentPoolAccessToken: poolId: int -> Promise<string>
     /// <summary>Get a list of deployment pool summaries.</summary>
     /// <param name="poolName">- Name of the deployment pool.</param>
     /// <param name="expands">- Include these additional details in the returned objects.</param>
@@ -131,7 +131,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="deploymentGroupId">- ID of the deployment group to which the target belongs.</param>
     /// <param name="targetId">- ID of the deployment target.</param>
     /// <param name="completedRequestCount">- Maximum number of completed requests to return. Default is **50**</param>
-    abstract getAgentRequestsForDeploymentTarget: project: string * deploymentGroupId: float * targetId: float * ?completedRequestCount: float -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequestsForDeploymentTarget: project: string * deploymentGroupId: int * targetId: int * ?completedRequestCount: int -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <summary>Get agent requests for a list deployment targets.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group to which the targets belong.</param>
@@ -139,11 +139,11 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="ownerId">- Id of owner of agent job request.</param>
     /// <param name="completedOn">- Datetime to return request after this time.</param>
     /// <param name="completedRequestCount">- Maximum number of completed requests to return for each target. Default is **50**</param>
-    abstract getAgentRequestsForDeploymentTargets: project: string * deploymentGroupId: float * ?targetIds: ResizeArray<float> * ?ownerId: float * ?completedOn: DateTime * ?completedRequestCount: float -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequestsForDeploymentTargets: project: string * deploymentGroupId: int * ?targetIds: ResizeArray<float> * ?ownerId: int * ?completedOn: DateTime * ?completedRequestCount: int -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <summary>Upgrade the deployment targets in a deployment group.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group.</param>
-    abstract refreshDeploymentTargets: project: string * deploymentGroupId: float -> Promise<unit>
+    abstract refreshDeploymentTargets: project: string * deploymentGroupId: int -> Promise<unit>
     /// <summary>Proxy for a GET request defined by an 'endpoint'. The request is authorized using a service connection. The response is filtered using an XPath/Json based selector.</summary>
     /// <param name="endpoint">- Describes the URL to fetch.</param>
     abstract queryEndpoint: endpoint: TaskAgent.TaskDefinitionEndpoint -> Promise<ResizeArray<string>>
@@ -152,7 +152,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="environmentId">-</param>
     /// <param name="continuationToken">-</param>
     /// <param name="top">-</param>
-    abstract getEnvironmentDeploymentExecutionRecords: project: string * environmentId: float * ?continuationToken: string * ?top: float -> Promise<ResizeArray<TaskAgent.EnvironmentDeploymentExecutionRecord>>
+    abstract getEnvironmentDeploymentExecutionRecords: project: string * environmentId: int * ?continuationToken: string * ?top: int -> Promise<ResizeArray<TaskAgent.EnvironmentDeploymentExecutionRecord>>
     /// <summary>Create an environment.</summary>
     /// <param name="environmentCreateParameter">- Environment to create.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -160,23 +160,23 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <summary>Delete the specified environment.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">- ID of the environment.</param>
-    abstract deleteEnvironment: project: string * environmentId: float -> Promise<unit>
+    abstract deleteEnvironment: project: string * environmentId: int -> Promise<unit>
     /// <summary>Get an environment by its ID.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">- ID of the environment.</param>
     /// <param name="expands">- Include these additional details in the returned objects.</param>
-    abstract getEnvironmentById: project: string * environmentId: float * ?expands: TaskAgent.EnvironmentExpands -> Promise<TaskAgent.EnvironmentInstance>
+    abstract getEnvironmentById: project: string * environmentId: int * ?expands: TaskAgent.EnvironmentExpands -> Promise<TaskAgent.EnvironmentInstance>
     /// <summary>Get all environments.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="name">-</param>
     /// <param name="continuationToken">-</param>
     /// <param name="top">-</param>
-    abstract getEnvironments: project: string * ?name: string * ?continuationToken: string * ?top: float -> Promise<ResizeArray<TaskAgent.EnvironmentInstance>>
+    abstract getEnvironments: project: string * ?name: string * ?continuationToken: string * ?top: int -> Promise<ResizeArray<TaskAgent.EnvironmentInstance>>
     /// <summary>Update the specified environment.</summary>
     /// <param name="environmentUpdateParameter">- Environment data to update.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">- ID of the environment.</param>
-    abstract updateEnvironment: environmentUpdateParameter: TaskAgent.EnvironmentUpdateParameter * project: string * environmentId: float -> Promise<TaskAgent.EnvironmentInstance>
+    abstract updateEnvironment: environmentUpdateParameter: TaskAgent.EnvironmentUpdateParameter * project: string * environmentId: int -> Promise<TaskAgent.EnvironmentInstance>
     /// <param name="hubName">-</param>
     /// <param name="includeEnterpriseUsersCount">-</param>
     /// <param name="includeHostedAgentMinutesCount">-</param>
@@ -190,60 +190,60 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="requestId">-</param>
     /// <param name="lockToken">-</param>
     /// <param name="result">-</param>
-    abstract deleteAgentRequest: poolId: float * requestId: float * lockToken: string * ?result: TaskAgent.TaskResult -> Promise<unit>
+    abstract deleteAgentRequest: poolId: int * requestId: int * lockToken: string * ?result: TaskAgent.TaskResult -> Promise<unit>
     /// <param name="poolId">-</param>
     /// <param name="requestId">-</param>
     /// <param name="includeStatus">-</param>
-    abstract getAgentRequest: poolId: float * requestId: float * ?includeStatus: bool -> Promise<TaskAgent.TaskAgentJobRequest>
+    abstract getAgentRequest: poolId: int * requestId: int * ?includeStatus: bool -> Promise<TaskAgent.TaskAgentJobRequest>
     /// <param name="poolId">-</param>
     /// <param name="top">-</param>
     /// <param name="continuationToken">-</param>
-    abstract getAgentRequests: poolId: float * top: float * ?continuationToken: string -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequests: poolId: int * top: int * ?continuationToken: string -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <param name="poolId">-</param>
     /// <param name="agentId">-</param>
     /// <param name="completedRequestCount">-</param>
-    abstract getAgentRequestsForAgent: poolId: float * agentId: float * ?completedRequestCount: float -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequestsForAgent: poolId: int * agentId: int * ?completedRequestCount: int -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <param name="poolId">-</param>
     /// <param name="agentIds">-</param>
     /// <param name="completedRequestCount">-</param>
-    abstract getAgentRequestsForAgents: poolId: float * ?agentIds: ResizeArray<float> * ?completedRequestCount: float -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequestsForAgents: poolId: int * ?agentIds: ResizeArray<float> * ?completedRequestCount: int -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <param name="poolId">-</param>
     /// <param name="planId">-</param>
     /// <param name="jobId">-</param>
-    abstract getAgentRequestsForPlan: poolId: float * planId: string * ?jobId: string -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
+    abstract getAgentRequestsForPlan: poolId: int * planId: string * ?jobId: string -> Promise<ResizeArray<TaskAgent.TaskAgentJobRequest>>
     /// <param name="request">-</param>
     /// <param name="poolId">-</param>
-    abstract queueAgentRequestByPool: request: TaskAgent.TaskAgentJobRequest * poolId: float -> Promise<TaskAgent.TaskAgentJobRequest>
+    abstract queueAgentRequestByPool: request: TaskAgent.TaskAgentJobRequest * poolId: int -> Promise<TaskAgent.TaskAgentJobRequest>
     /// <param name="request">-</param>
     /// <param name="poolId">-</param>
     /// <param name="requestId">-</param>
     /// <param name="lockToken">-</param>
-    abstract updateAgentRequest: request: TaskAgent.TaskAgentJobRequest * poolId: float * requestId: float * lockToken: string -> Promise<TaskAgent.TaskAgentJobRequest>
+    abstract updateAgentRequest: request: TaskAgent.TaskAgentJobRequest * poolId: int * requestId: int * lockToken: string -> Promise<TaskAgent.TaskAgentJobRequest>
     /// <param name="createParameters">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
-    abstract addKubernetesResource: createParameters: TaskAgent.KubernetesResourceCreateParameters * project: string * environmentId: float -> Promise<TaskAgent.KubernetesResource>
+    abstract addKubernetesResource: createParameters: TaskAgent.KubernetesResourceCreateParameters * project: string * environmentId: int -> Promise<TaskAgent.KubernetesResource>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
     /// <param name="resourceId">-</param>
-    abstract deleteKubernetesResource: project: string * environmentId: float * resourceId: float -> Promise<unit>
+    abstract deleteKubernetesResource: project: string * environmentId: int * resourceId: int -> Promise<unit>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
     /// <param name="resourceId">-</param>
-    abstract getKubernetesResource: project: string * environmentId: float * resourceId: float -> Promise<TaskAgent.KubernetesResource>
+    abstract getKubernetesResource: project: string * environmentId: int * resourceId: int -> Promise<TaskAgent.KubernetesResource>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="machineGroupId">-</param>
-    abstract generateDeploymentMachineGroupAccessToken: project: string * machineGroupId: float -> Promise<string>
+    abstract generateDeploymentMachineGroupAccessToken: project: string * machineGroupId: int -> Promise<string>
     /// <param name="machineGroup">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract addDeploymentMachineGroup: machineGroup: TaskAgent.DeploymentMachineGroup * project: string -> Promise<TaskAgent.DeploymentMachineGroup>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="machineGroupId">-</param>
-    abstract deleteDeploymentMachineGroup: project: string * machineGroupId: float -> Promise<unit>
+    abstract deleteDeploymentMachineGroup: project: string * machineGroupId: int -> Promise<unit>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="machineGroupId">-</param>
     /// <param name="actionFilter">-</param>
-    abstract getDeploymentMachineGroup: project: string * machineGroupId: float * ?actionFilter: TaskAgent.MachineGroupActionFilter -> Promise<TaskAgent.DeploymentMachineGroup>
+    abstract getDeploymentMachineGroup: project: string * machineGroupId: int * ?actionFilter: TaskAgent.MachineGroupActionFilter -> Promise<TaskAgent.DeploymentMachineGroup>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="machineGroupName">-</param>
     /// <param name="actionFilter">-</param>
@@ -251,99 +251,99 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="machineGroup">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="machineGroupId">-</param>
-    abstract updateDeploymentMachineGroup: machineGroup: TaskAgent.DeploymentMachineGroup * project: string * machineGroupId: float -> Promise<TaskAgent.DeploymentMachineGroup>
+    abstract updateDeploymentMachineGroup: machineGroup: TaskAgent.DeploymentMachineGroup * project: string * machineGroupId: int -> Promise<TaskAgent.DeploymentMachineGroup>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="machineGroupId">-</param>
     /// <param name="tagFilters">-</param>
-    abstract getDeploymentMachineGroupMachines: project: string * machineGroupId: float * ?tagFilters: ResizeArray<string> -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
+    abstract getDeploymentMachineGroupMachines: project: string * machineGroupId: int * ?tagFilters: ResizeArray<string> -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
     /// <param name="deploymentMachines">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="machineGroupId">-</param>
-    abstract updateDeploymentMachineGroupMachines: deploymentMachines: ResizeArray<TaskAgent.DeploymentMachine> * project: string * machineGroupId: float -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
+    abstract updateDeploymentMachineGroupMachines: deploymentMachines: ResizeArray<TaskAgent.DeploymentMachine> * project: string * machineGroupId: int -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
     /// <param name="machine">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
-    abstract addDeploymentMachine: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: float -> Promise<TaskAgent.DeploymentMachine>
+    abstract addDeploymentMachine: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: int -> Promise<TaskAgent.DeploymentMachine>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
     /// <param name="machineId">-</param>
-    abstract deleteDeploymentMachine: project: string * deploymentGroupId: float * machineId: float -> Promise<unit>
+    abstract deleteDeploymentMachine: project: string * deploymentGroupId: int * machineId: int -> Promise<unit>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
     /// <param name="machineId">-</param>
     /// <param name="expand">-</param>
-    abstract getDeploymentMachine: project: string * deploymentGroupId: float * machineId: float * ?expand: TaskAgent.DeploymentMachineExpands -> Promise<TaskAgent.DeploymentMachine>
+    abstract getDeploymentMachine: project: string * deploymentGroupId: int * machineId: int * ?expand: TaskAgent.DeploymentMachineExpands -> Promise<TaskAgent.DeploymentMachine>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
     /// <param name="tags">-</param>
     /// <param name="name">-</param>
     /// <param name="expand">-</param>
-    abstract getDeploymentMachines: project: string * deploymentGroupId: float * ?tags: ResizeArray<string> * ?name: string * ?expand: TaskAgent.DeploymentMachineExpands -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
+    abstract getDeploymentMachines: project: string * deploymentGroupId: int * ?tags: ResizeArray<string> * ?name: string * ?expand: TaskAgent.DeploymentMachineExpands -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
     /// <param name="machine">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
     /// <param name="machineId">-</param>
-    abstract replaceDeploymentMachine: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: float * machineId: float -> Promise<TaskAgent.DeploymentMachine>
+    abstract replaceDeploymentMachine: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: int * machineId: int -> Promise<TaskAgent.DeploymentMachine>
     /// <param name="machine">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
     /// <param name="machineId">-</param>
-    abstract updateDeploymentMachine: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: float * machineId: float -> Promise<TaskAgent.DeploymentMachine>
+    abstract updateDeploymentMachine: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: int * machineId: int -> Promise<TaskAgent.DeploymentMachine>
     /// <param name="machines">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">-</param>
-    abstract updateDeploymentMachines: machines: ResizeArray<TaskAgent.DeploymentMachine> * project: string * deploymentGroupId: float -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
+    abstract updateDeploymentMachines: machines: ResizeArray<TaskAgent.DeploymentMachine> * project: string * deploymentGroupId: int -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
     /// <param name="definition">-</param>
     /// <param name="poolId">-</param>
-    abstract createAgentPoolMaintenanceDefinition: definition: TaskAgent.TaskAgentPoolMaintenanceDefinition * poolId: float -> Promise<TaskAgent.TaskAgentPoolMaintenanceDefinition>
+    abstract createAgentPoolMaintenanceDefinition: definition: TaskAgent.TaskAgentPoolMaintenanceDefinition * poolId: int -> Promise<TaskAgent.TaskAgentPoolMaintenanceDefinition>
     /// <param name="poolId">-</param>
     /// <param name="definitionId">-</param>
-    abstract deleteAgentPoolMaintenanceDefinition: poolId: float * definitionId: float -> Promise<unit>
+    abstract deleteAgentPoolMaintenanceDefinition: poolId: int * definitionId: int -> Promise<unit>
     /// <param name="poolId">-</param>
     /// <param name="definitionId">-</param>
-    abstract getAgentPoolMaintenanceDefinition: poolId: float * definitionId: float -> Promise<TaskAgent.TaskAgentPoolMaintenanceDefinition>
+    abstract getAgentPoolMaintenanceDefinition: poolId: int * definitionId: int -> Promise<TaskAgent.TaskAgentPoolMaintenanceDefinition>
     /// <param name="poolId">-</param>
-    abstract getAgentPoolMaintenanceDefinitions: poolId: float -> Promise<ResizeArray<TaskAgent.TaskAgentPoolMaintenanceDefinition>>
+    abstract getAgentPoolMaintenanceDefinitions: poolId: int -> Promise<ResizeArray<TaskAgent.TaskAgentPoolMaintenanceDefinition>>
     /// <param name="definition">-</param>
     /// <param name="poolId">-</param>
     /// <param name="definitionId">-</param>
-    abstract updateAgentPoolMaintenanceDefinition: definition: TaskAgent.TaskAgentPoolMaintenanceDefinition * poolId: float * definitionId: float -> Promise<TaskAgent.TaskAgentPoolMaintenanceDefinition>
+    abstract updateAgentPoolMaintenanceDefinition: definition: TaskAgent.TaskAgentPoolMaintenanceDefinition * poolId: int * definitionId: int -> Promise<TaskAgent.TaskAgentPoolMaintenanceDefinition>
     /// <param name="poolId">-</param>
     /// <param name="jobId">-</param>
-    abstract deleteAgentPoolMaintenanceJob: poolId: float * jobId: float -> Promise<unit>
+    abstract deleteAgentPoolMaintenanceJob: poolId: int * jobId: int -> Promise<unit>
     /// <param name="poolId">-</param>
     /// <param name="jobId">-</param>
-    abstract getAgentPoolMaintenanceJob: poolId: float * jobId: float -> Promise<TaskAgent.TaskAgentPoolMaintenanceJob>
+    abstract getAgentPoolMaintenanceJob: poolId: int * jobId: int -> Promise<TaskAgent.TaskAgentPoolMaintenanceJob>
     /// <param name="poolId">-</param>
     /// <param name="jobId">-</param>
-    abstract getAgentPoolMaintenanceJobLogs: poolId: float * jobId: float -> Promise<ArrayBuffer>
+    abstract getAgentPoolMaintenanceJobLogs: poolId: int * jobId: int -> Promise<ArrayBuffer>
     /// <param name="poolId">-</param>
     /// <param name="definitionId">-</param>
-    abstract getAgentPoolMaintenanceJobs: poolId: float * ?definitionId: float -> Promise<ResizeArray<TaskAgent.TaskAgentPoolMaintenanceJob>>
+    abstract getAgentPoolMaintenanceJobs: poolId: int * ?definitionId: int -> Promise<ResizeArray<TaskAgent.TaskAgentPoolMaintenanceJob>>
     /// <param name="job">-</param>
     /// <param name="poolId">-</param>
-    abstract queueAgentPoolMaintenanceJob: job: TaskAgent.TaskAgentPoolMaintenanceJob * poolId: float -> Promise<TaskAgent.TaskAgentPoolMaintenanceJob>
+    abstract queueAgentPoolMaintenanceJob: job: TaskAgent.TaskAgentPoolMaintenanceJob * poolId: int -> Promise<TaskAgent.TaskAgentPoolMaintenanceJob>
     /// <param name="job">-</param>
     /// <param name="poolId">-</param>
     /// <param name="jobId">-</param>
-    abstract updateAgentPoolMaintenanceJob: job: TaskAgent.TaskAgentPoolMaintenanceJob * poolId: float * jobId: float -> Promise<TaskAgent.TaskAgentPoolMaintenanceJob>
+    abstract updateAgentPoolMaintenanceJob: job: TaskAgent.TaskAgentPoolMaintenanceJob * poolId: int * jobId: int -> Promise<TaskAgent.TaskAgentPoolMaintenanceJob>
     /// <param name="poolId">-</param>
     /// <param name="messageId">-</param>
     /// <param name="sessionId">-</param>
-    abstract deleteMessage: poolId: float * messageId: float * sessionId: string -> Promise<unit>
+    abstract deleteMessage: poolId: int * messageId: int * sessionId: string -> Promise<unit>
     /// <param name="poolId">-</param>
     /// <param name="sessionId">-</param>
     /// <param name="lastMessageId">-</param>
-    abstract getMessage: poolId: float * sessionId: string * ?lastMessageId: float -> Promise<TaskAgent.TaskAgentMessage>
+    abstract getMessage: poolId: int * sessionId: string * ?lastMessageId: int -> Promise<TaskAgent.TaskAgentMessage>
     /// <param name="poolId">-</param>
     /// <param name="agentId">-</param>
-    abstract refreshAgent: poolId: float * agentId: float -> Promise<unit>
+    abstract refreshAgent: poolId: int * agentId: int -> Promise<unit>
     /// <param name="poolId">-</param>
-    abstract refreshAgents: poolId: float -> Promise<unit>
+    abstract refreshAgents: poolId: int -> Promise<unit>
     /// <param name="message">-</param>
     /// <param name="poolId">-</param>
     /// <param name="requestId">-</param>
-    abstract sendMessage: message: TaskAgent.TaskAgentMessage * poolId: float * requestId: float -> Promise<unit>
+    abstract sendMessage: message: TaskAgent.TaskAgentMessage * poolId: int * requestId: int -> Promise<unit>
     /// <param name="packageType">-</param>
     /// <param name="platform">-</param>
     /// <param name="version">-</param>
@@ -351,20 +351,20 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="packageType">-</param>
     /// <param name="platform">-</param>
     /// <param name="top">-</param>
-    abstract getPackages: packageType: string * ?platform: string * ?top: float -> Promise<ResizeArray<TaskAgent.PackageMetadata>>
+    abstract getPackages: packageType: string * ?platform: string * ?top: int -> Promise<ResizeArray<TaskAgent.PackageMetadata>>
     /// <param name="poolId">-</param>
-    abstract getAgentPoolMetadata: poolId: float -> Promise<string>
+    abstract getAgentPoolMetadata: poolId: int -> Promise<string>
     /// <summary>Create an agent pool.</summary>
     /// <param name="pool">- Details about the new agent pool</param>
     abstract addAgentPool: pool: TaskAgent.TaskAgentPool -> Promise<TaskAgent.TaskAgentPool>
     /// <summary>Delete an agent pool.</summary>
     /// <param name="poolId">- ID of the agent pool to delete</param>
-    abstract deleteAgentPool: poolId: float -> Promise<unit>
+    abstract deleteAgentPool: poolId: int -> Promise<unit>
     /// <summary>Get information about an agent pool.</summary>
     /// <param name="poolId">- An agent pool ID</param>
     /// <param name="properties">- Agent pool properties (comma-separated)</param>
     /// <param name="actionFilter">- Filter by whether the calling user has use or manage permissions</param>
-    abstract getAgentPool: poolId: float * ?properties: ResizeArray<string> * ?actionFilter: TaskAgent.TaskAgentPoolActionFilter -> Promise<TaskAgent.TaskAgentPool>
+    abstract getAgentPool: poolId: int * ?properties: ResizeArray<string> * ?actionFilter: TaskAgent.TaskAgentPoolActionFilter -> Promise<TaskAgent.TaskAgentPool>
     /// <summary>Get a list of agent pools.</summary>
     /// <param name="poolName">- Filter by name</param>
     /// <param name="properties">- Filter by agent pool properties (comma-separated)</param>
@@ -378,7 +378,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <summary>Update properties on an agent pool</summary>
     /// <param name="pool">- Updated agent pool details</param>
     /// <param name="poolId">- The agent pool to update</param>
-    abstract updateAgentPool: pool: TaskAgent.TaskAgentPool * poolId: float -> Promise<TaskAgent.TaskAgentPool>
+    abstract updateAgentPool: pool: TaskAgent.TaskAgentPool * poolId: int -> Promise<TaskAgent.TaskAgentPool>
     /// <summary>Create a new agent queue to connect a project to an agent pool.</summary>
     /// <param name="queue">- Details about the queue to create</param>
     /// <param name="project">- Project ID or project name</param>
@@ -390,12 +390,12 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <summary>Removes an agent queue from a project.</summary>
     /// <param name="queueId">- The agent queue to remove</param>
     /// <param name="project">- Project ID or project name</param>
-    abstract deleteAgentQueue: queueId: float * ?project: string -> Promise<unit>
+    abstract deleteAgentQueue: queueId: int * ?project: string -> Promise<unit>
     /// <summary>Get information about an agent queue.</summary>
     /// <param name="queueId">- The agent queue to get information about</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="actionFilter">- Filter by whether the calling user has use or manage permissions</param>
-    abstract getAgentQueue: queueId: float * ?project: string * ?actionFilter: TaskAgent.TaskAgentQueueActionFilter -> Promise<TaskAgent.TaskAgentQueue>
+    abstract getAgentQueue: queueId: int * ?project: string * ?actionFilter: TaskAgent.TaskAgentQueueActionFilter -> Promise<TaskAgent.TaskAgentQueue>
     /// <summary>Get a list of agent queues.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="queueName">- Filter on the agent queue name</param>
@@ -417,7 +417,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="actionFilter">- Filter by whether the calling user has use or manage permissions</param>
     abstract getAgentQueuesForPools: poolIds: ResizeArray<float> * ?project: string * ?actionFilter: TaskAgent.TaskAgentQueueActionFilter -> Promise<ResizeArray<TaskAgent.TaskAgentQueue>>
     /// <param name="agentCloudId">-</param>
-    abstract getAgentCloudRequests: agentCloudId: float -> Promise<ResizeArray<TaskAgent.TaskAgentCloudRequest>>
+    abstract getAgentCloudRequests: agentCloudId: int -> Promise<ResizeArray<TaskAgent.TaskAgentCloudRequest>>
     abstract getResourceLimits: unit -> Promise<ResizeArray<TaskAgent.ResourceLimit>>
     /// <param name="parallelismTag">-</param>
     /// <param name="poolIsHosted">-</param>
@@ -482,26 +482,26 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     abstract uploadSecureFile: content: obj option * project: string * name: string * ?authorizePipelines: bool -> Promise<TaskAgent.SecureFile>
     /// <param name="session">-</param>
     /// <param name="poolId">-</param>
-    abstract createAgentSession: session: TaskAgent.TaskAgentSession * poolId: float -> Promise<TaskAgent.TaskAgentSession>
+    abstract createAgentSession: session: TaskAgent.TaskAgentSession * poolId: int -> Promise<TaskAgent.TaskAgentSession>
     /// <param name="poolId">-</param>
     /// <param name="sessionId">-</param>
-    abstract deleteAgentSession: poolId: float * sessionId: string -> Promise<unit>
+    abstract deleteAgentSession: poolId: int * sessionId: string -> Promise<unit>
     /// <summary>Register a deployment target to a deployment group. Generally this is called by agent configuration tool.</summary>
     /// <param name="machine">- Deployment target to register.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group to which the deployment target is registered.</param>
-    abstract addDeploymentTarget: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: float -> Promise<TaskAgent.DeploymentMachine>
+    abstract addDeploymentTarget: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: int -> Promise<TaskAgent.DeploymentMachine>
     /// <summary>Delete a deployment target in a deployment group. This deletes the agent from associated deployment pool too.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group in which deployment target is deleted.</param>
     /// <param name="targetId">- ID of the deployment target to delete.</param>
-    abstract deleteDeploymentTarget: project: string * deploymentGroupId: float * targetId: float -> Promise<unit>
+    abstract deleteDeploymentTarget: project: string * deploymentGroupId: int * targetId: int -> Promise<unit>
     /// <summary>Get a deployment target by its ID in a deployment group</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group to which deployment target belongs.</param>
     /// <param name="targetId">- ID of the deployment target to return.</param>
     /// <param name="expand">- Include these additional details in the returned objects.</param>
-    abstract getDeploymentTarget: project: string * deploymentGroupId: float * targetId: float * ?expand: TaskAgent.DeploymentTargetExpands -> Promise<TaskAgent.DeploymentMachine>
+    abstract getDeploymentTarget: project: string * deploymentGroupId: int * targetId: int * ?expand: TaskAgent.DeploymentTargetExpands -> Promise<TaskAgent.DeploymentMachine>
     /// <summary>Get a list of deployment targets in a deployment group.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group.</param>
@@ -515,24 +515,24 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="top">- Maximum number of deployment targets to return. Default is **1000**.</param>
     /// <param name="enabled">- Get only deployment targets that are enabled or disabled. Default is 'null' which returns all the targets.</param>
     /// <param name="propertyFilters">-</param>
-    abstract getDeploymentTargets: project: string * deploymentGroupId: float * ?tags: ResizeArray<string> * ?name: string * ?partialNameMatch: bool * ?expand: TaskAgent.DeploymentTargetExpands * ?agentStatus: TaskAgent.TaskAgentStatusFilter * ?agentJobResult: TaskAgent.TaskAgentJobResultFilter * ?continuationToken: string * ?top: float * ?enabled: bool * ?propertyFilters: ResizeArray<string> -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
+    abstract getDeploymentTargets: project: string * deploymentGroupId: int * ?tags: ResizeArray<string> * ?name: string * ?partialNameMatch: bool * ?expand: TaskAgent.DeploymentTargetExpands * ?agentStatus: TaskAgent.TaskAgentStatusFilter * ?agentJobResult: TaskAgent.TaskAgentJobResultFilter * ?continuationToken: string * ?top: int * ?enabled: bool * ?propertyFilters: ResizeArray<string> -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
     /// <summary>Replace a deployment target in a deployment group. Generally this is called by agent configuration tool.</summary>
     /// <param name="machine">- New deployment target.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group in which deployment target is replaced.</param>
     /// <param name="targetId">- ID of the deployment target to replace.</param>
-    abstract replaceDeploymentTarget: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: float * targetId: float -> Promise<TaskAgent.DeploymentMachine>
+    abstract replaceDeploymentTarget: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: int * targetId: int -> Promise<TaskAgent.DeploymentMachine>
     /// <summary>Update a deployment target and its agent properties in a deployment group. Generally this is called by agent configuration tool.</summary>
     /// <param name="machine">- Deployment target to update.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group in which deployment target is updated.</param>
     /// <param name="targetId">- ID of the deployment target to update.</param>
-    abstract updateDeploymentTarget: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: float * targetId: float -> Promise<TaskAgent.DeploymentMachine>
+    abstract updateDeploymentTarget: machine: TaskAgent.DeploymentMachine * project: string * deploymentGroupId: int * targetId: int -> Promise<TaskAgent.DeploymentMachine>
     /// <summary>Update tags of a list of deployment targets in a deployment group.</summary>
     /// <param name="machines">- Deployment targets with tags to udpdate.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="deploymentGroupId">- ID of the deployment group in which deployment targets are updated.</param>
-    abstract updateDeploymentTargets: machines: ResizeArray<TaskAgent.DeploymentTargetUpdateParameter> * project: string * deploymentGroupId: float -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
+    abstract updateDeploymentTargets: machines: ResizeArray<TaskAgent.DeploymentTargetUpdateParameter> * project: string * deploymentGroupId: int -> Promise<ResizeArray<TaskAgent.DeploymentMachine>>
     /// <summary>Create a task group.</summary>
     /// <param name="taskGroup">- Task group object to create.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -551,7 +551,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="taskGroupId">-</param>
     /// <param name="revision">-</param>
-    abstract getTaskGroupRevision: project: string * taskGroupId: string * revision: float -> Promise<string>
+    abstract getTaskGroupRevision: project: string * taskGroupId: string * revision: int -> Promise<string>
     /// <summary>List task groups.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="taskGroupId">- Id of the task group.</param>
@@ -561,7 +561,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="top">- Number of task groups to get.</param>
     /// <param name="continuationToken">- Gets the task groups after the continuation token provided.</param>
     /// <param name="queryOrder">- Gets the results in the defined order. Default is 'CreatedOnDescending'.</param>
-    abstract getTaskGroups: project: string * ?taskGroupId: string * ?expanded: bool * ?taskIdFilter: string * ?deleted: bool * ?top: float * ?continuationToken: DateTime * ?queryOrder: TaskAgent.TaskGroupQueryOrder -> Promise<ResizeArray<TaskAgent.TaskGroup>>
+    abstract getTaskGroups: project: string * ?taskGroupId: string * ?expanded: bool * ?taskIdFilter: string * ?deleted: bool * ?top: int * ?continuationToken: DateTime * ?queryOrder: TaskAgent.TaskGroupQueryOrder -> Promise<ResizeArray<TaskAgent.TaskGroup>>
     /// <param name="taskGroupMetadata">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="parentTaskGroupId">-</param>
@@ -598,30 +598,30 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="poolId">-</param>
     /// <param name="agentId">-</param>
     /// <param name="currentState">-</param>
-    abstract updateAgentUpdateState: poolId: float * agentId: float * currentState: string -> Promise<TaskAgent.TaskAgent>
+    abstract updateAgentUpdateState: poolId: int * agentId: int * currentState: string -> Promise<TaskAgent.TaskAgent>
     /// <param name="userCapabilities">-</param>
     /// <param name="poolId">-</param>
     /// <param name="agentId">-</param>
-    abstract updateAgentUserCapabilities: userCapabilities: TaskAgentRestClientUpdateAgentUserCapabilitiesUserCapabilities * poolId: float * agentId: float -> Promise<TaskAgent.TaskAgent>
+    abstract updateAgentUserCapabilities: userCapabilities: TaskAgentRestClientUpdateAgentUserCapabilitiesUserCapabilities * poolId: int * agentId: int -> Promise<TaskAgent.TaskAgent>
     /// <summary>Add a variable group.</summary>
     /// <param name="variableGroupParameters">-</param>
     abstract addVariableGroup: variableGroupParameters: TaskAgent.VariableGroupParameters -> Promise<TaskAgent.VariableGroup>
     /// <summary>Delete a variable group</summary>
     /// <param name="groupId">- Id of the variable group.</param>
     /// <param name="projectIds">-</param>
-    abstract deleteVariableGroup: groupId: float * projectIds: ResizeArray<string> -> Promise<unit>
+    abstract deleteVariableGroup: groupId: int * projectIds: ResizeArray<string> -> Promise<unit>
     /// <summary>Add a variable group.</summary>
     /// <param name="variableGroupProjectReferences">-</param>
     /// <param name="variableGroupId">-</param>
-    abstract shareVariableGroup: variableGroupProjectReferences: ResizeArray<TaskAgent.VariableGroupProjectReference> * variableGroupId: float -> Promise<unit>
+    abstract shareVariableGroup: variableGroupProjectReferences: ResizeArray<TaskAgent.VariableGroupProjectReference> * variableGroupId: int -> Promise<unit>
     /// <summary>Update a variable group.</summary>
     /// <param name="variableGroupParameters">-</param>
     /// <param name="groupId">- Id of the variable group to update.</param>
-    abstract updateVariableGroup: variableGroupParameters: TaskAgent.VariableGroupParameters * groupId: float -> Promise<TaskAgent.VariableGroup>
+    abstract updateVariableGroup: variableGroupParameters: TaskAgent.VariableGroupParameters * groupId: int -> Promise<TaskAgent.VariableGroup>
     /// <summary>Get a variable group.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="groupId">- Id of the variable group.</param>
-    abstract getVariableGroup: project: string * groupId: float -> Promise<TaskAgent.VariableGroup>
+    abstract getVariableGroup: project: string * groupId: int -> Promise<TaskAgent.VariableGroup>
     /// <summary>Get variable groups.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="groupName">- Name of variable group.</param>
@@ -629,7 +629,7 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="top">- Number of variable groups to get.</param>
     /// <param name="continuationToken">- Gets the variable groups after the continuation token provided.</param>
     /// <param name="queryOrder">- Gets the results in the defined order. Default is 'IdDescending'.</param>
-    abstract getVariableGroups: project: string * ?groupName: string * ?actionFilter: TaskAgent.VariableGroupActionFilter * ?top: float * ?continuationToken: float * ?queryOrder: TaskAgent.VariableGroupQueryOrder -> Promise<ResizeArray<TaskAgent.VariableGroup>>
+    abstract getVariableGroups: project: string * ?groupName: string * ?actionFilter: TaskAgent.VariableGroupActionFilter * ?top: int * ?continuationToken: int * ?queryOrder: TaskAgent.VariableGroupQueryOrder -> Promise<ResizeArray<TaskAgent.VariableGroup>>
     /// <summary>Get variable groups by ids.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="groupIds">- Comma separated list of Ids of variable groups.</param>
@@ -637,19 +637,19 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="createParameters">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
-    abstract addVirtualMachineGroup: createParameters: TaskAgent.VirtualMachineGroupCreateParameters * project: string * environmentId: float -> Promise<TaskAgent.VirtualMachineGroup>
+    abstract addVirtualMachineGroup: createParameters: TaskAgent.VirtualMachineGroupCreateParameters * project: string * environmentId: int -> Promise<TaskAgent.VirtualMachineGroup>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
     /// <param name="resourceId">-</param>
-    abstract deleteVirtualMachineGroup: project: string * environmentId: float * resourceId: float -> Promise<unit>
+    abstract deleteVirtualMachineGroup: project: string * environmentId: int * resourceId: int -> Promise<unit>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
     /// <param name="resourceId">-</param>
-    abstract getVirtualMachineGroup: project: string * environmentId: float * resourceId: float -> Promise<TaskAgent.VirtualMachineGroup>
+    abstract getVirtualMachineGroup: project: string * environmentId: int * resourceId: int -> Promise<TaskAgent.VirtualMachineGroup>
     /// <param name="resource">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
-    abstract updateVirtualMachineGroup: resource: TaskAgent.VirtualMachineGroup * project: string * environmentId: float -> Promise<TaskAgent.VirtualMachineGroup>
+    abstract updateVirtualMachineGroup: resource: TaskAgent.VirtualMachineGroup * project: string * environmentId: int -> Promise<TaskAgent.VirtualMachineGroup>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
     /// <param name="resourceId">-</param>
@@ -658,12 +658,12 @@ type [<AllowNullLiteral>] TaskAgentRestClient =
     /// <param name="partialNameMatch">-</param>
     /// <param name="tags">-</param>
     /// <param name="top">-</param>
-    abstract getVirtualMachines: project: string * environmentId: float * resourceId: float * ?continuationToken: string * ?name: string * ?partialNameMatch: bool * ?tags: ResizeArray<string> * ?top: float -> Promise<ResizeArray<TaskAgent.VirtualMachine>>
+    abstract getVirtualMachines: project: string * environmentId: int * resourceId: int * ?continuationToken: string * ?name: string * ?partialNameMatch: bool * ?tags: ResizeArray<string> * ?top: int -> Promise<ResizeArray<TaskAgent.VirtualMachine>>
     /// <param name="machines">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="environmentId">-</param>
     /// <param name="resourceId">-</param>
-    abstract updateVirtualMachines: machines: ResizeArray<TaskAgent.VirtualMachine> * project: string * environmentId: float * resourceId: float -> Promise<ResizeArray<TaskAgent.VirtualMachine>>
+    abstract updateVirtualMachines: machines: ResizeArray<TaskAgent.VirtualMachine> * project: string * environmentId: int * resourceId: int -> Promise<ResizeArray<TaskAgent.VirtualMachine>>
     /// <param name="authenticationRequest">-</param>
     abstract acquireAccessToken: authenticationRequest: TaskAgent.AadOauthTokenRequest -> Promise<TaskAgent.AadOauthTokenResult>
     /// <param name="tenantId">-</param>

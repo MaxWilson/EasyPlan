@@ -25,14 +25,14 @@ type [<AllowNullLiteral>] AgentChangeEvent =
     abstract agent: TaskAgent with get, set
     abstract eventType: string with get, set
     abstract pool: TaskAgentPoolReference with get, set
-    abstract poolId: float with get, set
+    abstract poolId: int with get, set
     abstract timeStamp: DateTime with get, set
 
 type [<AllowNullLiteral>] AgentJobRequestMessage =
     inherit JobRequestMessage
     abstract lockedUntil: DateTime with get, set
     abstract lockToken: string with get, set
-    abstract requestId: float with get, set
+    abstract requestId: int with get, set
     abstract tasks: ResizeArray<TaskInstance> with get, set
 
 type [<AllowNullLiteral>] AgentMigrationMessage =
@@ -51,7 +51,7 @@ type [<AllowNullLiteral>] AgentQueuesEvent =
     abstract queues: ResizeArray<TaskAgentQueue> with get, set
 
 type [<AllowNullLiteral>] AgentRefreshMessage =
-    abstract agentId: float with get, set
+    abstract agentId: int with get, set
     abstract targetVersion: string with get, set
     abstract timeout: obj option with get, set
 
@@ -137,8 +137,8 @@ type [<AllowNullLiteral>] ClientCertificate =
 
 type [<AllowNullLiteral>] CounterVariable =
     abstract prefix: string with get, set
-    abstract seed: float with get, set
-    abstract value: float with get, set
+    abstract seed: int with get, set
+    abstract value: int with get, set
 
 type [<AllowNullLiteral>] DataSource =
     abstract authenticationScheme: AuthenticationSchemeReference with get, set
@@ -193,7 +193,7 @@ type [<AllowNullLiteral>] DeploymentGroup =
     /// Description of the deployment group.
     abstract description: string with get, set
     /// Number of deployment targets in the deployment group.
-    abstract machineCount: float with get, set
+    abstract machineCount: int with get, set
     /// List of deployment targets in the deployment group.
     abstract machines: ResizeArray<DeploymentMachine> with get, set
     /// List of unique tags across all deployment targets in the deployment group.
@@ -213,12 +213,12 @@ type [<AllowNullLiteral>] DeploymentGroupCreateParameter =
     /// Deployment pool in which deployment agents are registered. This is obsolete. Kept for compatibility. Will be marked obsolete explicitly by M132.
     abstract pool: DeploymentGroupCreateParameterPoolProperty with get, set
     /// Identifier of the deployment pool in which deployment agents are registered.
-    abstract poolId: float with get, set
+    abstract poolId: int with get, set
 
 /// Properties of Deployment pool to create Deployment group.
 type [<AllowNullLiteral>] DeploymentGroupCreateParameterPoolProperty =
     /// Deployment pool identifier.
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 type [<RequireQualifiedAccess>] DeploymentGroupExpands =
     | None = 0
@@ -237,7 +237,7 @@ type [<AllowNullLiteral>] DeploymentGroupMetrics =
 /// Deployment group reference. This is useful for referring a deployment group in another object.
 type [<AllowNullLiteral>] DeploymentGroupReference =
     /// Deployment group identifier.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the deployment group.
     abstract name: string with get, set
     /// Deployment pool in which deployment agents are registered.
@@ -257,7 +257,7 @@ type [<AllowNullLiteral>] DeploymentMachine =
     /// Deployment agent.
     abstract agent: TaskAgent with get, set
     /// Deployment target Identifier.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Properties of the deployment target.
     abstract properties: obj option with get, set
     /// Tags of the deployment target.
@@ -276,10 +276,10 @@ type [<RequireQualifiedAccess>] DeploymentMachineExpands =
 type [<AllowNullLiteral>] DeploymentMachineGroup =
     inherit DeploymentMachineGroupReference
     abstract machines: ResizeArray<DeploymentMachine> with get, set
-    abstract size: float with get, set
+    abstract size: int with get, set
 
 type [<AllowNullLiteral>] DeploymentMachineGroupReference =
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract name: string with get, set
     abstract pool: TaskAgentPoolReference with get, set
     abstract project: ProjectReference with get, set
@@ -293,9 +293,9 @@ type [<AllowNullLiteral>] DeploymentPoolSummary =
     /// List of deployment groups referring to the deployment pool.
     abstract deploymentGroups: ResizeArray<DeploymentGroupReference> with get, set
     /// Number of deployment agents that are offline.
-    abstract offlineAgentsCount: float with get, set
+    abstract offlineAgentsCount: int with get, set
     /// Number of deployment agents that are online.
-    abstract onlineAgentsCount: float with get, set
+    abstract onlineAgentsCount: int with get, set
     /// Deployment pool.
     abstract pool: TaskAgentPoolReference with get, set
     /// Virtual machine Resource referring in pool.
@@ -315,16 +315,16 @@ type [<RequireQualifiedAccess>] DeploymentTargetExpands =
 /// Deployment target update parameter.
 type [<AllowNullLiteral>] DeploymentTargetUpdateParameter =
     /// Identifier of the deployment target.
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract tags: ResizeArray<string> with get, set
 
 type [<AllowNullLiteral>] DiagnosticLogMetadata =
-    abstract agentId: float with get, set
+    abstract agentId: int with get, set
     abstract agentName: string with get, set
     abstract fileName: string with get, set
     abstract phaseName: string with get, set
     abstract phaseResult: string with get, set
-    abstract poolId: float with get, set
+    abstract poolId: int with get, set
 
 type [<AllowNullLiteral>] EndpointAuthorization =
     /// Gets or sets the parameters for the selected authorization scheme.
@@ -362,13 +362,13 @@ type [<AllowNullLiteral>] EnvironmentDeploymentExecutionRecord =
     /// Definition of the environment deployment execution owner
     abstract definition: TaskOrchestrationOwner with get, set
     /// Id of the Environment
-    abstract environmentId: float with get, set
+    abstract environmentId: int with get, set
     /// Finish time of the environment deployment execution
     abstract finishTime: DateTime with get, set
     /// Id of the Environment deployment execution history record
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Job Attempt
-    abstract jobAttempt: float with get, set
+    abstract jobAttempt: int with get, set
     /// Job name
     abstract jobName: string with get, set
     /// Owner of the environment deployment execution record
@@ -382,7 +382,7 @@ type [<AllowNullLiteral>] EnvironmentDeploymentExecutionRecord =
     /// Request identifier of the Environment deployment execution history record
     abstract requestIdentifier: string with get, set
     /// Resource Id
-    abstract resourceId: float with get, set
+    abstract resourceId: int with get, set
     /// Result of the environment deployment execution
     abstract result: TaskResult with get, set
     /// Project Id
@@ -390,7 +390,7 @@ type [<AllowNullLiteral>] EnvironmentDeploymentExecutionRecord =
     /// Service owner Id
     abstract serviceOwner: string with get, set
     /// Stage Attempt
-    abstract stageAttempt: float with get, set
+    abstract stageAttempt: int with get, set
     /// Stage name
     abstract stageName: string with get, set
     /// Start time of the environment deployment execution
@@ -409,7 +409,7 @@ type [<AllowNullLiteral>] EnvironmentInstance =
     /// Description of the Environment.
     abstract description: string with get, set
     /// Id of the Environment
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Identity reference of the user who last modified the Environment.
     abstract lastModifiedBy: WebApi.IdentityRef with get, set
     /// Last modified time of the Environment
@@ -428,14 +428,14 @@ type [<AllowNullLiteral>] EnvironmentLinkedResourceReference =
     abstract typeName: string with get, set
 
 type [<AllowNullLiteral>] EnvironmentReference =
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract name: string with get, set
 
 type [<AllowNullLiteral>] EnvironmentResource =
     abstract createdBy: WebApi.IdentityRef with get, set
     abstract createdOn: DateTime with get, set
     abstract environmentReference: EnvironmentReference with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract lastModifiedBy: WebApi.IdentityRef with get, set
     abstract lastModifiedOn: DateTime with get, set
     abstract name: string with get, set
@@ -447,7 +447,7 @@ type [<AllowNullLiteral>] EnvironmentResource =
 /// EnvironmentResourceReference.
 type [<AllowNullLiteral>] EnvironmentResourceReference =
     /// Id of the resource.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the resource.
     abstract name: string with get, set
     /// Tags of the Environment Resource Reference.
@@ -510,7 +510,7 @@ type [<AllowNullLiteral>] JobCancelMessage =
 
 type [<AllowNullLiteral>] JobCompletedEvent =
     inherit JobEvent
-    abstract requestId: float with get, set
+    abstract requestId: int with get, set
     abstract result: TaskResult with get, set
 
 /// Represents the context of variables and vectors for a job request.
@@ -580,7 +580,7 @@ type [<AllowNullLiteral>] MarketplacePurchasedLicense =
     /// The name of the identity making the purchase as seen by the marketplace
     abstract purchaserName: string with get, set
     /// The quantity purchased.
-    abstract purchaseUnitCount: float with get, set
+    abstract purchaseUnitCount: int with get, set
 
 type [<AllowNullLiteral>] MaskHint =
     abstract ``type``: MaskType with get, set
@@ -631,9 +631,9 @@ type [<AllowNullLiteral>] PackageMetadata =
     abstract version: PackageVersion with get, set
 
 type [<AllowNullLiteral>] PackageVersion =
-    abstract major: float with get, set
-    abstract minor: float with get, set
-    abstract patch: float with get, set
+    abstract major: int with get, set
+    abstract minor: int with get, set
+    abstract patch: int with get, set
 
 type [<AllowNullLiteral>] PlanEnvironment =
     abstract mask: ResizeArray<MaskHint> with get, set
@@ -656,10 +656,10 @@ type [<AllowNullLiteral>] ProjectReference =
 
 type [<AllowNullLiteral>] PublishTaskGroupMetadata =
     abstract comment: string with get, set
-    abstract parentDefinitionRevision: float with get, set
+    abstract parentDefinitionRevision: int with get, set
     abstract preview: bool with get, set
     abstract taskGroupId: string with get, set
-    abstract taskGroupRevision: float with get, set
+    abstract taskGroupRevision: int with get, set
 
 type [<AllowNullLiteral>] ResourceFilterOptions =
     abstract identities: ResizeArray<WebApi.IdentityRef> with get, set
@@ -696,8 +696,8 @@ type [<AllowNullLiteral>] ResourceLimit =
     abstract isPremium: bool with get, set
     abstract parallelismTag: string with get, set
     abstract resourceLimitsData: AuthenticationSchemeReferenceInputs with get, set
-    abstract totalCount: float with get, set
-    abstract totalMinutes: float with get, set
+    abstract totalCount: int with get, set
+    abstract totalMinutes: int with get, set
 
 type [<AllowNullLiteral>] ResourcesHubData =
     abstract continuationToken: string with get, set
@@ -708,8 +708,8 @@ type [<AllowNullLiteral>] ResourcesHubData =
 type [<AllowNullLiteral>] ResourceUsage =
     abstract resourceLimit: ResourceLimit with get, set
     abstract runningRequests: ResizeArray<TaskAgentJobRequest> with get, set
-    abstract usedCount: float with get, set
-    abstract usedMinutes: float with get, set
+    abstract usedCount: int with get, set
+    abstract usedMinutes: int with get, set
 
 type [<AllowNullLiteral>] ResultTransformationDetails =
     abstract resultTemplate: string with get, set
@@ -803,7 +803,7 @@ type [<AllowNullLiteral>] ServiceEndpointExecutionData =
     /// Gets the finish time of service endpoint execution.
     abstract finishTime: DateTime with get, set
     /// Gets the Id of service endpoint execution data.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets the owner of service endpoint execution data.
     abstract owner: TaskOrchestrationOwner with get, set
     /// Gets the plan type of service endpoint execution data.
@@ -875,7 +875,7 @@ type [<AllowNullLiteral>] TaskAgent =
     /// The last request which was completed by this agent.
     abstract lastCompletedRequest: TaskAgentJobRequest with get, set
     /// Maximum job parallelism allowed for this agent.
-    abstract maxParallelism: float with get, set
+    abstract maxParallelism: int with get, set
     /// Pending update for this agent.
     abstract pendingUpdate: TaskAgentUpdate with get, set
     abstract properties: obj option with get, set
@@ -896,15 +896,15 @@ type [<AllowNullLiteral>] TaskAgentAuthorization =
 type [<AllowNullLiteral>] TaskAgentCloud =
     /// Gets or sets a AcquireAgentEndpoint using which a request can be made to acquire new agent
     abstract acquireAgentEndpoint: string with get, set
-    abstract acquisitionTimeout: float with get, set
-    abstract agentCloudId: float with get, set
+    abstract acquisitionTimeout: int with get, set
+    abstract agentCloudId: int with get, set
     abstract getAccountParallelismEndpoint: string with get, set
     abstract getAgentDefinitionEndpoint: string with get, set
     abstract getAgentRequestStatusEndpoint: string with get, set
     abstract id: string with get, set
     /// Signifies that this Agent Cloud is internal and should not be user-manageable
     abstract ``internal``: bool with get, set
-    abstract maxParallelism: float with get, set
+    abstract maxParallelism: int with get, set
     abstract name: string with get, set
     abstract releaseAgentEndpoint: string with get, set
     abstract sharedSecret: string with get, set
@@ -913,7 +913,7 @@ type [<AllowNullLiteral>] TaskAgentCloud =
 
 type [<AllowNullLiteral>] TaskAgentCloudRequest =
     abstract agent: TaskAgentReference with get, set
-    abstract agentCloudId: float with get, set
+    abstract agentCloudId: int with get, set
     abstract agentConnectedTime: DateTime with get, set
     abstract agentData: obj option with get, set
     abstract agentSpecification: obj option with get, set
@@ -977,15 +977,15 @@ type [<AllowNullLiteral>] TaskAgentJobRequest =
     /// Internal detail representing the type of orchestration plan.
     abstract planType: string with get, set
     /// The ID of the pool this request targets
-    abstract poolId: float with get, set
+    abstract poolId: int with get, set
     /// The ID of the queue this request targets
-    abstract queueId: float with get, set
+    abstract queueId: int with get, set
     /// The date/time this request was queued.
     abstract queueTime: DateTime with get, set
     /// The date/time this request was receieved by an agent.
     abstract receiveTime: DateTime with get, set
     /// ID of the request.
-    abstract requestId: float with get, set
+    abstract requestId: int with get, set
     /// The agent allocated for this request.
     abstract reservedAgent: TaskAgentReference with get, set
     /// The result of this request.
@@ -1012,7 +1012,7 @@ type [<AllowNullLiteral>] TaskAgentJobStep =
     abstract inputs: AuthenticationSchemeReferenceInputs with get, set
     abstract name: string with get, set
     abstract task: TaskAgentJobTask with get, set
-    abstract timeoutInMinutes: float with get, set
+    abstract timeoutInMinutes: int with get, set
     abstract ``type``: TaskAgentJobStepType with get, set
 
 type [<RequireQualifiedAccess>] TaskAgentJobStepType =
@@ -1039,7 +1039,7 @@ type [<AllowNullLiteral>] TaskAgentMessage =
     /// Gets or sets the initialization vector used to encrypt this message.
     abstract iv: ResizeArray<float> with get, set
     /// Gets or sets the message identifier.
-    abstract messageId: float with get, set
+    abstract messageId: int with get, set
     /// Gets or sets the message type, describing the data contract found in \<c\>TaskAgentMessage.Body\</c\>.
     abstract messageType: string with get, set
 
@@ -1053,7 +1053,7 @@ type [<AllowNullLiteral>] TaskAgentMinAgentVersionRequiredUpdate =
 type [<AllowNullLiteral>] TaskAgentPool =
     inherit TaskAgentPoolReference
     /// The ID of the associated agent cloud.
-    abstract agentCloudId: float with get, set
+    abstract agentCloudId: int with get, set
     /// Whether or not a queue should be automatically provisioned for each project collection.
     abstract autoProvision: bool with get, set
     /// Whether or not the pool should autosize itself based on the Agent Cloud Provider settings.
@@ -1066,7 +1066,7 @@ type [<AllowNullLiteral>] TaskAgentPool =
     abstract owner: WebApi.IdentityRef with get, set
     abstract properties: obj option with get, set
     /// Target parallelism.
-    abstract targetSize: float with get, set
+    abstract targetSize: int with get, set
 
 type [<RequireQualifiedAccess>] TaskAgentPoolActionFilter =
     | None = 0
@@ -1077,11 +1077,11 @@ type [<AllowNullLiteral>] TaskAgentPoolMaintenanceDefinition =
     /// Enable maintenance
     abstract enabled: bool with get, set
     /// Id
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Maintenance job timeout per agent
-    abstract jobTimeoutInMinutes: float with get, set
+    abstract jobTimeoutInMinutes: int with get, set
     /// Max percentage of agents within a pool running maintenance job at given time
-    abstract maxConcurrentAgentsPercentage: float with get, set
+    abstract maxConcurrentAgentsPercentage: int with get, set
     abstract options: TaskAgentPoolMaintenanceOptions with get, set
     /// Pool reference for the maintenance definition
     abstract pool: TaskAgentPoolReference with get, set
@@ -1090,13 +1090,13 @@ type [<AllowNullLiteral>] TaskAgentPoolMaintenanceDefinition =
 
 type [<AllowNullLiteral>] TaskAgentPoolMaintenanceJob =
     /// The maintenance definition for the maintenance job
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     /// The total error counts during the maintenance job
-    abstract errorCount: float with get, set
+    abstract errorCount: int with get, set
     /// Time that the maintenance job was completed
     abstract finishTime: DateTime with get, set
     /// Id of the maintenance job
-    abstract jobId: float with get, set
+    abstract jobId: int with get, set
     /// The log download url for the maintenance job
     abstract logsDownloadUrl: string with get, set
     /// Orchestration/Plan Id for the maintenance job
@@ -1115,7 +1115,7 @@ type [<AllowNullLiteral>] TaskAgentPoolMaintenanceJob =
     abstract status: TaskAgentPoolMaintenanceJobStatus with get, set
     abstract targetAgents: ResizeArray<TaskAgentPoolMaintenanceJobTargetAgent> with get, set
     /// The total warning counts during the maintenance job
-    abstract warningCount: float with get, set
+    abstract warningCount: int with get, set
 
 type [<RequireQualifiedAccess>] TaskAgentPoolMaintenanceJobResult =
     | Succeeded = 1
@@ -1130,17 +1130,17 @@ type [<RequireQualifiedAccess>] TaskAgentPoolMaintenanceJobStatus =
 
 type [<AllowNullLiteral>] TaskAgentPoolMaintenanceJobTargetAgent =
     abstract agent: TaskAgentReference with get, set
-    abstract jobId: float with get, set
+    abstract jobId: int with get, set
     abstract result: TaskAgentPoolMaintenanceJobResult with get, set
     abstract status: TaskAgentPoolMaintenanceJobStatus with get, set
 
 type [<AllowNullLiteral>] TaskAgentPoolMaintenanceOptions =
     /// time to consider a System.DefaultWorkingDirectory is stale
-    abstract workingDirectoryExpirationInDays: float with get, set
+    abstract workingDirectoryExpirationInDays: int with get, set
 
 type [<AllowNullLiteral>] TaskAgentPoolMaintenanceRetentionPolicy =
     /// Number of records to keep for maintenance job executed with this definition.
-    abstract numberOfHistoryRecordsToKeep: float with get, set
+    abstract numberOfHistoryRecordsToKeep: int with get, set
 
 type [<AllowNullLiteral>] TaskAgentPoolMaintenanceSchedule =
     /// Days for a build (flags enum for days of the week)
@@ -1148,9 +1148,9 @@ type [<AllowNullLiteral>] TaskAgentPoolMaintenanceSchedule =
     /// The Job Id of the Scheduled job that will queue the pool maintenance job.
     abstract scheduleJobId: string with get, set
     /// Local timezone hour to start
-    abstract startHours: float with get, set
+    abstract startHours: int with get, set
     /// Local timezone minute to start
-    abstract startMinutes: float with get, set
+    abstract startMinutes: int with get, set
     /// Time zone of the build schedule (string representation of the time zone id)
     abstract timeZoneId: string with get, set
 
@@ -1166,7 +1166,7 @@ type [<RequireQualifiedAccess>] TaskAgentPoolMaintenanceScheduleDays =
     | All = 127
 
 type [<AllowNullLiteral>] TaskAgentPoolReference =
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets a value indicating whether or not this pool is managed by the service.
     abstract isHosted: bool with get, set
     /// Determines whether the pool is legacy.
@@ -1176,16 +1176,16 @@ type [<AllowNullLiteral>] TaskAgentPoolReference =
     abstract poolType: TaskAgentPoolType with get, set
     abstract scope: string with get, set
     /// Gets the current size of the pool.
-    abstract size: float with get, set
+    abstract size: int with get, set
 
 type [<AllowNullLiteral>] TaskAgentPoolStatus =
     inherit TaskAgentPoolReference
     /// Number of requests queued and assigned to an agent. Not running yet.
-    abstract assignedRequestCount: float with get, set
+    abstract assignedRequestCount: int with get, set
     /// Number of queued requests which are not assigned to any agents
-    abstract queuedRequestCount: float with get, set
+    abstract queuedRequestCount: int with get, set
     /// Number of currently running requests
-    abstract runningRequestCount: float with get, set
+    abstract runningRequestCount: int with get, set
 
 type [<AllowNullLiteral>] TaskAgentPoolSummary =
     abstract columnsHeader: MetricsColumnsHeader with get, set
@@ -1208,7 +1208,7 @@ type [<AllowNullLiteral>] TaskAgentPublicKey =
 /// An agent queue.
 type [<AllowNullLiteral>] TaskAgentQueue =
     /// ID of the queue
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the queue
     abstract name: string with get, set
     /// Pool reference for this queue
@@ -1229,7 +1229,7 @@ type [<AllowNullLiteral>] TaskAgentReference =
     /// Whether or not this agent should run jobs.
     abstract enabled: bool with get, set
     /// Identifier of the agent.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the agent.
     abstract name: string with get, set
     /// Agent OS.
@@ -1412,7 +1412,7 @@ type [<AllowNullLiteral>] TaskGroup =
     /// Gets or sets parent task group Id. This is used while creating a draft task group.
     abstract parentDefinitionId: string with get, set
     /// Gets or sets revision.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Gets or sets the tasks.
     abstract tasks: ResizeArray<TaskGroupStep> with get, set
 
@@ -1460,7 +1460,7 @@ type [<AllowNullLiteral>] TaskGroupPublishPreviewParameter =
     /// Denotes if task group is in preview
     abstract preview: bool with get, set
     /// This is the revision of task group that is getting published
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// This is the version of task group that is getting published
     abstract version: TaskVersion with get, set
 
@@ -1478,9 +1478,9 @@ type [<AllowNullLiteral>] TaskGroupRevision =
     abstract changedDate: DateTime with get, set
     abstract changeType: AuditAction with get, set
     abstract comment: string with get, set
-    abstract fileId: float with get, set
-    abstract majorVersion: float with get, set
-    abstract revision: float with get, set
+    abstract fileId: int with get, set
+    abstract majorVersion: int with get, set
+    abstract revision: int with get, set
     abstract taskGroupId: string with get, set
 
 /// Represents tasks in the task group.
@@ -1502,7 +1502,7 @@ type [<AllowNullLiteral>] TaskGroupStep =
     /// Gets or sets the reference of the task.
     abstract task: TaskDefinitionReference with get, set
     /// Gets or sets the maximum time, in minutes, that a task is allowed to execute on agent before being cancelled by server. A zero value indicates an infinite timeout.
-    abstract timeoutInMinutes: float with get, set
+    abstract timeoutInMinutes: int with get, set
 
 type [<AllowNullLiteral>] TaskGroupUpdateParameter =
     /// Sets author name of the task group.
@@ -1528,7 +1528,7 @@ type [<AllowNullLiteral>] TaskGroupUpdateParameter =
     /// Gets or sets parent task group Id. This is used while creating a draft task group.
     abstract parentDefinitionId: string with get, set
     /// Sets revision of the task group.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Sets RunsOn of the task group. Value can be 'Agent', 'Server' or 'DeploymentGroup'.
     abstract runsOn: ResizeArray<string> with get, set
     /// Sets tasks for the task group.
@@ -1541,23 +1541,23 @@ type [<AllowNullLiteral>] TaskGroupUpdatePropertiesBase =
     abstract comment: string with get, set
 
 type [<AllowNullLiteral>] TaskHubLicenseDetails =
-    abstract enterpriseUsersCount: float with get, set
+    abstract enterpriseUsersCount: int with get, set
     abstract failedToReachAllProviders: bool with get, set
-    abstract freeHostedLicenseCount: float with get, set
-    abstract freeLicenseCount: float with get, set
+    abstract freeHostedLicenseCount: int with get, set
+    abstract freeLicenseCount: int with get, set
     abstract hasLicenseCountEverUpdated: bool with get, set
-    abstract hostedAgentMinutesFreeCount: float with get, set
-    abstract hostedAgentMinutesUsedCount: float with get, set
+    abstract hostedAgentMinutesFreeCount: int with get, set
+    abstract hostedAgentMinutesUsedCount: int with get, set
     abstract hostedLicensesArePremium: bool with get, set
     abstract marketplacePurchasedHostedLicenses: ResizeArray<MarketplacePurchasedLicense> with get, set
-    abstract msdnUsersCount: float with get, set
+    abstract msdnUsersCount: int with get, set
     /// Microsoft-hosted licenses purchased from VSTS directly.
-    abstract purchasedHostedLicenseCount: float with get, set
+    abstract purchasedHostedLicenseCount: int with get, set
     /// Self-hosted licenses purchased from VSTS directly.
-    abstract purchasedLicenseCount: float with get, set
-    abstract totalHostedLicenseCount: float with get, set
-    abstract totalLicenseCount: float with get, set
-    abstract totalPrivateLicenseCount: float with get, set
+    abstract purchasedLicenseCount: int with get, set
+    abstract totalHostedLicenseCount: int with get, set
+    abstract totalLicenseCount: int with get, set
+    abstract totalPrivateLicenseCount: int with get, set
 
 type [<AllowNullLiteral>] TaskInputDefinition =
     inherit DistributedTaskCommon.TaskInputDefinitionBase
@@ -1572,18 +1572,18 @@ type [<AllowNullLiteral>] TaskInstance =
     abstract environment: AuthenticationSchemeReferenceInputs with get, set
     abstract instanceId: string with get, set
     abstract refName: string with get, set
-    abstract timeoutInMinutes: float with get, set
+    abstract timeoutInMinutes: int with get, set
 
 type [<AllowNullLiteral>] TaskLog =
     inherit TaskLogReference
     abstract createdOn: DateTime with get, set
     abstract indexLocation: string with get, set
     abstract lastChangedOn: DateTime with get, set
-    abstract lineCount: float with get, set
+    abstract lineCount: int with get, set
     abstract path: string with get, set
 
 type [<AllowNullLiteral>] TaskLogReference =
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract location: string with get, set
 
 type [<AllowNullLiteral>] TaskOrchestrationContainer =
@@ -1591,7 +1591,7 @@ type [<AllowNullLiteral>] TaskOrchestrationContainer =
     abstract children: ResizeArray<TaskOrchestrationItem> with get, set
     abstract continueOnError: bool with get, set
     abstract data: AuthenticationSchemeReferenceInputs with get, set
-    abstract maxConcurrency: float with get, set
+    abstract maxConcurrency: int with get, set
     abstract ``parallel``: bool with get, set
     abstract rollback: TaskOrchestrationContainer with get, set
 
@@ -1616,7 +1616,7 @@ type [<AllowNullLiteral>] TaskOrchestrationJob =
 
 type [<AllowNullLiteral>] TaskOrchestrationOwner =
     abstract _links: obj option with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract name: string with get, set
 
 type [<AllowNullLiteral>] TaskOrchestrationPlan =
@@ -1639,7 +1639,7 @@ type [<AllowNullLiteral>] TaskOrchestrationPlanGroup =
     abstract runningRequests: ResizeArray<TaskAgentJobRequest> with get, set
 
 type [<AllowNullLiteral>] TaskOrchestrationPlanGroupsQueueMetrics =
-    abstract count: float with get, set
+    abstract count: int with get, set
     abstract status: PlanGroupStatus with get, set
 
 type [<AllowNullLiteral>] TaskOrchestrationPlanReference =
@@ -1651,7 +1651,7 @@ type [<AllowNullLiteral>] TaskOrchestrationPlanReference =
     abstract planId: string with get, set
     abstract planType: string with get, set
     abstract scopeIdentifier: string with get, set
-    abstract version: float with get, set
+    abstract version: int with get, set
 
 type [<RequireQualifiedAccess>] TaskOrchestrationPlanState =
     | InProgress = 1
@@ -1665,8 +1665,8 @@ type [<AllowNullLiteral>] TaskOrchestrationQueuedPlan =
     abstract owner: TaskOrchestrationOwner with get, set
     abstract planGroup: string with get, set
     abstract planId: string with get, set
-    abstract poolId: float with get, set
-    abstract queuePosition: float with get, set
+    abstract poolId: int with get, set
+    abstract queuePosition: int with get, set
     abstract queueTime: DateTime with get, set
     abstract scopeIdentifier: string with get, set
 
@@ -1676,7 +1676,7 @@ type [<AllowNullLiteral>] TaskOrchestrationQueuedPlanGroup =
     abstract planGroup: string with get, set
     abstract plans: ResizeArray<TaskOrchestrationQueuedPlan> with get, set
     abstract project: ProjectReference with get, set
-    abstract queuePosition: float with get, set
+    abstract queuePosition: int with get, set
 
 type [<AllowNullLiteral>] TaskOutputVariable =
     abstract description: string with get, set
@@ -1712,9 +1712,9 @@ type [<AllowNullLiteral>] TaskStartedEvent =
 
 type [<AllowNullLiteral>] TaskVersion =
     abstract isTest: bool with get, set
-    abstract major: float with get, set
-    abstract minor: float with get, set
-    abstract patch: float with get, set
+    abstract major: int with get, set
+    abstract minor: int with get, set
+    abstract patch: int with get, set
 
 type [<AllowNullLiteral>] Timeline =
     inherit TimelineReference
@@ -1724,7 +1724,7 @@ type [<AllowNullLiteral>] Timeline =
 
 type [<AllowNullLiteral>] TimelineAttempt =
     /// Gets or sets the attempt of the record.
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// Gets or sets the unique identifier for the record.
     abstract identifier: string with get, set
     /// Gets or sets the record identifier located within the specified timeline.
@@ -1734,11 +1734,11 @@ type [<AllowNullLiteral>] TimelineAttempt =
 
 type [<AllowNullLiteral>] TimelineRecord =
     abstract agentSpecification: obj option with get, set
-    abstract attempt: float with get, set
-    abstract changeId: float with get, set
+    abstract attempt: int with get, set
+    abstract changeId: int with get, set
     abstract currentOperation: string with get, set
     abstract details: TimelineReference with get, set
-    abstract errorCount: float with get, set
+    abstract errorCount: int with get, set
     abstract finishTime: DateTime with get, set
     abstract id: string with get, set
     abstract identifier: string with get, set
@@ -1747,11 +1747,11 @@ type [<AllowNullLiteral>] TimelineRecord =
     abstract location: string with get, set
     abstract log: TaskLogReference with get, set
     abstract name: string with get, set
-    abstract order: float with get, set
+    abstract order: int with get, set
     abstract parentId: string with get, set
-    abstract percentComplete: float with get, set
+    abstract percentComplete: int with get, set
     abstract previousAttempts: ResizeArray<TimelineAttempt> with get, set
-    abstract queueId: float with get, set
+    abstract queueId: int with get, set
     abstract refName: string with get, set
     abstract result: TaskResult with get, set
     abstract resultCode: string with get, set
@@ -1760,13 +1760,13 @@ type [<AllowNullLiteral>] TimelineRecord =
     abstract task: TaskReference with get, set
     abstract ``type``: string with get, set
     abstract variables: TimelineRecordVariables with get, set
-    abstract warningCount: float with get, set
+    abstract warningCount: int with get, set
     abstract workerName: string with get, set
 
 type [<AllowNullLiteral>] TimelineRecordFeedLinesWrapper =
-    abstract count: float with get, set
-    abstract endLine: float with get, set
-    abstract startLine: float with get, set
+    abstract count: int with get, set
+    abstract endLine: int with get, set
+    abstract startLine: int with get, set
     abstract stepId: string with get, set
     abstract value: ResizeArray<string> with get, set
 
@@ -1776,7 +1776,7 @@ type [<RequireQualifiedAccess>] TimelineRecordState =
     | Completed = 2
 
 type [<AllowNullLiteral>] TimelineReference =
-    abstract changeId: float with get, set
+    abstract changeId: int with get, set
     abstract id: string with get, set
     abstract location: string with get, set
 
@@ -1799,7 +1799,7 @@ type [<AllowNullLiteral>] VariableGroup =
     /// Gets or sets description of the variable group.
     abstract description: string with get, set
     /// Gets or sets id of the variable group.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Indicates whether variable group is shared with other projects or not.
     abstract isShared: bool with get, set
     /// Gets or sets the identity who modified the variable group.
@@ -1858,12 +1858,12 @@ type [<AllowNullLiteral>] VariableValue =
 
 type [<AllowNullLiteral>] VirtualMachine =
     abstract agent: TaskAgent with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract tags: ResizeArray<string> with get, set
 
 type [<AllowNullLiteral>] VirtualMachineGroup =
     inherit EnvironmentResource
-    abstract poolId: float with get, set
+    abstract poolId: int with get, set
 
 type [<AllowNullLiteral>] VirtualMachineGroupCreateParameters =
     abstract name: string with get, set

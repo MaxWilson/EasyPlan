@@ -65,7 +65,7 @@ type [<AllowNullLiteral>] AzureRestApiRequestModel =
     /// Gets or sets the asset id
     abstract assetId: string with get, set
     /// Gets or sets the asset version
-    abstract assetVersion: float with get, set
+    abstract assetVersion: int with get, set
     /// Gets or sets the customer support email
     abstract customerSupportEmail: string with get, set
     /// Gets or sets the integration contact email
@@ -93,7 +93,7 @@ type [<AllowNullLiteral>] CategoryLanguageTitle =
     /// The language for which the title is applicable
     abstract lang: string with get, set
     /// The language culture id of the lang parameter
-    abstract lcid: float with get, set
+    abstract lcid: int with get, set
     /// Actual title to be shown on the UI
     abstract title: string with get, set
 
@@ -127,23 +127,23 @@ type [<RequireQualifiedAccess>] DraftStateType =
 
 type [<AllowNullLiteral>] EventCounts =
     /// Average rating on the day for extension
-    abstract averageRating: float with get, set
+    abstract averageRating: int with get, set
     /// Number of times the extension was bought in hosted scenario (applies only to VSTS extensions)
-    abstract buyCount: float with get, set
+    abstract buyCount: int with get, set
     /// Number of times the extension was bought in connected scenario (applies only to VSTS extensions)
-    abstract connectedBuyCount: float with get, set
+    abstract connectedBuyCount: int with get, set
     /// Number of times the extension was installed in connected scenario (applies only to VSTS extensions)
-    abstract connectedInstallCount: float with get, set
+    abstract connectedInstallCount: int with get, set
     /// Number of times the extension was installed
-    abstract installCount: float with get, set
+    abstract installCount: int with get, set
     /// Number of times the extension was installed as a trial (applies only to VSTS extensions)
-    abstract tryCount: float with get, set
+    abstract tryCount: int with get, set
     /// Number of times the extension was uninstalled (applies only to VSTS extensions)
-    abstract uninstallCount: float with get, set
+    abstract uninstallCount: int with get, set
     /// Number of times the extension was downloaded (applies to VSTS extensions and VSCode marketplace click installs)
-    abstract webDownloadCount: float with get, set
+    abstract webDownloadCount: int with get, set
     /// Number of detail page views
-    abstract webPageViews: float with get, set
+    abstract webPageViews: int with get, set
 
 /// Contract for handling the extension acquisition process
 type [<AllowNullLiteral>] ExtensionAcquisitionRequest =
@@ -158,7 +158,7 @@ type [<AllowNullLiteral>] ExtensionAcquisitionRequest =
     /// Additional properties which can be added to the request.
     abstract properties: obj option with get, set
     /// How many licenses should be purchased
-    abstract quantity: float with get, set
+    abstract quantity: int with get, set
     /// A list of target guids where the item should be acquired (installed, requested, etc.), such as account id
     abstract targets: ResizeArray<string> with get, set
 
@@ -170,7 +170,7 @@ type [<AllowNullLiteral>] ExtensionBadge =
 type [<AllowNullLiteral>] ExtensionCategory =
     /// The name of the products with which this category is associated to.
     abstract associatedProducts: ResizeArray<string> with get, set
-    abstract categoryId: float with get, set
+    abstract categoryId: int with get, set
     /// This is the internal name for a category
     abstract categoryName: string with get, set
     /// This parameter is obsolete. Refer to LanguageTitles for langauge specific titles
@@ -200,7 +200,7 @@ type [<AllowNullLiteral>] ExtensionDailyStats =
     /// Name of the publisher
     abstract publisherName: string with get, set
     /// Count of stats
-    abstract statCount: float with get, set
+    abstract statCount: int with get, set
 
 type [<RequireQualifiedAccess>] ExtensionDeploymentTechnology =
     | Exe = 1
@@ -231,7 +231,7 @@ type [<AllowNullLiteral>] ExtensionDraftPatch =
 /// Stores details of each event
 type [<AllowNullLiteral>] ExtensionEvent =
     /// Id which identifies each data point uniquely
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract properties: obj option with get, set
     /// Timestamp of when the event occurred
     abstract statisticDate: DateTime with get, set
@@ -381,7 +381,7 @@ type [<AllowNullLiteral>] ExtensionShare =
 
 type [<AllowNullLiteral>] ExtensionStatistic =
     abstract statisticName: string with get, set
-    abstract value: float with get, set
+    abstract value: int with get, set
 
 type [<RequireQualifiedAccess>] ExtensionStatisticOperation =
     | None = 0
@@ -417,7 +417,7 @@ type [<RequireQualifiedAccess>] ExtensionVersionFlags =
 
 /// One condition in a QueryFilter.
 type [<AllowNullLiteral>] FilterCriteria =
-    abstract filterType: float with get, set
+    abstract filterType: int with get, set
     /// The value used in the match based on the filter type.
     abstract value: string with get, set
 
@@ -428,7 +428,7 @@ type [<AllowNullLiteral>] InstallationTarget =
 /// MetadataItem is one value of metadata under a given category of metadata
 type [<AllowNullLiteral>] MetadataItem =
     /// The count of the metadata item
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// The name of the metadata item
     abstract name: string with get, set
 
@@ -586,9 +586,9 @@ type [<AllowNullLiteral>] PublisherRoleAssignment =
 
 type [<AllowNullLiteral>] PublisherSecurityRole =
     /// Permissions the role is allowed.
-    abstract allowPermissions: float with get, set
+    abstract allowPermissions: int with get, set
     /// Permissions the role is denied.
-    abstract denyPermissions: float with get, set
+    abstract denyPermissions: int with get, set
     /// Description of user access defined by the role
     abstract description: string with get, set
     /// User friendly name of the role.
@@ -620,7 +620,7 @@ type [<AllowNullLiteral>] QnAItem =
     /// Time when the review was first created
     abstract createdDate: DateTime with get, set
     /// Unique identifier of a QnA item
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Get status of item
     abstract status: QnAItemStatus with get, set
     /// Text description of the QnA item
@@ -642,15 +642,15 @@ type [<AllowNullLiteral>] QueryFilter =
     /// The PagingDirection is applied to a paging token if one exists. If not the direction is ignored, and Forward from the start of the resultset is used. Direction should be left out of the request unless a paging token is used to help prevent future issues.
     abstract direction: PagingDirection with get, set
     /// The page number requested by the user. If not provided 1 is assumed by default.
-    abstract pageNumber: float with get, set
+    abstract pageNumber: int with get, set
     /// The page size defines the number of results the caller wants for this filter. The count can't exceed the overall query size limits.
-    abstract pageSize: float with get, set
+    abstract pageSize: int with get, set
     /// The paging token is a distinct type of filter and the other filter fields are ignored. The paging token represents the continuation of a previously executed query. The information about where in the result and what fields are being filtered are embeded in the token.
     abstract pagingToken: string with get, set
     /// Defines the type of sorting to be applied on the results. The page slice is cut of the sorted results only.
-    abstract sortBy: float with get, set
+    abstract sortBy: int with get, set
     /// Defines the order of sorting, 1 for Ascending, 2 for Descending, else default ordering based on the SortBy value
-    abstract sortOrder: float with get, set
+    abstract sortOrder: int with get, set
 
 /// The structure of the question / thread
 type [<AllowNullLiteral>] Question =
@@ -666,9 +666,9 @@ type [<AllowNullLiteral>] QuestionsResult =
 
 type [<AllowNullLiteral>] RatingCountPerRating =
     /// Rating value
-    abstract rating: float with get, set
+    abstract rating: int with get, set
     /// Count of total ratings
-    abstract ratingCount: float with get, set
+    abstract ratingCount: int with get, set
 
 /// The structure of a response
 type [<AllowNullLiteral>] Response =
@@ -687,7 +687,7 @@ type [<AllowNullLiteral>] RestApiResponseStatusModel =
     /// Gets or sets the operation id
     abstract operationId: string with get, set
     /// Gets or sets the completed status percentage
-    abstract percentageCompleted: float with get, set
+    abstract percentageCompleted: int with get, set
     /// Gets or sets the status
     abstract status: RestApiResponseStatus with get, set
     /// Gets or sets the status message
@@ -697,14 +697,14 @@ type [<AllowNullLiteral>] Review =
     /// Admin Reply, if any, for this review
     abstract adminReply: ReviewReply with get, set
     /// Unique identifier of a review item
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Flag for soft deletion
     abstract isDeleted: bool with get, set
     abstract isIgnored: bool with get, set
     /// Version of the product for which review was submitted
     abstract productVersion: string with get, set
     /// Rating provided by the user
-    abstract rating: float with get, set
+    abstract rating: int with get, set
     /// Reply, if any, for this review
     abstract reply: ReviewReply with get, set
     /// Text description of the review
@@ -732,7 +732,7 @@ type [<AllowNullLiteral>] ReviewEventProperties =
     /// Flag to record if the review is ignored
     abstract isIgnored: bool with get, set
     /// Rating at the time of event
-    abstract rating: float with get, set
+    abstract rating: int with get, set
     /// Reply update date
     abstract replyDate: DateTime with get, set
     /// Publisher reply text or admin reply text
@@ -744,7 +744,7 @@ type [<AllowNullLiteral>] ReviewEventProperties =
     /// Review update date
     abstract reviewDate: DateTime with get, set
     /// ReviewId of the review  on which the operation is performed
-    abstract reviewId: float with get, set
+    abstract reviewId: int with get, set
     /// Text in Review Text
     abstract reviewText: string with get, set
     /// User display name at the time of review
@@ -775,7 +775,7 @@ type [<RequireQualifiedAccess>] ReviewPatchOperation =
 
 type [<AllowNullLiteral>] ReviewReply =
     /// Id of the reply
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Flag for soft deletion
     abstract isDeleted: bool with get, set
     /// Version of the product when the reply was submitted or updated
@@ -783,7 +783,7 @@ type [<AllowNullLiteral>] ReviewReply =
     /// Content of the reply
     abstract replyText: string with get, set
     /// Id of the review, to which this reply belongs
-    abstract reviewId: float with get, set
+    abstract reviewId: int with get, set
     /// Title of the reply
     abstract title: string with get, set
     /// Date the reply was submitted or updated
@@ -802,13 +802,13 @@ type [<AllowNullLiteral>] ReviewsResult =
     /// List of reviews
     abstract reviews: ResizeArray<Review> with get, set
     /// Count of total review items
-    abstract totalReviewCount: float with get, set
+    abstract totalReviewCount: int with get, set
 
 type [<AllowNullLiteral>] ReviewSummary =
     /// Average Rating
-    abstract averageRating: float with get, set
+    abstract averageRating: int with get, set
     /// Count of total ratings
-    abstract ratingCount: float with get, set
+    abstract ratingCount: int with get, set
     /// Split of count across rating
     abstract ratingSplit: ResizeArray<RatingCountPerRating> with get, set
 
@@ -873,7 +873,7 @@ type [<AllowNullLiteral>] UserReportedConcern =
     /// User comment associated with the report
     abstract concernText: string with get, set
     /// Id of the review which was reported
-    abstract reviewId: float with get, set
+    abstract reviewId: int with get, set
     /// Date the report was submitted
     abstract submittedDate: DateTime with get, set
     /// Id of the user who reported a review

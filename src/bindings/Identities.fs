@@ -16,13 +16,13 @@ type [<AllowNullLiteral>] ChangedIdentities =
 /// Context class for changed identities
 type [<AllowNullLiteral>] ChangedIdentitiesContext =
     /// Last Group SequenceId
-    abstract groupSequenceId: float with get, set
+    abstract groupSequenceId: int with get, set
     /// Last Identity SequenceId
-    abstract identitySequenceId: float with get, set
+    abstract identitySequenceId: int with get, set
     /// Last Group OrganizationIdentitySequenceId
-    abstract organizationIdentitySequenceId: float with get, set
+    abstract organizationIdentitySequenceId: int with get, set
     /// Page size
-    abstract pageSize: float with get, set
+    abstract pageSize: int with get, set
 
 type [<AllowNullLiteral>] CreateScopeInfo =
     abstract adminGroupDescription: string with get, set
@@ -70,14 +70,14 @@ type [<AllowNullLiteral>] IdentityBase =
     abstract memberIds: ResizeArray<string> with get, set
     abstract memberOf: ResizeArray<IdentityDescriptor> with get, set
     abstract members: ResizeArray<IdentityDescriptor> with get, set
-    abstract metaTypeId: float with get, set
+    abstract metaTypeId: int with get, set
     abstract properties: obj option with get, set
     /// The display name for the identity as specified by the source identity provider.
     abstract providerDisplayName: string with get, set
-    abstract resourceVersion: float with get, set
+    abstract resourceVersion: int with get, set
     abstract socialDescriptor: string with get, set
     abstract subjectDescriptor: string with get, set
-    abstract uniqueUserId: float with get, set
+    abstract uniqueUserId: int with get, set
 
 type [<AllowNullLiteral>] IdentityBatchInfo =
     abstract descriptors: ResizeArray<IdentityDescriptor> with get, set
@@ -136,7 +136,7 @@ type [<AllowNullLiteral>] IdentitySnapshot =
 
 type [<AllowNullLiteral>] IdentityUpdateData =
     abstract id: string with get, set
-    abstract index: float with get, set
+    abstract index: int with get, set
     abstract updated: bool with get, set
 
 type [<AllowNullLiteral>] PagedIdentities =

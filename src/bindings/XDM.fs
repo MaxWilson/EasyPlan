@@ -62,7 +62,7 @@ type [<AllowNullLiteral>] ISerializationSettings =
 
 /// Represents a remote procedure call (rpc) between frames.
 type [<AllowNullLiteral>] IJsonRpcMessage =
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract instanceId: string option with get, set
     abstract instanceContext: Object option with get, set
     abstract methodName: string option with get, set

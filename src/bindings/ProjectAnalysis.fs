@@ -10,35 +10,35 @@ type [<RequireQualifiedAccess>] AggregationType =
 type [<AllowNullLiteral>] AnalyzerDescriptor =
     abstract description: string with get, set
     abstract id: string with get, set
-    abstract majorVersion: float with get, set
-    abstract minorVersion: float with get, set
+    abstract majorVersion: int with get, set
+    abstract minorVersion: int with get, set
     abstract name: string with get, set
-    abstract patchVersion: float with get, set
+    abstract patchVersion: int with get, set
 
 type [<AllowNullLiteral>] CodeChangeTrendItem =
     abstract time: DateTime with get, set
-    abstract value: float with get, set
+    abstract value: int with get, set
 
 type [<AllowNullLiteral>] LanguageMetricsSecuredObject =
     abstract namespaceId: string with get, set
     abstract projectId: string with get, set
-    abstract requiredPermissions: float with get, set
+    abstract requiredPermissions: int with get, set
 
 type [<AllowNullLiteral>] LanguageStatistics =
     inherit LanguageMetricsSecuredObject
-    abstract bytes: float with get, set
-    abstract files: float with get, set
-    abstract filesPercentage: float with get, set
-    abstract languagePercentage: float with get, set
+    abstract bytes: int with get, set
+    abstract files: int with get, set
+    abstract filesPercentage: int with get, set
+    abstract languagePercentage: int with get, set
     abstract name: string with get, set
 
 type [<AllowNullLiteral>] ProjectActivityMetrics =
-    abstract authorsCount: float with get, set
-    abstract codeChangesCount: float with get, set
+    abstract authorsCount: int with get, set
+    abstract codeChangesCount: int with get, set
     abstract codeChangesTrend: ResizeArray<CodeChangeTrendItem> with get, set
     abstract projectId: string with get, set
-    abstract pullRequestsCompletedCount: float with get, set
-    abstract pullRequestsCreatedCount: float with get, set
+    abstract pullRequestsCompletedCount: int with get, set
+    abstract pullRequestsCreatedCount: int with get, set
 
 type [<AllowNullLiteral>] ProjectLanguageAnalytics =
     inherit LanguageMetricsSecuredObject
@@ -49,7 +49,7 @@ type [<AllowNullLiteral>] ProjectLanguageAnalytics =
     abstract url: string with get, set
 
 type [<AllowNullLiteral>] RepositoryActivityMetrics =
-    abstract codeChangesCount: float with get, set
+    abstract codeChangesCount: int with get, set
     abstract codeChangesTrend: ResizeArray<CodeChangeTrendItem> with get, set
     abstract repositoryId: string with get, set
 

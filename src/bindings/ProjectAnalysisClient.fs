@@ -23,7 +23,7 @@ type [<AllowNullLiteral>] ProjectAnalysisRestClient =
     /// <param name="aggregationType">- Bucket size on which, trends are to be aggregated.</param>
     /// <param name="skip">- The number of repositories to ignore.</param>
     /// <param name="top">- The number of repositories for which activity metrics are to be retrieved.</param>
-    abstract getGitRepositoriesActivityMetrics: project: string * fromDate: DateTime * aggregationType: ProjectAnalysis.AggregationType * skip: float * top: float -> Promise<ResizeArray<ProjectAnalysis.RepositoryActivityMetrics>>
+    abstract getGitRepositoriesActivityMetrics: project: string * fromDate: DateTime * aggregationType: ProjectAnalysis.AggregationType * skip: int * top: int -> Promise<ResizeArray<ProjectAnalysis.RepositoryActivityMetrics>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="repositoryId">-</param>
     /// <param name="fromDate">-</param>

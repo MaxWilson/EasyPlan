@@ -24,7 +24,7 @@ type [<AllowNullLiteral>] PolicyConfiguration =
 /// Policy configuration reference.
 type [<AllowNullLiteral>] PolicyConfigurationRef =
     /// The policy configuration ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The policy configuration type.
     abstract ``type``: PolicyTypeRef with get, set
     /// The URL where the policy configuration can be retrieved.
@@ -78,4 +78,4 @@ type [<AllowNullLiteral>] PolicyTypeRef =
 type [<AllowNullLiteral>] VersionedPolicyConfigurationRef =
     inherit PolicyConfigurationRef
     /// The policy configuration revision ID.
-    abstract revision: float with get, set
+    abstract revision: int with get, set

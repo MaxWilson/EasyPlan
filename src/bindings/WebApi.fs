@@ -19,7 +19,7 @@ type [<AllowNullLiteral>] ApiResourceLocation =
     /// Resource name
     abstract resourceName: string with get, set
     /// The current resource version supported by this resource location
-    abstract resourceVersion: float with get, set
+    abstract resourceVersion: int with get, set
     /// This location's route template (templated relative path)
     abstract routeTemplate: string with get, set
 
@@ -30,7 +30,7 @@ type [<AllowNullLiteral>] ApiResourceVersion =
     /// Is the public API version in preview
     abstract isPreview: bool with get, set
     /// Internal resource version. This is defined per-resource and is used to support build-to-build compatibility of API changes within a given (in-preview) public api version. For example, within the TFS 1.0 API release cycle, while it is still in preview, a resource's data structure may be changed. This resource can be versioned such that older clients will still work (requests will be sent to the older version) and new/upgraded clients will talk to the new version of the resource.
-    abstract resourceVersion: float with get, set
+    abstract resourceVersion: int with get, set
 
 type [<RequireQualifiedAccess>] ConnectOptions =
     | None = 0
@@ -162,18 +162,18 @@ type [<AllowNullLiteral>] TeamMember =
 /// A single secured timing consisting of a duration and start time
 type [<AllowNullLiteral>] TimingEntry =
     /// Duration of the entry in ticks
-    abstract elapsedTicks: float with get, set
+    abstract elapsedTicks: int with get, set
     /// Properties to distinguish timings within the same group or to provide data to send with telemetry
     abstract properties: ServiceEventResourceContainers with get, set
     /// Offset from Server Request Context start time in microseconds
-    abstract startOffset: float with get, set
+    abstract startOffset: int with get, set
 
 /// A set of secured performance timings all keyed off of the same string
 type [<AllowNullLiteral>] TimingGroup =
     /// The total number of timing entries associated with this group
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Overall duration of all entries in this group in ticks
-    abstract elapsedTicks: float with get, set
+    abstract elapsedTicks: int with get, set
     /// A list of timing entries in this group. Only the first few entries in each group are collected.
     abstract timings: ResizeArray<TimingEntry> with get, set
 
@@ -183,7 +183,7 @@ type [<AllowNullLiteral>] TraceFilter =
     abstract exceptionType: string with get, set
     abstract isEnabled: bool with get, set
     abstract layer: string with get, set
-    abstract level: float with get, set
+    abstract level: int with get, set
     abstract ``method``: string with get, set
     /// Used to serialize additional identity information (display name, etc) to clients. Not set by default. Server-side callers should use OwnerId.
     abstract owner: IdentityRef with get, set
@@ -194,7 +194,7 @@ type [<AllowNullLiteral>] TraceFilter =
     abstract serviceHost: string with get, set
     abstract timeCreated: DateTime with get, set
     abstract traceId: string with get, set
-    abstract tracepoint: float with get, set
+    abstract tracepoint: int with get, set
     abstract uri: string with get, set
     abstract userAgent: string with get, set
     abstract userLogin: string with get, set
@@ -209,7 +209,7 @@ type [<AllowNullLiteral>] VssJsonCollectionWrapperV<'T> =
     abstract value: 'T with get, set
 
 type [<AllowNullLiteral>] VssJsonCollectionWrapperBase =
-    abstract count: float with get, set
+    abstract count: int with get, set
 
 /// This is the type used for firing notifications intended for the subsystem in the Notifications SDK. For components that can't take a dependency on the Notifications SDK directly, they can use ITeamFoundationEventService.PublishNotification and the Notifications SDK ISubscriber implementation will get it.
 type [<AllowNullLiteral>] VssNotificationEvent =
@@ -234,8 +234,8 @@ type [<AllowNullLiteral>] VssNotificationEvent =
 
 type [<AllowNullLiteral>] WrappedException =
     abstract customProperties: ServiceEventResourceContainers with get, set
-    abstract errorCode: float with get, set
-    abstract eventId: float with get, set
+    abstract errorCode: int with get, set
+    abstract eventId: int with get, set
     abstract helpLink: string with get, set
     abstract innerException: WrappedException with get, set
     abstract message: string with get, set

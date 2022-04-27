@@ -146,7 +146,7 @@ type [<AllowNullLiteral>] WorkRestClient =
     /// <param name="revision">- Revision of the plan for which you want data. If the current plan is a different revision you will get an ViewRevisionMismatchException exception. If you do not supply a revision you will get data for the latest revision.</param>
     /// <param name="startDate">- The start date of timeline</param>
     /// <param name="endDate">- The end date of timeline</param>
-    abstract getDeliveryTimelineData: project: string * id: string * ?revision: float * ?startDate: DateTime * ?endDate: DateTime -> Promise<Work.DeliveryViewData>
+    abstract getDeliveryTimelineData: project: string * id: string * ?revision: int * ?startDate: DateTime * ?endDate: DateTime -> Promise<Work.DeliveryViewData>
     /// <summary>Delete a team's iteration by iterationId</summary>
     /// <param name="teamContext">- The team context for the operation</param>
     /// <param name="id">- ID of the iteration</param>
@@ -207,7 +207,7 @@ type [<AllowNullLiteral>] WorkRestClient =
     /// <param name="teamContext">- The team context for the operation</param>
     /// <param name="iterationId">-</param>
     /// <param name="workItemId">-</param>
-    abstract updateWorkItemColumn: updateColumn: Work.UpdateTaskboardWorkItemColumn * teamContext: Core.TeamContext * iterationId: string * workItemId: float -> Promise<unit>
+    abstract updateWorkItemColumn: updateColumn: Work.UpdateTaskboardWorkItemColumn * teamContext: Core.TeamContext * iterationId: string * workItemId: int -> Promise<unit>
     /// <summary>Get team's days off for an iteration</summary>
     /// <param name="teamContext">- The team context for the operation</param>
     /// <param name="iterationId">- ID of the iteration</param>

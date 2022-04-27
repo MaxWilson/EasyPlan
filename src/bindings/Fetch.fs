@@ -32,7 +32,7 @@ type [<AllowNullLiteral>] IVssRequestOptions =
 /// An IPreRequestEvent is sent before a fetch request is made.
 type [<AllowNullLiteral>] IPreRequestEvent =
     /// A unique id that can be used to track this particular request (id is unique among all clients)
-    abstract requestId: float with get, set
+    abstract requestId: int with get, set
     /// Url of the request that is about to be issued
     abstract requestUrl: string with get, set
     /// Request settings being used
@@ -43,7 +43,7 @@ type [<AllowNullLiteral>] IPreRequestEvent =
 /// An IPostRequestEvent is sent after a fetch request has completed.
 type [<AllowNullLiteral>] IPostRequestEvent =
     /// A unique id that can be used to track this particular request (id is unique among all clients)
-    abstract requestId: float with get, set
+    abstract requestId: int with get, set
     /// Url of the request that is about to be issued
     abstract requestUrl: string with get, set
     /// The Response returned for this request, if the request fails it will be undefined
@@ -58,7 +58,7 @@ type [<AllowNullLiteral>] IPostRequestEvent =
 type [<ImportMember("Common/Fetch"); AllowNullLiteral; AbstractClass>] VssServerError =
     inherit System.Exception
     /// The status code returned from the server.
-    abstract status: float with get, set
+    abstract status: int with get, set
     /// The raw text that was returned from the server. If any is available.
     abstract responseText: string with get, set
     /// If the response text was sent and it was in the form of a JSON response

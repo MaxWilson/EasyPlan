@@ -18,9 +18,9 @@ type [<AllowNullLiteral>] Dashboard =
     /// ID of the Owner for a dashboard. For any legacy dashboards, this would be the unique identifier for the team associated with the dashboard.
     abstract ownerId: string with get, set
     /// Position of the dashboard, within a dashboard group. If unset at creation time, position is decided by the service.
-    abstract position: float with get, set
+    abstract position: int with get, set
     /// Interval for client to automatically refresh the dashboard. Expressed in minutes.
-    abstract refreshInterval: float with get, set
+    abstract refreshInterval: int with get, set
     abstract url: string with get, set
     /// The set of Widgets on the dashboard.
     abstract widgets: ResizeArray<Widget> with get, set
@@ -60,20 +60,20 @@ type [<RequireQualifiedAccess>] GroupMemberPermission =
 /// Lightbox configuration
 type [<AllowNullLiteral>] LightboxOptions =
     /// Height of desired lightbox, in pixels
-    abstract height: float with get, set
+    abstract height: int with get, set
     /// True to allow lightbox resizing, false to disallow lightbox resizing, defaults to false.
     abstract resizable: bool with get, set
     /// Width of desired lightbox, in pixels
-    abstract width: float with get, set
+    abstract width: int with get, set
 
 /// versioning for an artifact as described at: http://semver.org/, of the form major.minor.patch.
 type [<AllowNullLiteral>] SemanticVersion =
     /// Major version when you make incompatible API changes
-    abstract major: float with get, set
+    abstract major: int with get, set
     /// Minor version when you add functionality in a backwards-compatible manner
-    abstract minor: float with get, set
+    abstract minor: int with get, set
     /// Patch version when you make backwards-compatible bug fixes
-    abstract patch: float with get, set
+    abstract patch: int with get, set
 
 type [<RequireQualifiedAccess>] TeamDashboardPermission =
     | None = 0
@@ -167,8 +167,8 @@ type [<AllowNullLiteral>] WidgetMetadataResponse =
     abstract widgetMetadata: WidgetMetadata with get, set
 
 type [<AllowNullLiteral>] WidgetPosition =
-    abstract column: float with get, set
-    abstract row: float with get, set
+    abstract column: int with get, set
+    abstract row: int with get, set
 
 /// Response from RestAPI when saving and editing Widget
 type [<AllowNullLiteral>] WidgetResponse =
@@ -180,9 +180,9 @@ type [<RequireQualifiedAccess>] WidgetScope =
 
 type [<AllowNullLiteral>] WidgetSize =
     /// The Width of the widget, expressed in dashboard grid columns.
-    abstract columnSpan: float with get, set
+    abstract columnSpan: int with get, set
     /// The height of the widget, expressed in dashboard grid rows.
-    abstract rowSpan: float with get, set
+    abstract rowSpan: int with get, set
 
 /// Wrapper class to support HTTP header generation using CreateResponse, ClientHeaderParameter and ClientResponseType in WidgetV2Controller
 type [<AllowNullLiteral>] WidgetsVersionedList =

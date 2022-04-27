@@ -5,10 +5,10 @@ open Fable.Core
 open Fable.Core.JS
 
 type [<AllowNullLiteral>] AbortTestRunRequest =
-    abstract options: float with get, set
+    abstract options: int with get, set
     abstract projectName: string with get, set
-    abstract revision: float with get, set
-    abstract testRunId: float with get, set
+    abstract revision: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] AfnStrip =
     /// Auxiliary Url to be consumed by MTM
@@ -18,7 +18,7 @@ type [<AllowNullLiteral>] AfnStrip =
     /// File name of the attachment created
     abstract fileName: string with get, set
     /// ID of AfnStrip. This is same as the attachment ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Project identifier which contains AfnStrip
     abstract project: string with get, set
     /// Service in which this attachment is stored in
@@ -26,13 +26,13 @@ type [<AllowNullLiteral>] AfnStrip =
     /// Afn strip stream.
     abstract stream: string with get, set
     /// ID of the testcase.
-    abstract testCaseId: float with get, set
+    abstract testCaseId: int with get, set
     /// Backing test result id.
-    abstract testResultId: float with get, set
+    abstract testResultId: int with get, set
     /// Backing test run id.
-    abstract testRunId: float with get, set
+    abstract testRunId: int with get, set
     /// Byte stream (uncompressed) length of Afn strip.
-    abstract unCompressedStreamLength: float with get, set
+    abstract unCompressedStreamLength: int with get, set
     /// Url of the attachment created.
     abstract url: string with get, set
 
@@ -42,18 +42,18 @@ type [<AllowNullLiteral>] AggregatedDataForResultTrend =
     abstract resultsByOutcome: AggregatedDataForResultTrendResultsByOutcome with get, set
     abstract runSummaryByState: AggregatedDataForResultTrendRunSummaryByState with get, set
     abstract testResultsContext: TestResultsContext with get, set
-    abstract totalTests: float with get, set
+    abstract totalTests: int with get, set
 
 /// Result deatils for a particular test result outcome.
 type [<AllowNullLiteral>] AggregatedResultDetailsByOutcome =
     /// Number of results for current outcome.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Time taken by results.
     abstract duration: obj option with get, set
     /// Test result outcome
     abstract outcome: TestOutcome with get, set
     /// Number of results on rerun
-    abstract rerunResultCount: float with get, set
+    abstract rerunResultCount: int with get, set
 
 type [<AllowNullLiteral>] AggregatedResultsAnalysis =
     abstract duration: obj option with get, set
@@ -63,31 +63,31 @@ type [<AllowNullLiteral>] AggregatedResultsAnalysis =
     abstract resultsDifference: AggregatedResultsDifference with get, set
     abstract runSummaryByOutcome: AggregatedResultsAnalysisRunSummaryByOutcome with get, set
     abstract runSummaryByState: AggregatedDataForResultTrendRunSummaryByState with get, set
-    abstract totalTests: float with get, set
+    abstract totalTests: int with get, set
 
 type [<AllowNullLiteral>] AggregatedResultsByOutcome =
-    abstract count: float with get, set
+    abstract count: int with get, set
     abstract duration: obj option with get, set
     abstract groupByField: string with get, set
     abstract groupByValue: obj option with get, set
     abstract outcome: TestOutcome with get, set
-    abstract rerunResultCount: float with get, set
+    abstract rerunResultCount: int with get, set
 
 type [<AllowNullLiteral>] AggregatedResultsDifference =
     abstract increaseInDuration: obj option with get, set
-    abstract increaseInFailures: float with get, set
-    abstract increaseInNonImpactedTests: float with get, set
-    abstract increaseInOtherTests: float with get, set
-    abstract increaseInPassedTests: float with get, set
-    abstract increaseInTotalTests: float with get, set
+    abstract increaseInFailures: int with get, set
+    abstract increaseInNonImpactedTests: int with get, set
+    abstract increaseInOtherTests: int with get, set
+    abstract increaseInPassedTests: int with get, set
+    abstract increaseInTotalTests: int with get, set
 
 type [<AllowNullLiteral>] AggregatedRunsByOutcome =
     abstract outcome: TestRunOutcome with get, set
-    abstract runsCount: float with get, set
+    abstract runsCount: int with get, set
 
 type [<AllowNullLiteral>] AggregatedRunsByState =
     abstract resultsByOutcome: AggregatedDataForResultTrendResultsByOutcome with get, set
-    abstract runsCount: float with get, set
+    abstract runsCount: int with get, set
     abstract state: TestRunState with get, set
 
 type [<RequireQualifiedAccess>] AttachmentType =
@@ -114,7 +114,7 @@ type [<AllowNullLiteral>] BuildConfiguration =
     /// Branch name for which build is generated.
     abstract branchName: string with get, set
     /// BuildDefinitionId for build.
-    abstract buildDefinitionId: float with get, set
+    abstract buildDefinitionId: int with get, set
     /// Build system.
     abstract buildSystem: string with get, set
     /// Build Creation Date.
@@ -122,7 +122,7 @@ type [<AllowNullLiteral>] BuildConfiguration =
     /// Build flavor (eg Build/Release).
     abstract flavor: string with get, set
     /// BuildConfiguration Id.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Build Number.
     abstract number: string with get, set
     /// BuildConfiguration Platform.
@@ -132,7 +132,7 @@ type [<AllowNullLiteral>] BuildConfiguration =
     /// Repository Guid for the Build.
     abstract repositoryGuid: string with get, set
     /// Repository Id.
-    abstract repositoryId: float with get, set
+    abstract repositoryId: int with get, set
     /// Repository Type (eg. TFSGit).
     abstract repositoryType: string with get, set
     /// Source Version(/first commit) for the build was triggered.
@@ -162,9 +162,9 @@ type [<AllowNullLiteral>] BuildReference =
     /// Build system.
     abstract buildSystem: string with get, set
     /// Build Definition ID.
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     /// Build ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Build Number.
     abstract number: string with get, set
     /// Repository ID.
@@ -174,16 +174,16 @@ type [<AllowNullLiteral>] BuildReference =
 
 type [<AllowNullLiteral>] BuildReference2 =
     abstract branchName: string with get, set
-    abstract buildConfigurationId: float with get, set
-    abstract buildDefinitionId: float with get, set
+    abstract buildConfigurationId: int with get, set
+    abstract buildDefinitionId: int with get, set
     abstract buildDeleted: bool with get, set
     abstract buildFlavor: string with get, set
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
     abstract buildNumber: string with get, set
     abstract buildPlatform: string with get, set
     abstract buildSystem: string with get, set
     abstract buildUri: string with get, set
-    abstract coverageId: float with get, set
+    abstract coverageId: int with get, set
     abstract createdDate: DateTime with get, set
     abstract projectId: string with get, set
     abstract repoId: string with get, set
@@ -211,7 +211,7 @@ type [<AllowNullLiteral>] CloneOperationInformation =
     /// If the operation has Failed, Message contains the reason for failure. Null otherwise.
     abstract message: string with get, set
     /// The ID of the operation
-    abstract opId: float with get, set
+    abstract opId: int with get, set
     /// The type of the object generated as a result of the Clone operation
     abstract resultObjectType: ResultObjectType with get, set
     /// Shallow reference of the source
@@ -249,15 +249,15 @@ type [<AllowNullLiteral>] CloneOptions =
 /// Clone Statistics Details.
 type [<AllowNullLiteral>] CloneStatistics =
     /// Number of requirements cloned so far.
-    abstract clonedRequirementsCount: float with get, set
+    abstract clonedRequirementsCount: int with get, set
     /// Number of shared steps cloned so far.
-    abstract clonedSharedStepsCount: float with get, set
+    abstract clonedSharedStepsCount: int with get, set
     /// Number of test cases cloned so far
-    abstract clonedTestCasesCount: float with get, set
+    abstract clonedTestCasesCount: int with get, set
     /// Total number of requirements to be cloned
-    abstract totalRequirementsCount: float with get, set
+    abstract totalRequirementsCount: int with get, set
     /// Total number of test cases to be cloned
-    abstract totalTestCasesCount: float with get, set
+    abstract totalTestCasesCount: int with get, set
 
 /// Represents the build configuration (platform, flavor) and coverage data for the build
 type [<AllowNullLiteral>] CodeCoverageData =
@@ -271,17 +271,17 @@ type [<AllowNullLiteral>] CodeCoverageData =
 /// Represents the code coverage statistics for a particular coverage label (modules, statements, blocks, etc.)
 type [<AllowNullLiteral>] CodeCoverageStatistics =
     /// Covered units
-    abstract covered: float with get, set
+    abstract covered: int with get, set
     /// Delta of coverage
-    abstract delta: float with get, set
+    abstract delta: int with get, set
     /// Is delta valid
     abstract isDeltaAvailable: bool with get, set
     /// Label of coverage data ("Blocks", "Statements", "Modules", etc.)
     abstract label: string with get, set
     /// Position of label
-    abstract position: float with get, set
+    abstract position: int with get, set
     /// Total units
-    abstract total: float with get, set
+    abstract total: int with get, set
 
 /// Represents the code coverage summary results Used to publish or retrieve code coverage summary against a build
 type [<AllowNullLiteral>] CodeCoverageSummary =
@@ -295,19 +295,19 @@ type [<AllowNullLiteral>] CodeCoverageSummary =
     abstract status: CoverageSummaryStatus with get, set
 
 type [<AllowNullLiteral>] CodeCoverageSummary2 =
-    abstract buildConfigurationId: float with get, set
-    abstract covered: float with get, set
+    abstract buildConfigurationId: int with get, set
+    abstract covered: int with get, set
     abstract label: string with get, set
-    abstract position: float with get, set
+    abstract position: int with get, set
     abstract projectId: string with get, set
-    abstract total: float with get, set
+    abstract total: int with get, set
 
 type [<AllowNullLiteral>] Coverage2 =
-    abstract coverageId: float with get, set
+    abstract coverageId: int with get, set
     abstract dateCreated: DateTime with get, set
     abstract dateModified: DateTime with get, set
     abstract lastError: string with get, set
-    abstract state: float with get, set
+    abstract state: int with get, set
 
 type [<RequireQualifiedAccess>] CoverageQueryFlags =
     | Modules = 1
@@ -315,11 +315,11 @@ type [<RequireQualifiedAccess>] CoverageQueryFlags =
     | BlockData = 4
 
 type [<AllowNullLiteral>] CoverageStatistics =
-    abstract blocksCovered: float with get, set
-    abstract blocksNotCovered: float with get, set
-    abstract linesCovered: float with get, set
-    abstract linesNotCovered: float with get, set
-    abstract linesPartiallyCovered: float with get, set
+    abstract blocksCovered: int with get, set
+    abstract blocksNotCovered: int with get, set
+    abstract linesCovered: int with get, set
+    abstract linesNotCovered: int with get, set
+    abstract linesPartiallyCovered: int with get, set
 
 type [<RequireQualifiedAccess>] CoverageStatus =
     | Covered = 0
@@ -336,7 +336,7 @@ type [<RequireQualifiedAccess>] CoverageSummaryStatus =
 type [<AllowNullLiteral>] CreateTestMessageLogEntryRequest =
     abstract projectName: string with get, set
     abstract testMessageLogEntry: ResizeArray<TestMessageLogEntry> with get, set
-    abstract testRunId: float with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] CreateTestResultsRequest =
     abstract projectName: string with get, set
@@ -356,7 +356,7 @@ type [<AllowNullLiteral>] CustomTestField =
     abstract value: obj option with get, set
 
 type [<AllowNullLiteral>] CustomTestFieldDefinition =
-    abstract fieldId: float with get, set
+    abstract fieldId: int with get, set
     abstract fieldName: string with get, set
     abstract fieldType: CustomTestFieldType with get, set
     abstract scope: CustomTestFieldScope with get, set
@@ -381,9 +381,9 @@ type [<AllowNullLiteral>] DatedTestFieldData =
     abstract value: TestFieldData with get, set
 
 type [<AllowNullLiteral>] DefaultAfnStripBinding =
-    abstract testCaseId: float with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testCaseId: int with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] DeleteTestRunRequest =
     abstract projectName: string with get, set
@@ -434,13 +434,13 @@ type [<AllowNullLiteral>] FileCoverage =
 
 type [<AllowNullLiteral>] FileCoverageRequest =
     abstract filePath: string with get, set
-    abstract pullRequestBaseIterationId: float with get, set
-    abstract pullRequestId: float with get, set
-    abstract pullRequestIterationId: float with get, set
+    abstract pullRequestBaseIterationId: int with get, set
+    abstract pullRequestId: int with get, set
+    abstract pullRequestIterationId: int with get, set
     abstract repoId: string with get, set
 
 type [<AllowNullLiteral>] FilterPointQuery =
-    abstract planId: float with get, set
+    abstract planId: int with get, set
     abstract pointIds: ResizeArray<float> with get, set
     abstract pointOutcome: ResizeArray<float> with get, set
     abstract resultState: ResizeArray<float> with get, set
@@ -479,29 +479,29 @@ type [<AllowNullLiteral>] FunctionCoverage =
     abstract statistics: CoverageStatistics with get, set
 
 type [<AllowNullLiteral>] FunctionCoverage2 =
-    abstract blocksCovered: float with get, set
-    abstract blocksNotCovered: float with get, set
+    abstract blocksCovered: int with get, set
+    abstract blocksNotCovered: int with get, set
     abstract ``class``: string with get, set
-    abstract coverageId: float with get, set
-    abstract functionId: float with get, set
-    abstract linesCovered: float with get, set
-    abstract linesNotCovered: float with get, set
-    abstract linesPartiallyCovered: float with get, set
-    abstract moduleId: float with get, set
+    abstract coverageId: int with get, set
+    abstract functionId: int with get, set
+    abstract linesCovered: int with get, set
+    abstract linesNotCovered: int with get, set
+    abstract linesPartiallyCovered: int with get, set
+    abstract moduleId: int with get, set
     abstract name: string with get, set
     abstract ``namespace``: string with get, set
     abstract sourceFile: string with get, set
 
 type [<AllowNullLiteral>] HttpPostedTcmAttachment =
     abstract attachmentContent: string with get, set
-    abstract contentLength: float with get, set
+    abstract contentLength: int with get, set
     abstract contentType: string with get, set
     abstract fileName: string with get, set
 
 /// Job in pipeline. This is related to matrixing in YAML.
 type [<AllowNullLiteral>] JobReference =
     /// Attempt number of the job
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// Matrixing in YAML generates copies of a job with different inputs in matrix. JobName is the name of those input. Maximum supported length for name is 256 character.
     abstract jobName: string with get, set
 
@@ -510,17 +510,17 @@ type [<AllowNullLiteral>] LastResultDetails =
     /// CompletedDate of LastResult.
     abstract dateCompleted: DateTime with get, set
     /// Duration of LastResult.
-    abstract duration: float with get, set
+    abstract duration: int with get, set
     /// RunBy.
     abstract runBy: WebApi.IdentityRef with get, set
 
 type [<AllowNullLiteral>] LegacyBuildConfiguration =
     abstract branchName: string with get, set
-    abstract buildConfigurationId: float with get, set
-    abstract buildDefinitionId: float with get, set
+    abstract buildConfigurationId: int with get, set
+    abstract buildDefinitionId: int with get, set
     abstract buildDefinitionName: string with get, set
     abstract buildFlavor: string with get, set
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
     abstract buildNumber: string with get, set
     abstract buildPlatform: string with get, set
     abstract buildQuality: string with get, set
@@ -528,32 +528,32 @@ type [<AllowNullLiteral>] LegacyBuildConfiguration =
     abstract buildUri: string with get, set
     abstract completedDate: DateTime with get, set
     abstract createdDate: DateTime with get, set
-    abstract oldBuildConfigurationId: float with get, set
+    abstract oldBuildConfigurationId: int with get, set
     abstract repositoryId: string with get, set
     abstract repositoryType: string with get, set
     abstract sourceVersion: string with get, set
     abstract teamProjectName: string with get, set
 
 type [<AllowNullLiteral>] LegacyReleaseReference =
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     abstract environmentCreationDate: DateTime with get, set
-    abstract primaryArtifactBuildId: float with get, set
+    abstract primaryArtifactBuildId: int with get, set
     abstract primaryArtifactProjectId: string with get, set
     abstract primaryArtifactType: string with get, set
     abstract releaseCreationDate: DateTime with get, set
-    abstract releaseDefId: float with get, set
-    abstract releaseEnvDefId: float with get, set
-    abstract releaseEnvId: float with get, set
+    abstract releaseDefId: int with get, set
+    abstract releaseEnvDefId: int with get, set
+    abstract releaseEnvId: int with get, set
     abstract releaseEnvName: string with get, set
     abstract releaseEnvUri: string with get, set
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
     abstract releaseName: string with get, set
-    abstract releaseRefId: float with get, set
+    abstract releaseRefId: int with get, set
     abstract releaseUri: string with get, set
 
 type [<AllowNullLiteral>] LegacyTestCaseResult =
-    abstract afnStripId: float with get, set
-    abstract areaId: float with get, set
+    abstract afnStripId: int with get, set
+    abstract areaId: int with get, set
     abstract areaUri: string with get, set
     abstract automatedTestId: string with get, set
     abstract automatedTestName: string with get, set
@@ -564,58 +564,58 @@ type [<AllowNullLiteral>] LegacyTestCaseResult =
     abstract buildReference: LegacyBuildConfiguration with get, set
     abstract comment: string with get, set
     abstract computerName: string with get, set
-    abstract configurationId: float with get, set
+    abstract configurationId: int with get, set
     abstract configurationName: string with get, set
     abstract creationDate: DateTime with get, set
     abstract customFields: ResizeArray<TestExtensionField> with get, set
     abstract dateCompleted: DateTime with get, set
     abstract dateStarted: DateTime with get, set
-    abstract duration: float with get, set
+    abstract duration: int with get, set
     abstract errorMessage: string with get, set
     abstract failingSince: FailingSince with get, set
-    abstract failureType: float with get, set
+    abstract failureType: int with get, set
     abstract id: LegacyTestCaseResultIdentifier with get, set
     abstract isRerun: bool with get, set
     abstract lastUpdated: DateTime with get, set
     abstract lastUpdatedBy: string with get, set
     abstract lastUpdatedByName: string with get, set
-    abstract outcome: float with get, set
+    abstract outcome: int with get, set
     abstract owner: string with get, set
     abstract ownerName: string with get, set
-    abstract priority: float with get, set
+    abstract priority: int with get, set
     abstract releaseReference: LegacyReleaseReference with get, set
-    abstract resetCount: float with get, set
-    abstract resolutionStateId: float with get, set
+    abstract resetCount: int with get, set
+    abstract resolutionStateId: int with get, set
     abstract resultGroupType: ResultGroupType with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     abstract runBy: string with get, set
     abstract runByName: string with get, set
-    abstract sequenceId: float with get, set
+    abstract sequenceId: int with get, set
     abstract stackTrace: TestExtensionField with get, set
-    abstract state: float with get, set
-    abstract subResultCount: float with get, set
+    abstract state: int with get, set
+    abstract subResultCount: int with get, set
     abstract suiteName: string with get, set
     abstract testCaseArea: string with get, set
     abstract testCaseAreaUri: string with get, set
-    abstract testCaseId: float with get, set
-    abstract testCaseReferenceId: float with get, set
-    abstract testCaseRevision: float with get, set
+    abstract testCaseId: int with get, set
+    abstract testCaseReferenceId: int with get, set
+    abstract testCaseRevision: int with get, set
     abstract testCaseTitle: string with get, set
-    abstract testPlanId: float with get, set
-    abstract testPointId: float with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testPlanId: int with get, set
+    abstract testPointId: int with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
     abstract testRunTitle: string with get, set
-    abstract testSuiteId: float with get, set
+    abstract testSuiteId: int with get, set
 
 type [<AllowNullLiteral>] LegacyTestCaseResultIdentifier =
     abstract areaUri: string with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] LegacyTestRun =
-    abstract bugsCount: float with get, set
-    abstract buildConfigurationId: float with get, set
+    abstract bugsCount: int with get, set
+    abstract buildConfigurationId: int with get, set
     abstract buildFlavor: string with get, set
     abstract buildNumber: string with get, set
     abstract buildPlatform: string with get, set
@@ -635,65 +635,65 @@ type [<AllowNullLiteral>] LegacyTestRun =
     abstract dueDate: DateTime with get, set
     abstract errorMessage: string with get, set
     abstract filter: RunFilter with get, set
-    abstract incompleteTests: float with get, set
+    abstract incompleteTests: int with get, set
     abstract isAutomated: bool with get, set
     abstract isBvt: bool with get, set
     abstract iteration: string with get, set
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     abstract lastUpdated: DateTime with get, set
     abstract lastUpdatedBy: string with get, set
     abstract lastUpdatedByName: string with get, set
     abstract legacySharePath: string with get, set
-    abstract notApplicableTests: float with get, set
+    abstract notApplicableTests: int with get, set
     abstract owner: string with get, set
     abstract ownerName: string with get, set
-    abstract passedTests: float with get, set
-    abstract postProcessState: float with get, set
-    abstract publicTestSettingsId: float with get, set
+    abstract passedTests: int with get, set
+    abstract postProcessState: int with get, set
+    abstract publicTestSettingsId: int with get, set
     abstract releaseEnvironmentUri: string with get, set
     abstract releaseReference: LegacyReleaseReference with get, set
     abstract releaseUri: string with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     abstract rowVersion: ResizeArray<float> with get, set
     abstract runHasDtlEnvironment: bool with get, set
     abstract runTimeout: obj option with get, set
     abstract serviceVersion: string with get, set
     abstract sourceWorkflow: string with get, set
     abstract startDate: DateTime with get, set
-    abstract state: float with get, set
+    abstract state: int with get, set
     abstract subscriptionName: string with get, set
-    abstract substate: float with get, set
+    abstract substate: int with get, set
     abstract teamProject: string with get, set
     abstract teamProjectUri: string with get, set
     abstract testConfigurationsMapping: string with get, set
     abstract testEnvironmentId: string with get, set
     abstract testMessageLogEntries: ResizeArray<TestMessageLogDetails> with get, set
-    abstract testMessageLogId: float with get, set
-    abstract testPlanId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testMessageLogId: int with get, set
+    abstract testPlanId: int with get, set
+    abstract testRunId: int with get, set
     abstract testRunStatistics: ResizeArray<LegacyTestRunStatistic> with get, set
-    abstract testSettingsId: float with get, set
+    abstract testSettingsId: int with get, set
     abstract title: string with get, set
-    abstract totalTests: float with get, set
-    abstract ``type``: float with get, set
-    abstract unanalyzedTests: float with get, set
-    abstract version: float with get, set
+    abstract totalTests: int with get, set
+    abstract ``type``: int with get, set
+    abstract unanalyzedTests: int with get, set
+    abstract version: int with get, set
 
 type [<AllowNullLiteral>] LegacyTestRunStatistic =
-    abstract count: float with get, set
-    abstract outcome: float with get, set
+    abstract count: int with get, set
+    abstract outcome: int with get, set
     abstract resolutionState: TestResolutionState with get, set
-    abstract state: float with get, set
-    abstract testRunId: float with get, set
+    abstract state: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] LegacyTestSettings =
-    abstract areaId: float with get, set
+    abstract areaId: int with get, set
     abstract areaPath: string with get, set
     abstract createdBy: string with get, set
     abstract createdByName: string with get, set
     abstract createdDate: DateTime with get, set
     abstract description: string with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract isAutomated: bool with get, set
     abstract isPublic: bool with get, set
     abstract lastUpdated: DateTime with get, set
@@ -701,21 +701,21 @@ type [<AllowNullLiteral>] LegacyTestSettings =
     abstract lastUpdatedByName: string with get, set
     abstract machineRoles: ResizeArray<TestSettingsMachineRole> with get, set
     abstract name: string with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     abstract settings: string with get, set
     abstract teamProjectUri: string with get, set
 
 type [<AllowNullLiteral>] LineBlockCoverage =
     /// End of line block
-    abstract ``end``: float with get, set
+    abstract ``end``: int with get, set
     /// Start of line block
-    abstract start: float with get, set
+    abstract start: int with get, set
     /// Coverage status. Covered: 0, NotCovered: 1,  PartiallyCovered: 2
-    abstract status: float with get, set
+    abstract status: int with get, set
 
 type [<AllowNullLiteral>] LinkedWorkItemsQuery =
     abstract automatedTestNames: ResizeArray<string> with get, set
-    abstract planId: float with get, set
+    abstract planId: int with get, set
     abstract pointIds: ResizeArray<float> with get, set
     abstract suiteIds: ResizeArray<float> with get, set
     abstract testCaseIds: ResizeArray<float> with get, set
@@ -723,10 +723,10 @@ type [<AllowNullLiteral>] LinkedWorkItemsQuery =
 
 type [<AllowNullLiteral>] LinkedWorkItemsQueryResult =
     abstract automatedTestName: string with get, set
-    abstract planId: float with get, set
-    abstract pointId: float with get, set
-    abstract suiteId: float with get, set
-    abstract testCaseId: float with get, set
+    abstract planId: int with get, set
+    abstract pointId: int with get, set
+    abstract suiteId: int with get, set
+    abstract testCaseId: int with get, set
     abstract workItems: ResizeArray<WorkItemReference> with get, set
 
 type [<RequireQualifiedAccess>] Metrics =
@@ -736,31 +736,31 @@ type [<RequireQualifiedAccess>] Metrics =
     | RunSummary = 4
 
 type [<AllowNullLiteral>] ModuleCoverage =
-    abstract blockCount: float with get, set
+    abstract blockCount: int with get, set
     abstract blockData: ResizeArray<float> with get, set
     /// Code Coverage File Url
     abstract fileUrl: string with get, set
     abstract functions: ResizeArray<FunctionCoverage> with get, set
     abstract name: string with get, set
     abstract signature: string with get, set
-    abstract signatureAge: float with get, set
+    abstract signatureAge: int with get, set
     abstract statistics: CoverageStatistics with get, set
 
 type [<AllowNullLiteral>] ModuleCoverage2 =
-    abstract blockCount: float with get, set
+    abstract blockCount: int with get, set
     abstract blockData: ResizeArray<float> with get, set
-    abstract blockDataLength: float with get, set
-    abstract blocksCovered: float with get, set
-    abstract blocksNotCovered: float with get, set
+    abstract blockDataLength: int with get, set
+    abstract blocksCovered: int with get, set
+    abstract blocksNotCovered: int with get, set
     abstract coverageFileUrl: string with get, set
-    abstract coverageId: float with get, set
-    abstract linesCovered: float with get, set
-    abstract linesNotCovered: float with get, set
-    abstract linesPartiallyCovered: float with get, set
-    abstract moduleId: float with get, set
+    abstract coverageId: int with get, set
+    abstract linesCovered: int with get, set
+    abstract linesNotCovered: int with get, set
+    abstract linesPartiallyCovered: int with get, set
+    abstract moduleId: int with get, set
     abstract name: string with get, set
     abstract signature: string with get, set
-    abstract signatureAge: float with get, set
+    abstract signatureAge: int with get, set
 
 /// Name value pair
 type [<AllowNullLiteral>] NameValuePair =
@@ -776,7 +776,7 @@ type [<RequireQualifiedAccess>] OperationType =
 /// Phase in pipeline
 type [<AllowNullLiteral>] PhaseReference =
     /// Attempt number of the phase
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// Name of the phase. Maximum supported length for name is 256 character.
     abstract phaseName: string with get, set
 
@@ -787,7 +787,7 @@ type [<AllowNullLiteral>] PipelineReference =
     /// Reference of the phase.
     abstract phaseReference: PhaseReference with get, set
     /// Reference of the pipeline with which this pipeline instance is related.
-    abstract pipelineId: float with get, set
+    abstract pipelineId: int with get, set
     /// Reference of the stage.
     abstract stageReference: StageReference with get, set
 
@@ -847,7 +847,7 @@ type [<AllowNullLiteral>] PointAssignment =
 
 type [<AllowNullLiteral>] PointLastResult =
     abstract lastUpdatedDate: DateTime with get, set
-    abstract pointId: float with get, set
+    abstract pointId: int with get, set
 
 /// Filter class for test point.
 type [<AllowNullLiteral>] PointsFilter =
@@ -859,21 +859,21 @@ type [<AllowNullLiteral>] PointsFilter =
     abstract testers: ResizeArray<WebApi.IdentityRef> with get, set
 
 type [<AllowNullLiteral>] PointsReference2 =
-    abstract planId: float with get, set
-    abstract pointId: float with get, set
+    abstract planId: int with get, set
+    abstract pointId: int with get, set
 
 type [<AllowNullLiteral>] PointsResults2 =
-    abstract changeNumber: float with get, set
-    abstract lastFailureType: float with get, set
-    abstract lastResolutionStateId: float with get, set
-    abstract lastResultOutcome: float with get, set
-    abstract lastResultState: float with get, set
-    abstract lastTestResultId: float with get, set
-    abstract lastTestRunId: float with get, set
+    abstract changeNumber: int with get, set
+    abstract lastFailureType: int with get, set
+    abstract lastResolutionStateId: int with get, set
+    abstract lastResultOutcome: int with get, set
+    abstract lastResultState: int with get, set
+    abstract lastTestResultId: int with get, set
+    abstract lastTestRunId: int with get, set
     abstract lastUpdated: DateTime with get, set
     abstract lastUpdatedBy: string with get, set
-    abstract planId: float with get, set
-    abstract pointId: float with get, set
+    abstract planId: int with get, set
+    abstract pointId: int with get, set
 
 /// Model to update test point.
 type [<AllowNullLiteral>] PointUpdateModel =
@@ -896,17 +896,17 @@ type [<AllowNullLiteral>] PropertyBag =
 
 type [<AllowNullLiteral>] QueryByPointRequest =
     abstract projectName: string with get, set
-    abstract testPlanId: float with get, set
-    abstract testPointId: float with get, set
+    abstract testPlanId: int with get, set
+    abstract testPointId: int with get, set
 
 type [<AllowNullLiteral>] QueryByRunRequest =
     abstract includeActionResults: bool with get, set
-    abstract outcome: float with get, set
+    abstract outcome: int with get, set
     abstract owner: string with get, set
-    abstract pageSize: float with get, set
+    abstract pageSize: int with get, set
     abstract projectName: string with get, set
-    abstract state: float with get, set
-    abstract testRunId: float with get, set
+    abstract state: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] QueryModel =
     abstract query: string with get, set
@@ -922,8 +922,8 @@ type [<AllowNullLiteral>] QueryTestActionResultResponse =
 
 type [<AllowNullLiteral>] QueryTestMessageLogEntryRequest =
     abstract projectName: string with get, set
-    abstract testMessageLogId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testMessageLogId: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] QueryTestRuns2Request =
     abstract includeStatistics: bool with get, set
@@ -932,59 +932,59 @@ type [<AllowNullLiteral>] QueryTestRuns2Request =
 type [<AllowNullLiteral>] QueryTestRunsRequest =
     abstract buildUri: string with get, set
     abstract owner: string with get, set
-    abstract planId: float with get, set
-    abstract skip: float with get, set
+    abstract planId: int with get, set
+    abstract skip: int with get, set
     abstract teamProjectName: string with get, set
-    abstract testRunId: float with get, set
-    abstract top: float with get, set
+    abstract testRunId: int with get, set
+    abstract top: int with get, set
 
 type [<AllowNullLiteral>] QueryTestRunStatsRequest =
     abstract teamProjectName: string with get, set
-    abstract testRunId: float with get, set
+    abstract testRunId: int with get, set
 
 /// Reference to release environment resource.
 type [<AllowNullLiteral>] ReleaseEnvironmentDefinitionReference =
     /// ID of the release definition that contains the release environment definition.
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     /// ID of the release environment definition.
-    abstract environmentDefinitionId: float with get, set
+    abstract environmentDefinitionId: int with get, set
 
 /// Reference to a release.
 type [<AllowNullLiteral>] ReleaseReference =
     /// Number of Release Attempt.
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// Release Creation Date.
     abstract creationDate: DateTime with get, set
     /// Release definition ID.
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     /// Environment creation Date.
     abstract environmentCreationDate: DateTime with get, set
     /// Release environment definition ID.
-    abstract environmentDefinitionId: float with get, set
+    abstract environmentDefinitionId: int with get, set
     /// Release environment definition name.
     abstract environmentDefinitionName: string with get, set
     /// Release environment ID.
-    abstract environmentId: float with get, set
+    abstract environmentId: int with get, set
     /// Release environment name.
     abstract environmentName: string with get, set
     /// Release ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Release name.
     abstract name: string with get, set
 
 type [<AllowNullLiteral>] ReleaseReference2 =
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     abstract environmentCreationDate: DateTime with get, set
     abstract projectId: string with get, set
     abstract releaseCreationDate: DateTime with get, set
-    abstract releaseDefId: float with get, set
-    abstract releaseEnvDefId: float with get, set
-    abstract releaseEnvId: float with get, set
+    abstract releaseDefId: int with get, set
+    abstract releaseEnvDefId: int with get, set
+    abstract releaseEnvId: int with get, set
     abstract releaseEnvName: string with get, set
     abstract releaseEnvUri: string with get, set
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
     abstract releaseName: string with get, set
-    abstract releaseRefId: float with get, set
+    abstract releaseRefId: int with get, set
     abstract releaseUri: string with get, set
 
 type [<AllowNullLiteral>] RequirementsToTestsMapping2 =
@@ -994,8 +994,8 @@ type [<AllowNullLiteral>] RequirementsToTestsMapping2 =
     abstract deletionDate: DateTime with get, set
     abstract isMigratedToWIT: bool with get, set
     abstract projectId: string with get, set
-    abstract testMetadataId: float with get, set
-    abstract workItemId: float with get, set
+    abstract testMetadataId: int with get, set
+    abstract workItemId: int with get, set
 
 type [<AllowNullLiteral>] ResetTestResultsRequest =
     abstract ids: ResizeArray<LegacyTestCaseResultIdentifier> with get, set
@@ -1036,13 +1036,13 @@ type [<RequireQualifiedAccess>] ResultObjectType =
 /// Test result retention settings
 type [<AllowNullLiteral>] ResultRetentionSettings =
     /// Automated test result retention duration in days
-    abstract automatedResultsRetentionDuration: float with get, set
+    abstract automatedResultsRetentionDuration: int with get, set
     /// Last Updated by identity
     abstract lastUpdatedBy: WebApi.IdentityRef with get, set
     /// Last updated date
     abstract lastUpdatedDate: DateTime with get, set
     /// Manual test result retention duration in days
-    abstract manualResultsRetentionDuration: float with get, set
+    abstract manualResultsRetentionDuration: int with get, set
 
 /// Results insights for runs with state completed and NeedInvestigation.
 type [<AllowNullLiteral>] ResultsAnalysis =
@@ -1054,7 +1054,7 @@ type [<AllowNullLiteral>] ResultsAnalysis =
     abstract testFailuresAnalysis: TestResultFailuresAnalysis with get, set
 
 type [<AllowNullLiteral>] ResultsByQueryRequest =
-    abstract pageSize: float with get, set
+    abstract pageSize: int with get, set
     abstract query: ResultsStoreQuery with get, set
 
 type [<AllowNullLiteral>] ResultsByQueryResponse =
@@ -1067,13 +1067,13 @@ type [<AllowNullLiteral>] ResultsFilter =
     abstract executedIn: Service with get, set
     abstract groupBy: string with get, set
     abstract maxCompleteDate: DateTime with get, set
-    abstract resultsCount: float with get, set
-    abstract testCaseId: float with get, set
+    abstract resultsCount: int with get, set
+    abstract testCaseId: int with get, set
     abstract testCaseReferenceIds: ResizeArray<float> with get, set
-    abstract testPlanId: float with get, set
+    abstract testPlanId: int with get, set
     abstract testPointIds: ResizeArray<float> with get, set
     abstract testResultsContext: TestResultsContext with get, set
-    abstract trendDays: float with get, set
+    abstract trendDays: int with get, set
 
 type [<AllowNullLiteral>] ResultsStoreQuery =
     abstract dayPrecision: bool with get, set
@@ -1088,9 +1088,9 @@ type [<AllowNullLiteral>] ResultsSummaryByOutcome =
     /// Time taken by results.
     abstract duration: obj option with get, set
     /// Total number of not reported test results.
-    abstract notReportedTestCount: float with get, set
+    abstract notReportedTestCount: int with get, set
     /// Total number of test results. (It includes NotImpacted test results as well which need to exclude while calculating pass/fail test result percentage).
-    abstract totalTestCount: float with get, set
+    abstract totalTestCount: int with get, set
 
 /// Summary of results for a pipeline instance.
 type [<AllowNullLiteral>] ResultSummary =
@@ -1105,8 +1105,8 @@ type [<AllowNullLiteral>] ResultUpdateRequest =
     abstract parameterDeletes: ResizeArray<TestResultParameter> with get, set
     abstract parameters: ResizeArray<TestResultParameter> with get, set
     abstract testCaseResult: LegacyTestCaseResult with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] ResultUpdateRequestModel =
     abstract actionResultDeletes: ResizeArray<TestActionResultModel> with get, set
@@ -1120,13 +1120,13 @@ type [<AllowNullLiteral>] ResultUpdateResponse =
     abstract lastUpdated: DateTime with get, set
     abstract lastUpdatedBy: string with get, set
     abstract lastUpdatedByName: string with get, set
-    abstract maxReservedSubResultId: float with get, set
-    abstract revision: float with get, set
-    abstract testPlanId: float with get, set
-    abstract testResultId: float with get, set
+    abstract maxReservedSubResultId: int with get, set
+    abstract revision: int with get, set
+    abstract testPlanId: int with get, set
+    abstract testResultId: int with get, set
 
 type [<AllowNullLiteral>] ResultUpdateResponseModel =
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 /// Test run create details.
 type [<AllowNullLiteral>] RunCreateModel =
@@ -1212,7 +1212,7 @@ type [<AllowNullLiteral>] RunFilter =
 /// Test run statistics per outcome.
 type [<AllowNullLiteral>] RunStatistic =
     /// Test result count fo the given outcome.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Test result outcome
     abstract outcome: string with get, set
     /// Test run Resolution State.
@@ -1227,20 +1227,20 @@ type [<AllowNullLiteral>] RunSummary =
     /// Total time taken by runs with state completed and NeedInvestigation.
     abstract duration: obj option with get, set
     /// NoConfig runs count.
-    abstract noConfigRunsCount: float with get, set
+    abstract noConfigRunsCount: int with get, set
     /// Runs count by outcome for runs with state completed and NeedInvestigation runs.
     abstract runSummaryByOutcome: RunSummaryRunSummaryByOutcome with get, set
     /// Runs count by state.
     abstract runSummaryByState: RunSummaryRunSummaryByOutcome with get, set
     /// Total runs count.
-    abstract totalRunsCount: float with get, set
+    abstract totalRunsCount: int with get, set
 
 /// Run summary for each output type of test.
 type [<AllowNullLiteral>] RunSummaryModel =
     /// Total time taken in milliseconds.
-    abstract duration: float with get, set
+    abstract duration: int with get, set
     /// Number of results for Outcome TestOutcome
-    abstract resultCount: float with get, set
+    abstract resultCount: int with get, set
     /// Summary is based on outcome
     abstract testOutcome: TestOutcome with get, set
 
@@ -1323,28 +1323,28 @@ type [<AllowNullLiteral>] ShallowReference =
 type [<AllowNullLiteral>] ShallowTestCaseResult =
     abstract automatedTestName: string with get, set
     abstract automatedTestStorage: string with get, set
-    abstract durationInMs: float with get, set
-    abstract id: float with get, set
+    abstract durationInMs: int with get, set
+    abstract id: int with get, set
     abstract isReRun: bool with get, set
     abstract outcome: string with get, set
     abstract owner: string with get, set
-    abstract priority: float with get, set
-    abstract refId: float with get, set
-    abstract runId: float with get, set
+    abstract priority: int with get, set
+    abstract refId: int with get, set
+    abstract runId: int with get, set
     abstract tags: ResizeArray<string> with get, set
     abstract testCaseTitle: string with get, set
 
 /// Reference to shared step workitem.
 type [<AllowNullLiteral>] SharedStepModel =
     /// WorkItem shared step ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Shared step workitem revision.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 /// Stage in pipeline
 type [<AllowNullLiteral>] StageReference =
     /// Attempt number of stage
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// Name of the stage. Maximum supported length for name is 256 character.
     abstract stageName: string with get, set
 
@@ -1362,22 +1362,22 @@ type [<AllowNullLiteral>] SuiteCreateModel =
 /// A suite entry defines properties for a test suite.
 type [<AllowNullLiteral>] SuiteEntry =
     /// Id of child suite in the test suite.
-    abstract childSuiteId: float with get, set
+    abstract childSuiteId: int with get, set
     /// Sequence number for the test case or child test suite in the test suite.
-    abstract sequenceNumber: float with get, set
+    abstract sequenceNumber: int with get, set
     /// Id for the test suite.
-    abstract suiteId: float with get, set
+    abstract suiteId: int with get, set
     /// Id of a test case in the test suite.
-    abstract testCaseId: float with get, set
+    abstract testCaseId: int with get, set
 
 /// A model to define sequence of test suite entries in a test suite.
 type [<AllowNullLiteral>] SuiteEntryUpdateModel =
     /// Id of the child suite in the test suite.
-    abstract childSuiteId: float with get, set
+    abstract childSuiteId: int with get, set
     /// Updated sequence number for the test case or child test suite in the test suite.
-    abstract sequenceNumber: float with get, set
+    abstract sequenceNumber: int with get, set
     /// Id of the test case in the test suite.
-    abstract testCaseId: float with get, set
+    abstract testCaseId: int with get, set
 
 type [<RequireQualifiedAccess>] SuiteExpand =
     | Children = 1
@@ -1411,8 +1411,8 @@ type [<AllowNullLiteral>] SuiteUpdateModel =
     abstract queryString: string with get, set
 
 type [<AllowNullLiteral>] TCMPropertyBag2 =
-    abstract artifactId: float with get, set
-    abstract artifactType: float with get, set
+    abstract artifactId: int with get, set
+    abstract artifactType: int with get, set
     abstract name: string with get, set
     abstract value: string with get, set
 
@@ -1428,15 +1428,15 @@ type [<AllowNullLiteral>] TestActionResult =
     abstract creationDate: DateTime with get, set
     abstract dateCompleted: DateTime with get, set
     abstract dateStarted: DateTime with get, set
-    abstract duration: float with get, set
+    abstract duration: int with get, set
     abstract errorMessage: string with get, set
     abstract id: LegacyTestCaseResultIdentifier with get, set
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     abstract lastUpdated: DateTime with get, set
     abstract lastUpdatedBy: string with get, set
-    abstract outcome: float with get, set
-    abstract sharedStepId: float with get, set
-    abstract sharedStepRevision: float with get, set
+    abstract outcome: int with get, set
+    abstract sharedStepId: int with get, set
+    abstract sharedStepRevision: int with get, set
 
 type [<AllowNullLiteral>] TestActionResult2 =
     abstract actionPath: string with get, set
@@ -1444,15 +1444,15 @@ type [<AllowNullLiteral>] TestActionResult2 =
     abstract creationDate: DateTime with get, set
     abstract dateCompleted: DateTime with get, set
     abstract dateStarted: DateTime with get, set
-    abstract duration: float with get, set
+    abstract duration: int with get, set
     abstract errorMessage: string with get, set
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     abstract lastUpdated: DateTime with get, set
-    abstract outcome: float with get, set
-    abstract sharedStepId: float with get, set
-    abstract sharedStepRevision: float with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract outcome: int with get, set
+    abstract sharedStepId: int with get, set
+    abstract sharedStepRevision: int with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 /// Represents a test step result.
 type [<AllowNullLiteral>] TestActionResultModel =
@@ -1460,7 +1460,7 @@ type [<AllowNullLiteral>] TestActionResultModel =
     /// Path identifier test step in test case workitem.
     abstract actionPath: string with get, set
     /// Iteration ID of test action result.
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     /// Reference to shared step workitem.
     abstract sharedStepModel: SharedStepModel with get, set
     /// This is step Id of test case. For shared step, it is step Id of shared step in test case workitem; step Id in shared step. Example: TestCase workitem has two steps: 1) Normal step with Id = 1 2) Shared Step with Id = 2. Inside shared step: a) Normal Step with Id = 1 Value for StepIdentifier for First step: "1" Second step: "2;1"
@@ -1478,16 +1478,16 @@ type [<AllowNullLiteral>] TestAttachment =
     /// Attachment file name
     abstract fileName: string with get, set
     /// ID of the attachment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Attachment size.
-    abstract size: float with get, set
+    abstract size: int with get, set
     /// Attachment Url.
     abstract url: string with get, set
 
 /// Reference to test attachment.
 type [<AllowNullLiteral>] TestAttachmentReference =
     /// ID of the attachment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Url to download the attachment.
     abstract url: string with get, set
 
@@ -1503,47 +1503,47 @@ type [<AllowNullLiteral>] TestAttachmentRequestModel =
     abstract stream: string with get, set
 
 type [<AllowNullLiteral>] TestAuthoringDetails =
-    abstract configurationId: float with get, set
+    abstract configurationId: int with get, set
     abstract isAutomated: bool with get, set
     abstract lastUpdated: DateTime with get, set
-    abstract pointId: float with get, set
-    abstract priority: float with get, set
+    abstract pointId: int with get, set
+    abstract priority: int with get, set
     abstract runBy: string with get, set
     abstract state: TestPointState with get, set
-    abstract suiteId: float with get, set
+    abstract suiteId: int with get, set
     abstract testerId: string with get, set
 
 type [<AllowNullLiteral>] TestCaseMetadata2 =
     abstract container: string with get, set
     abstract name: string with get, set
     abstract projectId: string with get, set
-    abstract testMetadataId: float with get, set
+    abstract testMetadataId: int with get, set
 
 type [<AllowNullLiteral>] TestCaseReference2 =
-    abstract areaId: float with get, set
+    abstract areaId: int with get, set
     abstract automatedTestId: string with get, set
     abstract automatedTestName: string with get, set
     abstract automatedTestNameHash: ResizeArray<float> with get, set
     abstract automatedTestStorage: string with get, set
     abstract automatedTestStorageHash: ResizeArray<float> with get, set
     abstract automatedTestType: string with get, set
-    abstract configurationId: float with get, set
+    abstract configurationId: int with get, set
     abstract createdBy: string with get, set
     abstract creationDate: DateTime with get, set
     abstract lastRefTestRunDate: DateTime with get, set
     abstract owner: string with get, set
-    abstract priority: float with get, set
+    abstract priority: int with get, set
     abstract projectId: string with get, set
-    abstract testCaseId: float with get, set
-    abstract testCaseRefId: float with get, set
-    abstract testCaseRevision: float with get, set
+    abstract testCaseId: int with get, set
+    abstract testCaseRefId: int with get, set
+    abstract testCaseRevision: int with get, set
     abstract testCaseTitle: string with get, set
-    abstract testPointId: float with get, set
+    abstract testPointId: int with get, set
 
 /// Represents a test result.
 type [<AllowNullLiteral>] TestCaseResult =
     /// Test attachment ID of action recording.
-    abstract afnStripId: float with get, set
+    abstract afnStripId: int with get, set
     /// Reference to area path of test.
     abstract area: ShallowReference with get, set
     /// Reference to bugs linked to test result.
@@ -1575,7 +1575,7 @@ type [<AllowNullLiteral>] TestCaseResult =
     /// Additional properties of test result.
     abstract customFields: ResizeArray<CustomTestField> with get, set
     /// Duration of test execution in milliseconds. If not provided value will be set as CompletedDate - StartedDate
-    abstract durationInMs: float with get, set
+    abstract durationInMs: int with get, set
     /// Error message in test execution.
     abstract errorMessage: string with get, set
     /// Information when test results started failing.
@@ -1583,7 +1583,7 @@ type [<AllowNullLiteral>] TestCaseResult =
     /// Failure type of test result. Valid Value= (Known Issue, New Issue, Regression, Unknown, None)
     abstract failureType: string with get, set
     /// ID of a test result.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Test result details of test iterations used only for Manual Testing.
     abstract iterationDetails: ResizeArray<TestIterationDetailsModel> with get, set
     /// Reference to identity last updated test result.
@@ -1595,7 +1595,7 @@ type [<AllowNullLiteral>] TestCaseResult =
     /// Reference to test owner.
     abstract owner: WebApi.IdentityRef with get, set
     /// Priority of test executed.
-    abstract priority: float with get, set
+    abstract priority: int with get, set
     /// Reference to team project.
     abstract project: ShallowReference with get, set
     /// Shallow reference to release associated with test result.
@@ -1603,15 +1603,15 @@ type [<AllowNullLiteral>] TestCaseResult =
     /// Reference to release associated with test result.
     abstract releaseReference: ReleaseReference with get, set
     /// ResetCount.
-    abstract resetCount: float with get, set
+    abstract resetCount: int with get, set
     /// Resolution state of test result.
     abstract resolutionState: string with get, set
     /// ID of resolution state.
-    abstract resolutionStateId: float with get, set
+    abstract resolutionStateId: int with get, set
     /// Hierarchy type of the result, default value of None means its leaf node.
     abstract resultGroupType: ResultGroupType with get, set
     /// Revision number of test result.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Reference to identity executed the test.
     abstract runBy: WebApi.IdentityRef with get, set
     /// Stacktrace with maxSize= 1000 chars.
@@ -1625,9 +1625,9 @@ type [<AllowNullLiteral>] TestCaseResult =
     /// Reference to the test executed.
     abstract testCase: ShallowReference with get, set
     /// Reference ID of test used by test result. Type TestResultMetaData
-    abstract testCaseReferenceId: float with get, set
+    abstract testCaseReferenceId: int with get, set
     /// TestCaseRevision Number.
-    abstract testCaseRevision: float with get, set
+    abstract testCaseRevision: int with get, set
     /// Name of test.
     abstract testCaseTitle: string with get, set
     /// Reference to test plan test case workitem is part of.
@@ -1646,26 +1646,26 @@ type [<AllowNullLiteral>] TestCaseResultAttachmentModel =
     /// Path identifier test step in test case workitem.
     abstract actionPath: string with get, set
     /// Attachment ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Iteration ID.
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     /// Name of attachment.
     abstract name: string with get, set
     /// Attachment size.
-    abstract size: float with get, set
+    abstract size: int with get, set
     /// Url to attachment.
     abstract url: string with get, set
 
 type [<AllowNullLiteral>] TestCaseResultIdAndRev =
     abstract id: LegacyTestCaseResultIdentifier with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 /// Reference to a test result.
 type [<AllowNullLiteral>] TestCaseResultIdentifier =
     /// Test result ID.
-    abstract testResultId: float with get, set
+    abstract testResultId: int with get, set
     /// Test run ID.
-    abstract testRunId: float with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] TestCaseResultUpdateModel =
     abstract associatedWorkItems: ResizeArray<float> with get, set
@@ -1694,7 +1694,7 @@ type [<AllowNullLiteral>] TestConfiguration =
     /// Description of the configuration
     abstract description: string with get, set
     /// Id of the configuration
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Is the configuration a default for the test plans
     abstract isDefault: bool with get, set
     /// Last Updated By  Reference
@@ -1706,7 +1706,7 @@ type [<AllowNullLiteral>] TestConfiguration =
     /// Project to which the configuration belongs
     abstract project: ShallowReference with get, set
     /// Revision of the the configuration
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// State of the configuration
     abstract state: TestConfigurationState with get, set
     /// Url of Configuration Resource
@@ -1733,7 +1733,7 @@ type [<AllowNullLiteral>] TestExtensionField =
     abstract value: obj option with get, set
 
 type [<AllowNullLiteral>] TestExtensionFieldDetails =
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract isResultScoped: bool with get, set
     abstract isRunScoped: bool with get, set
     abstract isSystemField: bool with get, set
@@ -1741,7 +1741,7 @@ type [<AllowNullLiteral>] TestExtensionFieldDetails =
     abstract ``type``: SystemData.SqlDbType with get, set
 
 type [<AllowNullLiteral>] TestFailureDetails =
-    abstract count: float with get, set
+    abstract count: int with get, set
     abstract testResults: ResizeArray<TestCaseResultIdentifier> with get, set
 
 type [<AllowNullLiteral>] TestFailuresAnalysis =
@@ -1751,18 +1751,18 @@ type [<AllowNullLiteral>] TestFailuresAnalysis =
     abstract previousContext: TestResultsContext with get, set
 
 type [<AllowNullLiteral>] TestFailureType =
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract name: string with get, set
     abstract project: ShallowReference with get, set
 
 type [<AllowNullLiteral>] TestFieldData =
     abstract dimensions: TestFieldDataDimensions with get, set
-    abstract ``measure``: float with get, set
+    abstract ``measure``: int with get, set
 
 type [<AllowNullLiteral>] TestFieldsEx2 =
-    abstract fieldId: float with get, set
+    abstract fieldId: int with get, set
     abstract fieldName: string with get, set
-    abstract fieldType: float with get, set
+    abstract fieldType: int with get, set
     abstract isResultScoped: bool with get, set
     abstract isRunScoped: bool with get, set
     abstract isSystemField: bool with get, set
@@ -1782,7 +1782,7 @@ type [<AllowNullLiteral>] TestHistoryQuery =
     /// Results to be get for a particular branches.
     abstract branch: string with get, set
     /// Get the results history only for this BuildDefinitionId. This to get used in query GroupBy should be Branch. If this is provided, Branch will have no use.
-    abstract buildDefinitionId: float with get, set
+    abstract buildDefinitionId: int with get, set
     /// It will be filled by server. If not null means there are some results still to be get, and we need to call this REST API with this ContinuousToken. It is not supposed to be created (or altered, if received from server in last batch) by user.
     abstract continuationToken: string with get, set
     /// Group the result on the basis of TestResultGroupBy. This can be Branch, Environment or null(if results are fetched by BuildDefinitionId)
@@ -1790,13 +1790,13 @@ type [<AllowNullLiteral>] TestHistoryQuery =
     /// History to get between time interval MaxCompleteDate and  (MaxCompleteDate - TrendDays). Default is current date time.
     abstract maxCompleteDate: DateTime with get, set
     /// Get the results history only for this ReleaseEnvDefinitionId. This to get used in query GroupBy should be Environment.
-    abstract releaseEnvDefinitionId: float with get, set
+    abstract releaseEnvDefinitionId: int with get, set
     /// List of TestResultHistoryForGroup which are grouped by GroupBy
     abstract resultsForGroup: ResizeArray<TestResultHistoryForGroup> with get, set
     /// Get the results history only for this testCaseId. This to get used in query to filter the result along with automatedtestname
-    abstract testCaseId: float with get, set
+    abstract testCaseId: int with get, set
     /// Number of days for which history to collect. Maximum supported value is 7 days. Default is 7 days.
-    abstract trendDays: float with get, set
+    abstract trendDays: int with get, set
 
 /// Represents a test iteration result.
 type [<AllowNullLiteral>] TestIterationDetailsModel =
@@ -1809,11 +1809,11 @@ type [<AllowNullLiteral>] TestIterationDetailsModel =
     /// Time when execution completed.
     abstract completedDate: DateTime with get, set
     /// Duration of execution.
-    abstract durationInMs: float with get, set
+    abstract durationInMs: int with get, set
     /// Error message in test iteration result execution.
     abstract errorMessage: string with get, set
     /// ID of test iteration result.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Test outcome if test iteration result.
     abstract outcome: string with get, set
     /// Test parameters in an iteration.
@@ -1832,26 +1832,26 @@ type [<AllowNullLiteral>] TestLog =
     /// LastUpdatedDate for Log file
     abstract modifiedOn: DateTime with get, set
     /// Size in Bytes for Log file
-    abstract size: float with get, set
+    abstract size: int with get, set
 
 /// Test Log Reference object
 type [<AllowNullLiteral>] TestLogReference =
     /// BuildId for test log, if context is build
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
     /// FileName for log file
     abstract filePath: string with get, set
     /// ReleaseEnvId for test log, if context is Release
-    abstract releaseEnvId: float with get, set
+    abstract releaseEnvId: int with get, set
     /// ReleaseId for test log, if context is Release
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
     /// Resultid for test log, if context is run and log is related to result
-    abstract resultId: float with get, set
+    abstract resultId: int with get, set
     /// runid for test log, if context is run
-    abstract runId: float with get, set
+    abstract runId: int with get, set
     /// Test Log Scope
     abstract scope: TestLogScope with get, set
     /// SubResultid for test log, if context is run and log is related to subresult
-    abstract subResultId: float with get, set
+    abstract subResultId: int with get, set
     /// Log Type
     abstract ``type``: TestLogType with get, set
 
@@ -1914,33 +1914,33 @@ type [<RequireQualifiedAccess>] TestLogType =
     | System = 5
 
 type [<AllowNullLiteral>] TestMessageLog2 =
-    abstract testMessageLogId: float with get, set
+    abstract testMessageLogId: int with get, set
 
 /// An abstracted reference to some other resource. This class is used to provide the build data contracts with a uniform way to reference other resources in a way that provides easy traversal through links.
 type [<AllowNullLiteral>] TestMessageLogDetails =
     /// Date when the resource is created
     abstract dateCreated: DateTime with get, set
     /// Id of the resource
-    abstract entryId: float with get, set
+    abstract entryId: int with get, set
     /// Message of the resource
     abstract message: string with get, set
 
 type [<AllowNullLiteral>] TestMessageLogEntry =
     abstract dateCreated: DateTime with get, set
-    abstract entryId: float with get, set
-    abstract logLevel: float with get, set
+    abstract entryId: int with get, set
+    abstract logLevel: int with get, set
     abstract logUser: string with get, set
     abstract logUserName: string with get, set
     abstract message: string with get, set
-    abstract testMessageLogId: float with get, set
+    abstract testMessageLogId: int with get, set
 
 type [<AllowNullLiteral>] TestMessageLogEntry2 =
     abstract dateCreated: DateTime with get, set
-    abstract entryId: float with get, set
-    abstract logLevel: float with get, set
+    abstract entryId: int with get, set
+    abstract logLevel: int with get, set
     abstract logUser: string with get, set
     abstract message: string with get, set
-    abstract testMessageLogId: float with get, set
+    abstract testMessageLogId: int with get, set
 
 type [<AllowNullLiteral>] TestMethod =
     abstract container: string with get, set
@@ -1979,13 +1979,13 @@ type [<AllowNullLiteral>] TestParameter2 =
     abstract actionPath: string with get, set
     abstract actual: ResizeArray<float> with get, set
     abstract creationDate: DateTime with get, set
-    abstract dataType: float with get, set
+    abstract dataType: int with get, set
     abstract dateModified: DateTime with get, set
     abstract expected: ResizeArray<float> with get, set
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     abstract parameterName: string with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 /// The test plan resource.
 type [<AllowNullLiteral>] TestPlan =
@@ -2003,7 +2003,7 @@ type [<AllowNullLiteral>] TestPlan =
     /// End date for the test plan.
     abstract endDate: DateTime with get, set
     /// ID of the test plan.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Iteration path of the test plan.
     abstract iteration: string with get, set
     abstract manualTestEnvironment: TestEnvironment with get, set
@@ -2018,7 +2018,7 @@ type [<AllowNullLiteral>] TestPlan =
     /// Release Environment to be used to deploy the build and run automated tests from this test plan.
     abstract releaseEnvironmentDefinition: ReleaseEnvironmentDefinitionReference with get, set
     /// Revision of the test plan.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Root test suite of the test plan.
     abstract rootSuite: ShallowReference with get, set
     /// Start date for the test plan.
@@ -2038,15 +2038,15 @@ type [<AllowNullLiteral>] TestPlanCloneRequest =
     abstract suiteIds: ResizeArray<float> with get, set
 
 type [<AllowNullLiteral>] TestPlanHubData =
-    abstract selectedSuiteId: float with get, set
+    abstract selectedSuiteId: int with get, set
     abstract testPlan: TestPlan with get, set
     abstract testPoints: ResizeArray<TestPoint> with get, set
     abstract testSuites: ResizeArray<TestSuite> with get, set
-    abstract totalTestPoints: float with get, set
+    abstract totalTestPoints: int with get, set
 
 type [<AllowNullLiteral>] TestPlansWithSelection =
-    abstract lastSelectedPlan: float with get, set
-    abstract lastSelectedSuite: float with get, set
+    abstract lastSelectedPlan: int with get, set
+    abstract lastSelectedSuite: int with get, set
     abstract plans: ResizeArray<TestPlan> with get, set
 
 /// Test point.
@@ -2062,11 +2062,11 @@ type [<AllowNullLiteral>] TestPoint =
     /// Failure type of test point.
     abstract failureType: string with get, set
     /// ID of the test point.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Last date when test point was reset to Active.
     abstract lastResetToActive: DateTime with get, set
     /// Last resolution state id of test point.
-    abstract lastResolutionStateId: float with get, set
+    abstract lastResolutionStateId: int with get, set
     /// Last result of test point. Type ShallowReference.
     abstract lastResult: ShallowReference with get, set
     /// Last result details of test point. Type LastResultDetails.
@@ -2084,7 +2084,7 @@ type [<AllowNullLiteral>] TestPoint =
     /// Outcome of test point.
     abstract outcome: string with get, set
     /// Revision number.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// State of test point.
     abstract state: string with get, set
     /// Suite of test point. Type ShallowReference.
@@ -2099,7 +2099,7 @@ type [<AllowNullLiteral>] TestPoint =
     abstract workItemProperties: ResizeArray<obj option> with get, set
 
 type [<AllowNullLiteral>] TestPointReference =
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract state: TestPointState with get, set
 
 type [<AllowNullLiteral>] TestPointsEvent =
@@ -2131,32 +2131,32 @@ type [<AllowNullLiteral>] TestPointsUpdatedEvent =
 /// Test Resolution State Details.
 type [<AllowNullLiteral>] TestResolutionState =
     /// Test Resolution state Id.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Test Resolution State Name.
     abstract name: string with get, set
     abstract project: ShallowReference with get, set
 
 type [<AllowNullLiteral>] TestResult2 =
-    abstract afnStripId: float with get, set
+    abstract afnStripId: int with get, set
     abstract computerName: string with get, set
     abstract creationDate: DateTime with get, set
     abstract dateCompleted: DateTime with get, set
     abstract dateStarted: DateTime with get, set
-    abstract effectivePointState: float with get, set
-    abstract failureType: float with get, set
+    abstract effectivePointState: int with get, set
+    abstract failureType: int with get, set
     abstract lastUpdated: DateTime with get, set
     abstract lastUpdatedBy: string with get, set
-    abstract outcome: float with get, set
+    abstract outcome: int with get, set
     abstract owner: string with get, set
     abstract projectId: string with get, set
-    abstract resetCount: float with get, set
-    abstract resolutionStateId: float with get, set
-    abstract revision: float with get, set
+    abstract resetCount: int with get, set
+    abstract resolutionStateId: int with get, set
+    abstract revision: int with get, set
     abstract runBy: string with get, set
-    abstract state: float with get, set
-    abstract testCaseRefId: float with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract state: int with get, set
+    abstract testCaseRefId: int with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] TestResultAcrossProjectResponse =
     abstract projectName: string with get, set
@@ -2169,20 +2169,20 @@ type [<AllowNullLiteral>] TestResultAttachment =
     abstract creationDate: DateTime with get, set
     abstract downloadQueryString: string with get, set
     abstract fileName: string with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract isComplete: bool with get, set
-    abstract iterationId: float with get, set
-    abstract length: float with get, set
-    abstract sessionId: float with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract iterationId: int with get, set
+    abstract length: int with get, set
+    abstract sessionId: int with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
     abstract tmiRunId: string with get, set
 
 type [<AllowNullLiteral>] TestResultAttachmentIdentity =
-    abstract attachmentId: float with get, set
-    abstract sessionId: float with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract attachmentId: int with get, set
+    abstract sessionId: int with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] TestResultCreateModel =
     abstract area: ShallowReference with get, set
@@ -2253,9 +2253,9 @@ type [<AllowNullLiteral>] TestResultMetaData =
     /// Owner of test result.
     abstract owner: string with get, set
     /// Priority of test result.
-    abstract priority: float with get, set
+    abstract priority: int with get, set
     /// ID of TestCaseReference.
-    abstract testCaseReferenceId: float with get, set
+    abstract testCaseReferenceId: int with get, set
     /// TestCaseTitle of test result.
     abstract testCaseTitle: string with get, set
 
@@ -2273,7 +2273,7 @@ type [<AllowNullLiteral>] TestResultModelBase =
     /// Time when execution completed.
     abstract completedDate: DateTime with get, set
     /// Duration of execution.
-    abstract durationInMs: float with get, set
+    abstract durationInMs: int with get, set
     /// Error message in result.
     abstract errorMessage: string with get, set
     /// Test outcome of result.
@@ -2285,17 +2285,17 @@ type [<AllowNullLiteral>] TestResultParameter =
     abstract actionPath: string with get, set
     abstract actual: ResizeArray<float> with get, set
     abstract expected: ResizeArray<float> with get, set
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     abstract parameterName: string with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 /// Test parameter information in a test iteration.
 type [<AllowNullLiteral>] TestResultParameterModel =
     /// Test step path where parameter is referenced.
     abstract actionPath: string with get, set
     /// Iteration ID.
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     /// Name of parameter.
     abstract parameterName: string with get, set
     /// This is step Id of test case. For shared step, it is step Id of shared step in test case workitem; step Id in shared step. Example: TestCase workitem has two steps: 1) Normal step with Id = 1 2) Shared Step with Id = 2. Inside shared step: a) Normal Step with Id = 1 Value for StepIdentifier for First step: "1" Second step: "2;1"
@@ -2314,10 +2314,10 @@ type [<AllowNullLiteral>] TestResultReset2 =
     abstract auditIdentity: string with get, set
     abstract dateModified: DateTime with get, set
     abstract projectId: string with get, set
-    abstract revision: float with get, set
-    abstract testResultId: float with get, set
+    abstract revision: int with get, set
+    abstract testResultId: int with get, set
     abstract testResultRV: ResizeArray<float> with get, set
-    abstract testRunId: float with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] TestResultsContext =
     abstract build: BuildReference with get, set
@@ -2344,19 +2344,19 @@ type [<AllowNullLiteral>] TestResultsEx2 =
     abstract bitValue: bool with get, set
     abstract creationDate: DateTime with get, set
     abstract dateTimeValue: DateTime with get, set
-    abstract fieldId: float with get, set
+    abstract fieldId: int with get, set
     abstract fieldName: string with get, set
-    abstract floatValue: float with get, set
+    abstract floatValue: int with get, set
     abstract guidValue: string with get, set
-    abstract intValue: float with get, set
+    abstract intValue: int with get, set
     abstract projectId: string with get, set
     abstract stringValue: string with get, set
-    abstract testResultId: float with get, set
-    abstract testRunId: float with get, set
+    abstract testResultId: int with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] TestResultsGroupsForBuild =
     /// BuildId for which groupby result is fetched.
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
     /// The group by results
     abstract fields: ResizeArray<FieldDetailsForTestResults> with get, set
 
@@ -2364,9 +2364,9 @@ type [<AllowNullLiteral>] TestResultsGroupsForRelease =
     /// The group by results
     abstract fields: ResizeArray<FieldDetailsForTestResults> with get, set
     /// Release Environment Id for which groupby result is fetched.
-    abstract releaseEnvId: float with get, set
+    abstract releaseEnvId: int with get, set
     /// ReleaseId for which groupby result is fetched.
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
 
 type [<AllowNullLiteral>] TestResultsQuery =
     abstract fields: ResizeArray<string> with get, set
@@ -2383,11 +2383,11 @@ type [<RequireQualifiedAccess>] TestResultsSettingsType =
 
 type [<AllowNullLiteral>] TestResultSummary =
     abstract aggregatedResultsAnalysis: AggregatedResultsAnalysis with get, set
-    abstract noConfigRunsCount: float with get, set
+    abstract noConfigRunsCount: int with get, set
     abstract teamProject: Core.TeamProjectReference with get, set
     abstract testFailures: TestFailuresAnalysis with get, set
     abstract testResultsContext: TestResultsContext with get, set
-    abstract totalRunsCount: float with get, set
+    abstract totalRunsCount: int with get, set
 
 type [<AllowNullLiteral>] TestResultsUpdateSettings =
     /// FlakySettings defines Flaky Settings Data.
@@ -2396,18 +2396,18 @@ type [<AllowNullLiteral>] TestResultsUpdateSettings =
 type [<AllowNullLiteral>] TestResultsWithWatermark =
     abstract changedDate: DateTime with get, set
     abstract pointsResults: ResizeArray<PointsResults2> with get, set
-    abstract resultId: float with get, set
-    abstract runId: float with get, set
+    abstract resultId: int with get, set
+    abstract runId: int with get, set
 
 type [<AllowNullLiteral>] TestResultTrendFilter =
     abstract branchNames: ResizeArray<string> with get, set
-    abstract buildCount: float with get, set
+    abstract buildCount: int with get, set
     abstract definitionIds: ResizeArray<float> with get, set
     abstract envDefinitionIds: ResizeArray<float> with get, set
     abstract maxCompleteDate: DateTime with get, set
     abstract publishContext: string with get, set
     abstract testRunTitles: ResizeArray<string> with get, set
-    abstract trendDays: float with get, set
+    abstract trendDays: int with get, set
 
 /// Test run details.
 type [<AllowNullLiteral>] TestRun =
@@ -2436,9 +2436,9 @@ type [<AllowNullLiteral>] TestRun =
     abstract errorMessage: string with get, set
     abstract filter: RunFilter with get, set
     /// ID of the test run.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Number of Incomplete Tests.
-    abstract incompleteTests: float with get, set
+    abstract incompleteTests: int with get, set
     /// true if test run is automated, false otherwise.
     abstract isAutomated: bool with get, set
     /// The iteration to which the run belongs.
@@ -2450,11 +2450,11 @@ type [<AllowNullLiteral>] TestRun =
     /// Name of the test run.
     abstract name: string with get, set
     /// Number of Not Applicable Tests.
-    abstract notApplicableTests: float with get, set
+    abstract notApplicableTests: int with get, set
     /// Team Foundation ID of the owner of the runs.
     abstract owner: WebApi.IdentityRef with get, set
     /// Number of passed tests in the run
-    abstract passedTests: float with get, set
+    abstract passedTests: int with get, set
     /// Phase/State for the testRun.
     abstract phase: string with get, set
     /// Reference of the pipeline to which this test run belongs.
@@ -2471,7 +2471,7 @@ type [<AllowNullLiteral>] TestRun =
     abstract releaseEnvironmentUri: string with get, set
     /// Release Uri for TestRun.
     abstract releaseUri: string with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// RunSummary by outcome.
     abstract runStatistics: ResizeArray<RunStatistic> with get, set
     /// Start date time of the run.
@@ -2484,70 +2484,70 @@ type [<AllowNullLiteral>] TestRun =
     abstract tags: ResizeArray<TestTag> with get, set
     /// Test environment associated with the run.
     abstract testEnvironment: TestEnvironment with get, set
-    abstract testMessageLogId: float with get, set
+    abstract testMessageLogId: int with get, set
     abstract testSettings: ShallowReference with get, set
     /// Total tests in the run
-    abstract totalTests: float with get, set
+    abstract totalTests: int with get, set
     /// Number of failed tests in the run.
-    abstract unanalyzedTests: float with get, set
+    abstract unanalyzedTests: int with get, set
     /// Url of the test run
     abstract url: string with get, set
     /// Web Access Url for TestRun.
     abstract webAccessUrl: string with get, set
 
 type [<AllowNullLiteral>] TestRun2 =
-    abstract buildConfigurationId: float with get, set
+    abstract buildConfigurationId: int with get, set
     abstract buildNumber: string with get, set
     abstract comment: string with get, set
     abstract completeDate: DateTime with get, set
     abstract controller: string with get, set
-    abstract coverageId: float with get, set
+    abstract coverageId: int with get, set
     abstract creationDate: DateTime with get, set
     abstract deletedOn: DateTime with get, set
     abstract dropLocation: string with get, set
     abstract dueDate: DateTime with get, set
     abstract errorMessage: string with get, set
-    abstract incompleteTests: float with get, set
+    abstract incompleteTests: int with get, set
     abstract isAutomated: bool with get, set
     abstract isBvt: bool with get, set
     abstract isMigrated: bool with get, set
-    abstract iterationId: float with get, set
+    abstract iterationId: int with get, set
     abstract lastUpdated: DateTime with get, set
     abstract lastUpdatedBy: string with get, set
     abstract legacySharePath: string with get, set
-    abstract maxReservedResultId: float with get, set
-    abstract notApplicableTests: float with get, set
+    abstract maxReservedResultId: int with get, set
+    abstract notApplicableTests: int with get, set
     abstract owner: string with get, set
-    abstract passedTests: float with get, set
-    abstract postProcessState: float with get, set
+    abstract passedTests: int with get, set
+    abstract postProcessState: int with get, set
     abstract projectId: string with get, set
-    abstract publicTestSettingsId: float with get, set
+    abstract publicTestSettingsId: int with get, set
     abstract releaseEnvironmentUri: string with get, set
     abstract releaseUri: string with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     abstract startDate: DateTime with get, set
-    abstract state: float with get, set
+    abstract state: int with get, set
     abstract testEnvironmentId: string with get, set
-    abstract testMessageLogId: float with get, set
-    abstract testPlanId: float with get, set
-    abstract testRunContextId: float with get, set
-    abstract testRunId: float with get, set
-    abstract testSettingsId: float with get, set
+    abstract testMessageLogId: int with get, set
+    abstract testPlanId: int with get, set
+    abstract testRunContextId: int with get, set
+    abstract testRunId: int with get, set
+    abstract testSettingsId: int with get, set
     abstract title: string with get, set
-    abstract totalTests: float with get, set
-    abstract ``type``: float with get, set
-    abstract unanalyzedTests: float with get, set
-    abstract version: float with get, set
+    abstract totalTests: int with get, set
+    abstract ``type``: int with get, set
+    abstract unanalyzedTests: int with get, set
+    abstract version: int with get, set
 
 type [<AllowNullLiteral>] TestRunCanceledEvent =
     inherit TestRunEvent
 
 type [<AllowNullLiteral>] TestRunContext2 =
-    abstract buildRefId: float with get, set
+    abstract buildRefId: int with get, set
     abstract projectId: string with get, set
-    abstract releaseRefId: float with get, set
+    abstract releaseRefId: int with get, set
     abstract sourceWorkflow: string with get, set
-    abstract testRunContextId: float with get, set
+    abstract testRunContextId: int with get, set
 
 /// Test Run Code Coverage Details
 type [<AllowNullLiteral>] TestRunCoverage =
@@ -2570,14 +2570,14 @@ type [<AllowNullLiteral>] TestRunEx2 =
     abstract bitValue: bool with get, set
     abstract createdDate: DateTime with get, set
     abstract dateTimeValue: DateTime with get, set
-    abstract fieldId: float with get, set
+    abstract fieldId: int with get, set
     abstract fieldName: string with get, set
-    abstract floatValue: float with get, set
+    abstract floatValue: int with get, set
     abstract guidValue: string with get, set
-    abstract intValue: float with get, set
+    abstract intValue: int with get, set
     abstract projectId: string with get, set
     abstract stringValue: string with get, set
-    abstract testRunId: float with get, set
+    abstract testRunId: int with get, set
 
 type [<AllowNullLiteral>] TestRunExtended2 =
     abstract autEnvironmentUrl: string with get, set
@@ -2586,10 +2586,10 @@ type [<AllowNullLiteral>] TestRunExtended2 =
     abstract projectId: string with get, set
     abstract sourceFilter: string with get, set
     abstract subscriptionName: string with get, set
-    abstract substate: float with get, set
+    abstract substate: int with get, set
     abstract testCaseFilter: string with get, set
     abstract testEnvironmentUrl: string with get, set
-    abstract testRunId: float with get, set
+    abstract testRunId: int with get, set
 
 type [<RequireQualifiedAccess>] TestRunOutcome =
     | Passed = 0
@@ -2633,14 +2633,14 @@ type [<RequireQualifiedAccess>] TestRunSubstate =
 type [<AllowNullLiteral>] TestRunSummary2 =
     abstract isRerun: bool with get, set
     abstract projectId: string with get, set
-    abstract resultCount: float with get, set
-    abstract resultDuration: float with get, set
-    abstract runDuration: float with get, set
-    abstract testOutcome: float with get, set
+    abstract resultCount: int with get, set
+    abstract resultDuration: int with get, set
+    abstract runDuration: int with get, set
+    abstract testOutcome: int with get, set
     abstract testRunCompletedDate: DateTime with get, set
-    abstract testRunContextId: float with get, set
-    abstract testRunId: float with get, set
-    abstract testRunStatsId: float with get, set
+    abstract testRunContextId: int with get, set
+    abstract testRunId: int with get, set
+    abstract testRunStatsId: int with get, set
 
 type [<AllowNullLiteral>] TestRunWithDtlEnvEvent =
     inherit TestRunEvent
@@ -2658,7 +2658,7 @@ type [<AllowNullLiteral>] TestSession =
     /// Duration of the session
     abstract endDate: DateTime with get, set
     /// Id of the test session
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Last Updated By  Reference
     abstract lastUpdatedBy: WebApi.IdentityRef with get, set
     /// Last updated date
@@ -2670,7 +2670,7 @@ type [<AllowNullLiteral>] TestSession =
     /// Generic store for test session data
     abstract propertyBag: PropertyBag with get, set
     /// Revision of the test session
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Source of the test session
     abstract source: TestSessionSource with get, set
     /// Start date
@@ -2710,7 +2710,7 @@ type [<RequireQualifiedAccess>] TestSessionState =
 
 type [<AllowNullLiteral>] TestSessionWorkItemReference =
     /// Id of the workitem
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Type of the workitem
     abstract ``type``: string with get, set
 
@@ -2727,7 +2727,7 @@ type [<AllowNullLiteral>] TestSettings =
     /// Test settings content.
     abstract testSettingsContent: string with get, set
     /// Test settings id.
-    abstract testSettingsId: float with get, set
+    abstract testSettingsId: int with get, set
     /// Test settings name.
     abstract testSettingsName: string with get, set
 
@@ -2748,7 +2748,7 @@ type [<AllowNullLiteral>] TestSettings2 =
     /// Test settings content.
     abstract testSettingsContent: string with get, set
     /// Test settings id.
-    abstract testSettingsId: float with get, set
+    abstract testSettingsId: int with get, set
     /// Test settings name.
     abstract testSettingsName: string with get, set
 
@@ -2771,21 +2771,21 @@ type [<AllowNullLiteral>] TestSubResult =
     /// Name of sub result.
     abstract displayName: string with get, set
     /// Duration of test execution.
-    abstract durationInMs: float with get, set
+    abstract durationInMs: int with get, set
     /// Error message in sub result.
     abstract errorMessage: string with get, set
     /// ID of sub result.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Time when result last updated.
     abstract lastUpdatedDate: DateTime with get, set
     /// Outcome of sub result.
     abstract outcome: string with get, set
     /// Immediate parent ID of sub result.
-    abstract parentId: float with get, set
+    abstract parentId: int with get, set
     /// Hierarchy type of the result, default value of None means its leaf node.
     abstract resultGroupType: ResultGroupType with get, set
     /// Index number of sub result.
-    abstract sequenceId: float with get, set
+    abstract sequenceId: int with get, set
     /// Stacktrace.
     abstract stackTrace: string with get, set
     /// Time when test execution started.
@@ -2808,7 +2808,7 @@ type [<AllowNullLiteral>] TestSuite =
     /// Test suite default testers.
     abstract defaultTesters: ResizeArray<ShallowReference> with get, set
     /// Id of test suite.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Default configuration was inherited or not.
     abstract inheritDefaultConfigurations: bool with get, set
     /// Last error for test suite.
@@ -2830,9 +2830,9 @@ type [<AllowNullLiteral>] TestSuite =
     /// Test suite query string, for dynamic suites.
     abstract queryString: string with get, set
     /// Test suite requirement id.
-    abstract requirementId: float with get, set
+    abstract requirementId: int with get, set
     /// Test suite revision.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// State of test suite.
     abstract state: string with get, set
     /// List of shallow reference of suites.
@@ -2840,7 +2840,7 @@ type [<AllowNullLiteral>] TestSuite =
     /// Test suite type.
     abstract suiteType: string with get, set
     /// Test cases count.
-    abstract testCaseCount: float with get, set
+    abstract testCaseCount: int with get, set
     /// Test case url.
     abstract testCasesUrl: string with get, set
     /// Used in tree view. If test suite is root suite then, it is name of plan otherwise title of the suite.
@@ -2853,7 +2853,7 @@ type [<AllowNullLiteral>] TestSuiteCloneRequest =
     /// Clone options for cloning the test suite.
     abstract cloneOptions: CloneOptions with get, set
     /// Suite id under which, we have to clone the suite.
-    abstract destinationSuiteId: float with get, set
+    abstract destinationSuiteId: int with get, set
     /// Destination suite project name.
     abstract destinationSuiteProjectName: string with get, set
 
@@ -2883,24 +2883,24 @@ type [<AllowNullLiteral>] TestVariable =
     /// Description of the test variable
     abstract description: string with get, set
     /// Id of the test variable
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the test variable
     abstract name: string with get, set
     /// Project to which the test variable belongs
     abstract project: ShallowReference with get, set
     /// Revision
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Url of the test variable
     abstract url: string with get, set
     /// List of allowed values
     abstract values: ResizeArray<string> with get, set
 
 type [<AllowNullLiteral>] UpdatedProperties =
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract lastUpdated: DateTime with get, set
     abstract lastUpdatedBy: string with get, set
     abstract lastUpdatedByName: string with get, set
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 type [<AllowNullLiteral>] UpdateTestRunRequest =
     abstract attachmentsToAdd: ResizeArray<TestResultAttachment> with get, set
@@ -2936,13 +2936,13 @@ type [<AllowNullLiteral>] WorkItemToTestLinks =
     abstract workItem: WorkItemReference with get, set
 
 type [<AllowNullLiteral>] AggregatedDataForResultTrendResultsByOutcome =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> AggregatedResultsByOutcome with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> AggregatedResultsByOutcome with get, set
 
 type [<AllowNullLiteral>] AggregatedDataForResultTrendRunSummaryByState =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> AggregatedRunsByState with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> AggregatedRunsByState with get, set
 
 type [<AllowNullLiteral>] AggregatedResultsAnalysisRunSummaryByOutcome =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> AggregatedRunsByOutcome with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> AggregatedRunsByOutcome with get, set
 
 type [<AllowNullLiteral>] CloneOptionsOverrideParameters =
     [<Emit "$0[$1]{{=$2}}">] abstract Item: key: string -> string with get, set
@@ -2952,19 +2952,19 @@ type [<AllowNullLiteral>] PointWorkItemPropertyWorkItem =
     abstract value: obj option with get, set
 
 type [<AllowNullLiteral>] ResultsSummaryByOutcomeAggregatedResultDetailsByOutcome =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> AggregatedResultDetailsByOutcome with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> AggregatedResultDetailsByOutcome with get, set
 
 type [<AllowNullLiteral>] ResultSummaryResultSummaryByRunState =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> ResultsSummaryByOutcome with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> ResultsSummaryByOutcome with get, set
 
 type [<AllowNullLiteral>] RunSummaryRunSummaryByOutcome =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> float with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> float with get, set
 
 type [<AllowNullLiteral>] TestFieldDataDimensions =
     [<Emit "$0[$1]{{=$2}}">] abstract Item: key: string -> obj option with get, set
 
 type [<AllowNullLiteral>] TestTagSummaryTagsGroupByTestArtifact =
-    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: float -> ResizeArray<TestTag> with get, set
+    [<Emit "$0[$1]{{=$2}}">] abstract Item: key: int -> ResizeArray<TestTag> with get, set
 
 type [<AllowNullLiteral>] TestTagsUpdateModelTags =
     abstract key: OperationType with get, set

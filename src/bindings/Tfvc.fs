@@ -8,7 +8,7 @@ open Fable.Core.JS
 type [<AllowNullLiteral>] AssociatedWorkItem =
     abstract assignedTo: string with get, set
     /// Id of associated the work item.
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract state: string with get, set
     abstract title: string with get, set
     /// REST Url of the work item.
@@ -34,7 +34,7 @@ type [<AllowNullLiteral>] CheckinNote =
 
 type [<AllowNullLiteral>] FileContentMetadata =
     abstract contentType: string with get, set
-    abstract encoding: float with get, set
+    abstract encoding: int with get, set
     abstract extension: string with get, set
     abstract fileName: string with get, set
     abstract isBinary: bool with get, set
@@ -52,7 +52,7 @@ type [<AllowNullLiteral>] GitRepository =
     abstract project: Core.TeamProjectReference with get, set
     abstract remoteUrl: string with get, set
     /// Compressed size (bytes) of the repository.
-    abstract size: float with get, set
+    abstract size: int with get, set
     abstract sshUrl: string with get, set
     abstract url: string with get, set
     abstract validRemoteUrls: ResizeArray<string> with get, set
@@ -130,7 +130,7 @@ type [<AllowNullLiteral>] TfvcChange =
     /// List of merge sources in case of rename or branch creation.
     abstract mergeSources: ResizeArray<TfvcMergeSource> with get, set
     /// Version at which a (shelved) change was pended against
-    abstract pendingVersion: float with get, set
+    abstract pendingVersion: int with get, set
 
 /// A collection of changes.
 type [<AllowNullLiteral>] TfvcChangeset =
@@ -159,7 +159,7 @@ type [<AllowNullLiteral>] TfvcChangesetRef =
     /// Alias or display name of user.
     abstract author: WebApi.IdentityRef with get, set
     /// Changeset Id.
-    abstract changesetId: float with get, set
+    abstract changesetId: int with get, set
     /// Alias or display name of user.
     abstract checkedInBy: WebApi.IdentityRef with get, set
     /// Comment for the changeset.
@@ -180,7 +180,7 @@ type [<AllowNullLiteral>] TfvcChangesetSearchCriteria =
     /// If provided, only include changesets created after this date (string).
     abstract fromDate: string with get, set
     /// If provided, only include changesets after this changesetID.
-    abstract fromId: float with get, set
+    abstract fromId: int with get, set
     /// Whether to include the _links field on the shallow references.
     abstract includeLinks: bool with get, set
     /// Path of item to search under.
@@ -189,14 +189,14 @@ type [<AllowNullLiteral>] TfvcChangesetSearchCriteria =
     /// If provided, only include changesets created before this date (string).
     abstract toDate: string with get, set
     /// If provided, a version descriptor for the latest change list to include.
-    abstract toId: float with get, set
+    abstract toId: int with get, set
 
 /// Request body for Get batched changesets.
 type [<AllowNullLiteral>] TfvcChangesetsRequestData =
     /// List of changeset Ids.
     abstract changesetIds: ResizeArray<float> with get, set
     /// Max length of the comment.
-    abstract commentLength: float with get, set
+    abstract commentLength: int with get, set
     /// Whether to include the _links field on the shallow references
     abstract includeLinks: bool with get, set
 
@@ -206,9 +206,9 @@ type [<AllowNullLiteral>] TfvcItem =
     /// Item changed datetime.
     abstract changeDate: DateTime with get, set
     /// Greater than 0 if item is deleted.
-    abstract deletionId: float with get, set
+    abstract deletionId: int with get, set
     /// File encoding from database, -1 represents binary.
-    abstract encoding: float with get, set
+    abstract encoding: int with get, set
     /// MD5 hash as a base 64 string, applies to files only.
     abstract hashValue: string with get, set
     /// True if item is a branch.
@@ -216,9 +216,9 @@ type [<AllowNullLiteral>] TfvcItem =
     /// True if there is a change pending.
     abstract isPendingChange: bool with get, set
     /// The size of the file, if applicable.
-    abstract size: float with get, set
+    abstract size: int with get, set
     /// Changeset version Id.
-    abstract version: float with get, set
+    abstract version: int with get, set
 
 /// Item path and Version descriptor properties
 type [<AllowNullLiteral>] TfvcItemDescriptor =
@@ -254,7 +254,7 @@ type [<AllowNullLiteral>] TfvcLabelRef =
     /// Label description.
     abstract description: string with get, set
     /// Label Id.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Label scope.
     abstract labelScope: string with get, set
     /// Last modified datetime for the label.
@@ -271,7 +271,7 @@ type [<AllowNullLiteral>] TfvcLabelRequestData =
     abstract includeLinks: bool with get, set
     abstract itemLabelFilter: string with get, set
     abstract labelScope: string with get, set
-    abstract maxItemCount: float with get, set
+    abstract maxItemCount: int with get, set
     abstract name: string with get, set
     abstract owner: string with get, set
 
@@ -288,9 +288,9 @@ type [<AllowNullLiteral>] TfvcMergeSource =
     /// The server item of the merge source.
     abstract serverItem: string with get, set
     /// Start of the version range.
-    abstract versionFrom: float with get, set
+    abstract versionFrom: int with get, set
     /// End of the version range.
-    abstract versionTo: float with get, set
+    abstract versionTo: int with get, set
 
 /// Policy failure information.
 type [<AllowNullLiteral>] TfvcPolicyFailureInfo =
@@ -350,9 +350,9 @@ type [<AllowNullLiteral>] TfvcShelvesetRequestData =
     /// Whether to include workItems
     abstract includeWorkItems: bool with get, set
     /// Max number of changes to include
-    abstract maxChangeCount: float with get, set
+    abstract maxChangeCount: int with get, set
     /// Max length of comment
-    abstract maxCommentLength: float with get, set
+    abstract maxCommentLength: int with get, set
     /// Shelveset name
     abstract name: string with get, set
     /// Owner's ID. Could be a name or a guid.
@@ -360,9 +360,9 @@ type [<AllowNullLiteral>] TfvcShelvesetRequestData =
 
 type [<AllowNullLiteral>] TfvcStatistics =
     /// Id of the last changeset the stats are based on.
-    abstract changesetId: float with get, set
+    abstract changesetId: int with get, set
     /// Count of files at the requested scope.
-    abstract fileCountTotal: float with get, set
+    abstract fileCountTotal: int with get, set
 
 /// Version descriptor properties.
 type [<AllowNullLiteral>] TfvcVersionDescriptor =

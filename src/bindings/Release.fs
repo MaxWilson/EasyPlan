@@ -39,7 +39,7 @@ type [<AllowNullLiteral>] AgentDeploymentInput =
     /// Specification for an agent on which a job gets executed.
     abstract agentSpecification: AgentSpecification with get, set
     /// Gets or sets the image ID.
-    abstract imageId: float with get, set
+    abstract imageId: int with get, set
     /// Gets or sets the parallel execution input.
     abstract parallelExecution: ExecutionInput with get, set
 
@@ -47,7 +47,7 @@ type [<AllowNullLiteral>] AgentDeploymentInput =
 type [<AllowNullLiteral>] AgentPoolQueueReference =
     inherit ResourceReference
     /// The ID of the queue.
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 /// Specification of the agent defined by the pool provider.
 type [<AllowNullLiteral>] AgentSpecification =
@@ -76,9 +76,9 @@ type [<AllowNullLiteral>] ApprovalOptions =
     /// Specify whether the user requesting a release or deployment should allow to approver.
     abstract releaseCreatorCanBeApprover: bool with get, set
     /// The number of approvals required to move release forward. '0' means all approvals required.
-    abstract requiredApproverCount: float with get, set
+    abstract requiredApproverCount: int with get, set
     /// Approval timeout. Approval default timeout is 30 days. Maximum allowed timeout is 365 days. '0' means default timeout i.e 30 days.
-    abstract timeoutInMinutes: float with get, set
+    abstract timeoutInMinutes: int with get, set
 
 type [<RequireQualifiedAccess>] ApprovalStatus =
     | Undefined = 0
@@ -160,7 +160,7 @@ type [<AllowNullLiteral>] ArtifactMetadata =
 
 type [<AllowNullLiteral>] ArtifactProvider =
     /// Gets or sets the id of artifact provider.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets the name of artifact provider.
     abstract name: string with get, set
     /// Gets or sets the link of artifact provider.
@@ -281,11 +281,11 @@ type [<AllowNullLiteral>] BaseDeploymentInput =
     /// Gets or sets the job condition.
     abstract condition: string with get, set
     /// Gets or sets the job cancel timeout in minutes for deployment which are cancelled by user for this release environment.
-    abstract jobCancelTimeoutInMinutes: float with get, set
+    abstract jobCancelTimeoutInMinutes: int with get, set
     /// Gets or sets the override inputs.
     abstract overrideInputs: ArtifactContributionDefinitionArtifactTypeStreamMapping with get, set
     /// Gets or sets the job execution timeout in minutes for deployment which are queued against this release environment.
-    abstract timeoutInMinutes: float with get, set
+    abstract timeoutInMinutes: int with get, set
 
 type [<AllowNullLiteral>] BuildArtifactDownloadInput =
     inherit ArtifactDownloadInputBase
@@ -369,7 +369,7 @@ type [<AllowNullLiteral>] ConfigurationVariableValue =
 
 type [<AllowNullLiteral>] Consumer =
     /// ID of the consumer.
-    abstract consumerId: float with get, set
+    abstract consumerId: int with get, set
     /// Name of the consumer.
     abstract consumerName: string with get, set
 
@@ -428,11 +428,11 @@ type [<AllowNullLiteral>] DataSourceBinding =
 
 type [<AllowNullLiteral>] DefinitionEnvironmentReference =
     /// Definition environment ID.
-    abstract definitionEnvironmentId: float with get, set
+    abstract definitionEnvironmentId: int with get, set
     /// Definition environment name.
     abstract definitionEnvironmentName: string with get, set
     /// ReleaseDefinition ID.
-    abstract releaseDefinitionId: float with get, set
+    abstract releaseDefinitionId: int with get, set
     /// ReleaseDefinition name.
     abstract releaseDefinitionName: string with get, set
 
@@ -446,17 +446,17 @@ type [<AllowNullLiteral>] Deployment =
     /// Gets links to access the deployment.
     abstract _links: obj option with get, set
     /// Gets attempt number.
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// Gets the date on which deployment is complete.
     abstract completedOn: DateTime with get, set
     /// Gets the list of condition associated with deployment.
     abstract conditions: ResizeArray<Condition> with get, set
     /// Gets release definition environment id.
-    abstract definitionEnvironmentId: float with get, set
+    abstract definitionEnvironmentId: int with get, set
     /// Gets status of the deployment.
     abstract deploymentStatus: DeploymentStatus with get, set
     /// Gets the unique identifier for deployment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets the identity who last modified the deployment.
     abstract lastModifiedBy: WebApi.IdentityRef with get, set
     /// Gets the date on which deployment is last modified.
@@ -506,15 +506,15 @@ type [<AllowNullLiteral>] DeploymentApprovalPendingEvent =
 
 type [<AllowNullLiteral>] DeploymentAttempt =
     /// Deployment attempt.
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// ID of the deployment.
-    abstract deploymentId: float with get, set
+    abstract deploymentId: int with get, set
     /// Error log to show any unexpected error that occurred during executing deploy step
     abstract errorLog: string with get, set
     /// Specifies whether deployment has started or not.
     abstract hasStarted: bool with get, set
     /// ID of deployment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// All the issues related to the deployment.
     abstract issues: ResizeArray<Issue> with get, set
     abstract job: ReleaseTask with get, set
@@ -580,7 +580,7 @@ type [<AllowNullLiteral>] DeploymentInput =
     /// Indicates whether to include access token in deployment job or not.
     abstract enableAccessToken: bool with get, set
     /// Id of the pool on which job get executed.
-    abstract queueId: float with get, set
+    abstract queueId: int with get, set
     /// Indicates whether artifacts downloaded while job execution or not.
     abstract skipArtifactsDownload: bool with get, set
 
@@ -628,7 +628,7 @@ type [<AllowNullLiteral>] DeploymentQueryParameters =
     /// Query deployments based specified artifact versions.
     abstract artifactVersions: ResizeArray<string> with get, set
     /// Query deployments number of deployments per environment.
-    abstract deploymentsPerEnvironment: float with get, set
+    abstract deploymentsPerEnvironment: int with get, set
     /// Query deployment based on deployment status.
     abstract deploymentStatus: DeploymentStatus with get, set
     /// Query deployments of specified environments.
@@ -638,7 +638,7 @@ type [<AllowNullLiteral>] DeploymentQueryParameters =
     /// Specify deleted deployments should return or not.
     abstract isDeleted: bool with get, set
     abstract latestDeploymentsOnly: bool with get, set
-    abstract maxDeploymentsPerEnvironment: float with get, set
+    abstract maxDeploymentsPerEnvironment: int with get, set
     abstract maxModifiedTime: DateTime with get, set
     abstract minModifiedTime: DateTime with get, set
     /// Query deployment based on deployment operation status.
@@ -680,7 +680,7 @@ type [<AllowNullLiteral>] DeployPhase =
     /// Indicates the deploy phase type.
     abstract phaseType: DeployPhaseTypes with get, set
     /// Gets and sets the rank of deploy phase.
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// Gets and sets the reference name of deploy phase.
     abstract refName: string with get, set
     /// Gets and sets the workflow tasks for the deploy phase.
@@ -713,9 +713,9 @@ type [<AllowNullLiteral>] EmailRecipients =
 /// Defines policy on environment queuing at Release Management side queue. We will send to Environment Runner [creating pre-deploy and other steps] only when the policies mentioned are satisfied.
 type [<AllowNullLiteral>] EnvironmentExecutionPolicy =
     /// This policy decides, how many environments would be with Environment Runner.
-    abstract concurrencyCount: float with get, set
+    abstract concurrencyCount: int with get, set
     /// Queue depth in the EnvironmentQueue table, this table keeps the environment entries till Environment Runner is free [as per it's policy] to take another environment for running.
-    abstract queueDepthCount: float with get, set
+    abstract queueDepthCount: int with get, set
 
 type [<AllowNullLiteral>] EnvironmentOptions =
     /// Gets and sets as the auto link workitems or not.
@@ -730,13 +730,13 @@ type [<AllowNullLiteral>] EnvironmentOptions =
     /// Gets and sets as the.pull request deployment enabled or not.
     abstract pullRequestDeploymentEnabled: bool with get, set
     abstract skipArtifactsDownload: bool with get, set
-    abstract timeoutInMinutes: float with get, set
+    abstract timeoutInMinutes: int with get, set
 
 type [<AllowNullLiteral>] EnvironmentRetentionPolicy =
     /// Gets and sets the number of days to keep environment.
-    abstract daysToKeep: float with get, set
+    abstract daysToKeep: int with get, set
     /// Gets and sets the number of releases to keep.
-    abstract releasesToKeep: float with get, set
+    abstract releasesToKeep: int with get, set
     /// Gets and sets as the build to be retained or not.
     abstract retainBuild: bool with get, set
 
@@ -753,9 +753,9 @@ type [<RequireQualifiedAccess>] EnvironmentStatus =
 
 type [<AllowNullLiteral>] EnvironmentTrigger =
     /// Definition environment ID on which this trigger applicable.
-    abstract definitionEnvironmentId: float with get, set
+    abstract definitionEnvironmentId: int with get, set
     /// ReleaseDefinition ID on which this trigger applicable.
-    abstract releaseDefinitionId: float with get, set
+    abstract releaseDefinitionId: int with get, set
     /// Gets or sets the trigger content.
     abstract triggerContent: string with get, set
     /// Gets or sets the trigger type.
@@ -809,11 +809,11 @@ type [<RequireQualifiedAccess>] FolderPathQueryOrder =
 type [<AllowNullLiteral>] GatesDeploymentInput =
     inherit BaseDeploymentInput
     /// Gates minimum success duration.
-    abstract minimumSuccessDuration: float with get, set
+    abstract minimumSuccessDuration: int with get, set
     /// Gates sampling interval.
-    abstract samplingInterval: float with get, set
+    abstract samplingInterval: int with get, set
     /// Gates stabilization time.
-    abstract stabilizationTime: float with get, set
+    abstract stabilizationTime: int with get, set
 
 type [<AllowNullLiteral>] GatesDeployPhase =
     inherit DeployPhase
@@ -872,7 +872,7 @@ type [<AllowNullLiteral>] MachineGroupDeploymentInput =
     /// Deployment group health option.
     abstract deploymentHealthOption: string with get, set
     /// Minimum percentage of the targets guaranteed to be healthy.
-    abstract healthPercent: float with get, set
+    abstract healthPercent: int with get, set
     /// Deployment target tag filter.
     abstract tags: ResizeArray<string> with get, set
 
@@ -914,7 +914,7 @@ type [<AllowNullLiteral>] ManualIntervention =
     /// Gets date on which it got created.
     abstract createdOn: DateTime with get, set
     /// Gets the unique identifier for manual intervention.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets instructions for approval.
     abstract instructions: string with get, set
     /// Gets date on which it got modified.
@@ -954,7 +954,7 @@ type [<AllowNullLiteral>] Metric =
     /// Name of the Metric.
     abstract name: string with get, set
     /// Value of the Metric.
-    abstract value: float with get, set
+    abstract value: int with get, set
 
 type [<AllowNullLiteral>] MultiConfigInput =
     inherit ParallelExecutionInputBase
@@ -974,7 +974,7 @@ type [<AllowNullLiteral>] ParallelExecutionInputBase =
     /// Indicate whether continue execution of deployment on error or not.
     abstract continueOnError: bool with get, set
     /// Maximum number of agents used while parallel execution.
-    abstract maxNumberOfAgents: float with get, set
+    abstract maxNumberOfAgents: int with get, set
 
 type [<RequireQualifiedAccess>] ParallelExecutionTypes =
     | None = 0
@@ -1037,18 +1037,18 @@ type [<AllowNullLiteral>] QueuedReleaseData =
     /// Project ID of the release.
     abstract projectId: string with get, set
     /// Release queue position.
-    abstract queuePosition: float with get, set
+    abstract queuePosition: int with get, set
     /// Queued release ID.
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
 
 type [<AllowNullLiteral>] RealtimeReleaseDefinitionEvent =
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     abstract projectId: string with get, set
 
 type [<AllowNullLiteral>] RealtimeReleaseEvent =
-    abstract environmentId: float with get, set
+    abstract environmentId: int with get, set
     abstract projectId: string with get, set
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
 
 type [<AllowNullLiteral>] Release =
     /// Gets links to access the release.
@@ -1062,13 +1062,13 @@ type [<AllowNullLiteral>] Release =
     /// Gets date on which it got created.
     abstract createdOn: DateTime with get, set
     /// Gets revision number of definition snapshot.
-    abstract definitionSnapshotRevision: float with get, set
+    abstract definitionSnapshotRevision: int with get, set
     /// Gets or sets description of release.
     abstract description: string with get, set
     /// Gets list of environments.
     abstract environments: ResizeArray<ReleaseEnvironment> with get, set
     /// Gets the unique identifier of this field.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Whether to exclude the release from retention policies.
     abstract keepForever: bool with get, set
     /// Gets logs container url.
@@ -1089,7 +1089,7 @@ type [<AllowNullLiteral>] Release =
     /// Gets releaseDefinitionReference which specifies the reference of the release definition to which this release is associated.
     abstract releaseDefinition: ReleaseDefinitionShallowReference with get, set
     /// Gets or sets the release definition revision.
-    abstract releaseDefinitionRevision: float with get, set
+    abstract releaseDefinitionRevision: int with get, set
     /// Gets release name format.
     abstract releaseNameFormat: string with get, set
     /// Gets status.
@@ -1115,7 +1115,7 @@ type [<AllowNullLiteral>] ReleaseApproval =
     /// Gets or sets the identity who should approve.
     abstract approver: WebApi.IdentityRef with get, set
     /// Gets or sets attempt which specifies as which deployment attempt it belongs.
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// Gets or sets comments for approval.
     abstract comments: string with get, set
     /// Gets date on which it got created.
@@ -1123,14 +1123,14 @@ type [<AllowNullLiteral>] ReleaseApproval =
     /// Gets history which specifies all approvals associated with this approval.
     abstract history: ResizeArray<ReleaseApprovalHistory> with get, set
     /// Gets the unique identifier of this field.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets as approval is automated or not.
     abstract isAutomated: bool with get, set
     abstract isNotificationOn: bool with get, set
     /// Gets date on which it got modified.
     abstract modifiedOn: DateTime with get, set
     /// Gets or sets rank which specifies the order of the approval. e.g. Same rank denotes parallel approval.
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// Gets releaseReference which specifies the reference of the release to which this approval is associated.
     abstract release: ReleaseShallowReference with get, set
     /// Gets releaseDefinitionReference which specifies the reference of the release definition to which this approval is associated.
@@ -1138,10 +1138,10 @@ type [<AllowNullLiteral>] ReleaseApproval =
     /// Gets releaseEnvironmentReference which specifies the reference of the release environment to which this approval is associated.
     abstract releaseEnvironment: ReleaseEnvironmentShallowReference with get, set
     /// Gets the revision number.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Gets or sets the status of the approval.
     abstract status: ApprovalStatus with get, set
-    abstract trialNumber: float with get, set
+    abstract trialNumber: int with get, set
     /// Gets url to access the approval.
     abstract url: string with get, set
 
@@ -1157,7 +1157,7 @@ type [<AllowNullLiteral>] ReleaseApprovalHistory =
     /// Time when this approval modified.
     abstract modifiedOn: DateTime with get, set
     /// Approval history revision.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 type [<AllowNullLiteral>] ReleaseApprovalPendingEvent =
     abstract approval: ReleaseApproval with get, set
@@ -1165,7 +1165,7 @@ type [<AllowNullLiteral>] ReleaseApprovalPendingEvent =
     abstract completedApprovals: ResizeArray<ReleaseApproval> with get, set
     abstract definitionName: string with get, set
     abstract deployment: Deployment with get, set
-    abstract environmentId: float with get, set
+    abstract environmentId: int with get, set
     abstract environmentName: string with get, set
     abstract environments: ResizeArray<ReleaseEnvironment> with get, set
     abstract isMultipleRankApproval: bool with get, set
@@ -1183,15 +1183,15 @@ type [<AllowNullLiteral>] ReleaseArtifact =
     /// Gets or sets the definition json of ReleaseArtifact.
     abstract definitionData: string with get, set
     /// Gets or sets the definition id of ReleaseArtifact.
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     /// Gets or sets the description of ReleaseArtifact.
     abstract description: string with get, set
     /// Gets or sets the id of ReleaseArtifact.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets the name of ReleaseArtifact.
     abstract name: string with get, set
     /// Gets or sets the release id.
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
 
 type [<AllowNullLiteral>] ReleaseCondition =
     inherit Condition
@@ -1232,7 +1232,7 @@ type [<AllowNullLiteral>] ReleaseDefinition =
     abstract releaseNameFormat: string with get, set
     abstract retentionPolicy: RetentionPolicy with get, set
     /// Gets the revision number.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// Gets or sets source of release definition.
     abstract source: ReleaseDefinitionSource with get, set
     /// Gets or sets list of tags.
@@ -1259,7 +1259,7 @@ type [<AllowNullLiteral>] ReleaseDefinitionApprovalStep =
     /// Indicates whether the approval notification set.
     abstract isNotificationOn: bool with get, set
     /// Gets or sets the rank of approval step.
-    abstract rank: float with get, set
+    abstract rank: int with get, set
 
 type [<AllowNullLiteral>] ReleaseDefinitionDeployStep =
     inherit ReleaseDefinitionEnvironmentStep
@@ -1286,7 +1286,7 @@ type [<AllowNullLiteral>] ReleaseDefinitionEnvironment =
     /// Gets or sets the environment execution policy.
     abstract executionPolicy: EnvironmentExecutionPolicy with get, set
     /// Gets and sets the ID of the ReleaseDefinitionEnvironment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets and sets the name of the ReleaseDefinitionEnvironment.
     abstract name: string with get, set
     /// Gets and sets the Owner of the ReleaseDefinitionEnvironment.
@@ -1304,9 +1304,9 @@ type [<AllowNullLiteral>] ReleaseDefinitionEnvironment =
     /// Gets or sets the properties on environment.
     abstract properties: obj option with get, set
     /// Gets or sets the queue ID.
-    abstract queueId: float with get, set
+    abstract queueId: int with get, set
     /// Gets and sets the rank of the ReleaseDefinitionEnvironment.
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// Gets or sets the environment retention policy.
     abstract retentionPolicy: EnvironmentRetentionPolicy with get, set
     abstract runOptions: ArtifactContributionDefinitionArtifactTypeStreamMapping with get, set
@@ -1319,11 +1319,11 @@ type [<AllowNullLiteral>] ReleaseDefinitionEnvironment =
 
 type [<AllowNullLiteral>] ReleaseDefinitionEnvironmentStep =
     /// ID of the approval or deploy step.
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 type [<AllowNullLiteral>] ReleaseDefinitionEnvironmentSummary =
     /// ID of ReleaseDefinition environment summary.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// List of release shallow reference deployed using this ReleaseDefinition.
     abstract lastReleases: ResizeArray<ReleaseShallowReference> with get, set
     /// Name of ReleaseDefinition environment summary.
@@ -1366,13 +1366,13 @@ type [<AllowNullLiteral>] ReleaseDefinitionGatesOptions =
     /// Gets or sets as the gates enabled or not.
     abstract isEnabled: bool with get, set
     /// Gets or sets the minimum duration for steady results after a successful gates evaluation.
-    abstract minimumSuccessDuration: float with get, set
+    abstract minimumSuccessDuration: int with get, set
     /// Gets or sets the time between re-evaluation of gates.
-    abstract samplingInterval: float with get, set
+    abstract samplingInterval: int with get, set
     /// Gets or sets the delay before evaluation.
-    abstract stabilizationTime: float with get, set
+    abstract stabilizationTime: int with get, set
     /// Gets or sets the timeout after which gates fail.
-    abstract timeout: float with get, set
+    abstract timeout: int with get, set
 
 type [<AllowNullLiteral>] ReleaseDefinitionGatesStep =
     /// Gets or sets the gates.
@@ -1380,7 +1380,7 @@ type [<AllowNullLiteral>] ReleaseDefinitionGatesStep =
     /// Gets or sets the gate options.
     abstract gatesOptions: ReleaseDefinitionGatesOptions with get, set
     /// ID of the ReleaseDefinitionGateStep.
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 type [<RequireQualifiedAccess>] ReleaseDefinitionQueryOrder =
     | IdAscending = 0
@@ -1400,17 +1400,17 @@ type [<AllowNullLiteral>] ReleaseDefinitionRevision =
     /// Gets comments for revision.
     abstract comment: string with get, set
     /// Get id of the definition.
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     /// Gets definition URL.
     abstract definitionUrl: string with get, set
     /// Get revision number of the definition.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 type [<AllowNullLiteral>] ReleaseDefinitionShallowReference =
     /// Gets the links to related resources, APIs, and views for the release definition.
     abstract _links: obj option with get, set
     /// Gets the unique identifier of release definition.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets the name of the release definition.
     abstract name: string with get, set
     /// Gets or sets the path of the release definition.
@@ -1445,7 +1445,7 @@ type [<AllowNullLiteral>] ReleaseDeployPhase =
     /// Phase execution error logs.
     abstract errorLog: string with get, set
     /// ID of the phase.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// List of manual intervention tasks execution information in phase.
     abstract manualInterventions: ResizeArray<ManualIntervention> with get, set
     /// Name of the phase.
@@ -1455,7 +1455,7 @@ type [<AllowNullLiteral>] ReleaseDeployPhase =
     /// Type of the phase.
     abstract phaseType: DeployPhaseTypes with get, set
     /// Rank of the phase.
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// Run Plan ID of the phase.
     abstract runPlanId: string with get, set
     /// Phase start time.
@@ -1469,7 +1469,7 @@ type [<AllowNullLiteral>] ReleaseEnvironment =
     /// Gets date on which it got created.
     abstract createdOn: DateTime with get, set
     /// Gets definition environment id.
-    abstract definitionEnvironmentId: float with get, set
+    abstract definitionEnvironmentId: int with get, set
     /// Gets demands.
     abstract demands: ResizeArray<Demand> with get, set
     /// Gets list of deploy phases snapshot.
@@ -1479,7 +1479,7 @@ type [<AllowNullLiteral>] ReleaseEnvironment =
     /// Gets environment options.
     abstract environmentOptions: EnvironmentOptions with get, set
     /// Gets the unique identifier of this field.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets date on which it got modified.
     abstract modifiedOn: DateTime with get, set
     /// Gets name.
@@ -1503,9 +1503,9 @@ type [<AllowNullLiteral>] ReleaseEnvironment =
     /// Gets process parameters.
     abstract processParameters: DistributedTaskCommon.ProcessParameters with get, set
     /// Gets queue id.
-    abstract queueId: float with get, set
+    abstract queueId: int with get, set
     /// Gets rank.
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// Gets release reference which specifies the reference of the release to which this release environment is associated.
     abstract release: ReleaseShallowReference with get, set
     /// Gets the identity who created release.
@@ -1515,7 +1515,7 @@ type [<AllowNullLiteral>] ReleaseEnvironment =
     /// Gets release description.
     abstract releaseDescription: string with get, set
     /// Gets release id.
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
     /// Gets schedule deployment time of release environment.
     abstract scheduledDeploymentTime: DateTime with get, set
     /// Gets list of schedules.
@@ -1523,7 +1523,7 @@ type [<AllowNullLiteral>] ReleaseEnvironment =
     /// Gets environment status.
     abstract status: EnvironmentStatus with get, set
     /// Gets time to deploy.
-    abstract timeToDeploy: float with get, set
+    abstract timeToDeploy: int with get, set
     /// Gets trigger reason.
     abstract triggerReason: string with get, set
     /// Gets the list of variable groups.
@@ -1535,10 +1535,10 @@ type [<AllowNullLiteral>] ReleaseEnvironment =
 
 type [<AllowNullLiteral>] ReleaseEnvironmentCompletedEvent =
     abstract createdByName: string with get, set
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     abstract definitionName: string with get, set
     abstract environment: ReleaseEnvironment with get, set
-    abstract environmentId: float with get, set
+    abstract environmentId: int with get, set
     abstract projectName: string with get, set
     abstract reason: DeploymentReason with get, set
     abstract releaseCreatedBy: WebApi.IdentityRef with get, set
@@ -1552,7 +1552,7 @@ type [<AllowNullLiteral>] ReleaseEnvironmentShallowReference =
     /// Gets the links to related resources, APIs, and views for the release environment.
     abstract _links: obj option with get, set
     /// Gets the unique identifier of release environment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets the name of the release environment.
     abstract name: string with get, set
     /// Gets the REST API url to access the release environment.
@@ -1560,11 +1560,11 @@ type [<AllowNullLiteral>] ReleaseEnvironmentShallowReference =
 
 type [<AllowNullLiteral>] ReleaseEnvironmentStatusUpdatedEvent =
     inherit RealtimeReleaseDefinitionEvent
-    abstract environmentId: float with get, set
+    abstract environmentId: int with get, set
     abstract environmentStatus: EnvironmentStatus with get, set
     abstract latestDeploymentOperationStatus: DeploymentOperationStatus with get, set
     abstract latestDeploymentStatus: DeploymentStatus with get, set
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
 
 type [<AllowNullLiteral>] ReleaseEnvironmentUpdateMetadata =
     /// Gets or sets comment.
@@ -1589,7 +1589,7 @@ type [<AllowNullLiteral>] ReleaseGates =
     /// Contains the gates job details of each evaluation.
     abstract deploymentJobs: ResizeArray<DeploymentJob> with get, set
     /// ID of release gates.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// List of ignored gates.
     abstract ignoredGates: ResizeArray<IgnoredGate> with get, set
     /// Gates last modified time.
@@ -1649,7 +1649,7 @@ type [<AllowNullLiteral>] ReleaseReference =
     /// Gets description.
     abstract description: string with get, set
     /// ID of the Release.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets the identity who modified release.
     abstract modifiedBy: WebApi.IdentityRef with get, set
     /// Gets name of release.
@@ -1673,9 +1673,9 @@ type [<AllowNullLiteral>] ReleaseRevision =
     /// Comment of the revision.
     abstract comment: string with get, set
     /// Release ID of which this revision belongs.
-    abstract definitionSnapshotRevision: float with get, set
+    abstract definitionSnapshotRevision: int with get, set
     /// Gets or sets the release ID of which this revision belongs.
-    abstract releaseId: float with get, set
+    abstract releaseId: int with get, set
 
 type [<AllowNullLiteral>] ReleaseSchedule =
     /// Days of the week to release.
@@ -1685,9 +1685,9 @@ type [<AllowNullLiteral>] ReleaseSchedule =
     /// Flag to determine if this schedule should only release if the associated artifact has been changed or release definition changed.
     abstract scheduleOnlyWithChanges: bool with get, set
     /// Local time zone hour to start.
-    abstract startHours: float with get, set
+    abstract startHours: int with get, set
     /// Local time zone minute to start.
-    abstract startMinutes: float with get, set
+    abstract startMinutes: int with get, set
     /// Time zone Id of release schedule, such as 'UTC'.
     abstract timeZoneId: string with get, set
 
@@ -1701,7 +1701,7 @@ type [<AllowNullLiteral>] ReleaseShallowReference =
     /// Gets the links to related resources, APIs, and views for the release.
     abstract _links: obj option with get, set
     /// Gets the unique identifier of release.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Gets or sets the name of the release.
     abstract name: string with get, set
     /// Gets the REST API url to access the release.
@@ -1709,7 +1709,7 @@ type [<AllowNullLiteral>] ReleaseShallowReference =
 
 type [<AllowNullLiteral>] ReleaseStartEnvironmentMetadata =
     /// Sets release definition environment id.
-    abstract definitionEnvironmentId: float with get, set
+    abstract definitionEnvironmentId: int with get, set
     /// Sets list of environments variables to be overridden at deployment time.
     abstract variables: ReleaseVariables with get, set
 
@@ -1717,7 +1717,7 @@ type [<AllowNullLiteral>] ReleaseStartMetadata =
     /// Sets list of artifact to create a release.
     abstract artifacts: ResizeArray<ArtifactMetadata> with get, set
     /// Sets definition Id to create a release.
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     /// Sets description to create a release.
     abstract description: string with get, set
     /// Sets list of environments meta data.
@@ -1746,19 +1746,19 @@ type [<AllowNullLiteral>] ReleaseTask =
     /// Finish time of the release task.
     abstract finishTime: DateTime with get, set
     /// ID of the release task.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// List of issues occurred while execution of task.
     abstract issues: ResizeArray<Issue> with get, set
     /// Number of lines log release task has.
-    abstract lineCount: float with get, set
+    abstract lineCount: int with get, set
     /// Log URL of the task.
     abstract logUrl: string with get, set
     /// Name of the task.
     abstract name: string with get, set
     /// Task execution complete precent.
-    abstract percentComplete: float with get, set
+    abstract percentComplete: int with get, set
     /// Rank of the release task.
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// Result code of the task.
     abstract resultCode: string with get, set
     /// ID of the release task.
@@ -1798,8 +1798,8 @@ type [<AllowNullLiteral>] ReleaseTasksUpdatedEvent =
     inherit RealtimeReleaseEvent
     abstract job: ReleaseTask with get, set
     abstract planId: string with get, set
-    abstract releaseDeployPhaseId: float with get, set
-    abstract releaseStepId: float with get, set
+    abstract releaseDeployPhaseId: int with get, set
+    abstract releaseStepId: int with get, set
     abstract tasks: ResizeArray<ReleaseTask> with get, set
 
 type [<AllowNullLiteral>] ReleaseTriggerBase =
@@ -1853,11 +1853,11 @@ type [<AllowNullLiteral>] ResourceReference =
 
 type [<AllowNullLiteral>] RetentionPolicy =
     /// Indicates the number of days to keep deployment.
-    abstract daysToKeep: float with get, set
+    abstract daysToKeep: int with get, set
 
 type [<AllowNullLiteral>] RetentionSettings =
     /// Number of days to keep deleted releases.
-    abstract daysToKeepDeletedReleases: float with get, set
+    abstract daysToKeepDeletedReleases: int with get, set
     /// Specifies the default environment retention policy.
     abstract defaultEnvironmentRetentionPolicy: EnvironmentRetentionPolicy with get, set
     /// Specifies the maximum environment retention policy.
@@ -1933,7 +1933,7 @@ type [<AllowNullLiteral>] SummaryMailSection =
     /// Html content of summary mail.
     abstract htmlContent: string with get, set
     /// Rank of the summary mail.
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// Summary mail section type. MailSectionType has section types.
     abstract sectionType: MailSectionType with get, set
     /// Title of the summary mail.
@@ -1987,7 +1987,7 @@ type [<AllowNullLiteral>] VariableGroup =
     /// Gets or sets description.
     abstract description: string with get, set
     /// Gets the unique identifier of this field.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Denotes if a variable group is shared with other project or not.
     abstract isShared: bool with get, set
     /// Gets or sets the identity who modified.
@@ -2052,7 +2052,7 @@ type [<AllowNullLiteral>] WorkflowTask =
     /// Gets or sets the ID of the task.
     abstract taskId: string with get, set
     /// Gets or sets the task timeout.
-    abstract timeoutInMinutes: float with get, set
+    abstract timeoutInMinutes: int with get, set
     /// Gets or sets the version of the task.
     abstract version: string with get, set
 

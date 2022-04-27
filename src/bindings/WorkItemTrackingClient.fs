@@ -50,11 +50,11 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="ids">- Comma separated integer classification nodes ids. It's not required, if you want root nodes.</param>
     /// <param name="depth">- Depth of children to fetch.</param>
     /// <param name="errorPolicy">- Flag to handle errors in getting some nodes. Possible options are Fail and Omit.</param>
-    abstract getClassificationNodes: project: string * ids: ResizeArray<float> * ?depth: float * ?errorPolicy: WorkItemTracking.ClassificationNodesErrorPolicy -> Promise<ResizeArray<WorkItemTracking.WorkItemClassificationNode>>
+    abstract getClassificationNodes: project: string * ids: ResizeArray<float> * ?depth: int * ?errorPolicy: WorkItemTracking.ClassificationNodesErrorPolicy -> Promise<ResizeArray<WorkItemTracking.WorkItemClassificationNode>>
     /// <summary>Gets root classification nodes under the project.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="depth">- Depth of children to fetch.</param>
-    abstract getRootNodes: project: string * ?depth: float -> Promise<ResizeArray<WorkItemTracking.WorkItemClassificationNode>>
+    abstract getRootNodes: project: string * ?depth: int -> Promise<ResizeArray<WorkItemTracking.WorkItemClassificationNode>>
     /// <summary>Create new or update an existing classification node.</summary>
     /// <param name="postedNode">- Node to create or update.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -66,13 +66,13 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="structureGroup">- Structure group of the classification node, area or iteration.</param>
     /// <param name="path">- Path of the classification node.</param>
     /// <param name="reclassifyId">- Id of the target classification node for reclassification.</param>
-    abstract deleteClassificationNode: project: string * structureGroup: WorkItemTracking.TreeStructureGroup * ?path: string * ?reclassifyId: float -> Promise<unit>
+    abstract deleteClassificationNode: project: string * structureGroup: WorkItemTracking.TreeStructureGroup * ?path: string * ?reclassifyId: int -> Promise<unit>
     /// <summary>Gets the classification node for a given node path.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="structureGroup">- Structure group of the classification node, area or iteration.</param>
     /// <param name="path">- Path of the classification node.</param>
     /// <param name="depth">- Depth of children to fetch.</param>
-    abstract getClassificationNode: project: string * structureGroup: WorkItemTracking.TreeStructureGroup * ?path: string * ?depth: float -> Promise<WorkItemTracking.WorkItemClassificationNode>
+    abstract getClassificationNode: project: string * structureGroup: WorkItemTracking.TreeStructureGroup * ?path: string * ?depth: int -> Promise<WorkItemTracking.WorkItemClassificationNode>
     /// <summary>Update an existing classification node.</summary>
     /// <param name="postedNode">- Node to create or update.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -83,14 +83,14 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="id">- Work item id</param>
     /// <param name="revision">- Revision for which the comment need to be fetched</param>
     /// <param name="project">- Project ID or project name</param>
-    abstract getComment: id: float * revision: float * ?project: string -> Promise<WorkItemTracking.WorkItemComment>
+    abstract getComment: id: int * revision: int * ?project: string -> Promise<WorkItemTracking.WorkItemComment>
     /// <summary>Gets the specified number of comments for a work item from the specified revision.</summary>
     /// <param name="id">- Work item id</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="fromRevision">- Revision from which comments are to be fetched (default is 1)</param>
     /// <param name="top">- The number of comments to return (default is 200)</param>
     /// <param name="order">- Ascending or descending by revision id (default is ascending)</param>
-    abstract getComments: id: float * ?project: string * ?fromRevision: float * ?top: float * ?order: WorkItemTracking.CommentSortOrder -> Promise<WorkItemTracking.WorkItemComments>
+    abstract getComments: id: int * ?project: string * ?fromRevision: int * ?top: int * ?order: WorkItemTracking.CommentSortOrder -> Promise<WorkItemTracking.WorkItemComments>
     /// <summary>Create a new field.</summary>
     /// <param name="workItemField">- New field definition</param>
     /// <param name="project">- Project ID or project name</param>
@@ -122,21 +122,21 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="expand">- Include the query string (wiql), clauses, query result columns, and sort options in the results.</param>
     /// <param name="depth">- In the folder of queries, return child queries and folders to this depth.</param>
     /// <param name="includeDeleted">- Include deleted queries and folders</param>
-    abstract getQueries: project: string * ?expand: WorkItemTracking.QueryExpand * ?depth: float * ?includeDeleted: bool -> Promise<ResizeArray<WorkItemTracking.QueryHierarchyItem>>
+    abstract getQueries: project: string * ?expand: WorkItemTracking.QueryExpand * ?depth: int * ?includeDeleted: bool -> Promise<ResizeArray<WorkItemTracking.QueryHierarchyItem>>
     /// <summary>Retrieves an individual query and its children</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="query">- ID or path of the query.</param>
     /// <param name="expand">- Include the query string (wiql), clauses, query result columns, and sort options in the results.</param>
     /// <param name="depth">- In the folder of queries, return child queries and folders to this depth.</param>
     /// <param name="includeDeleted">- Include deleted queries and folders</param>
-    abstract getQuery: project: string * query: string * ?expand: WorkItemTracking.QueryExpand * ?depth: float * ?includeDeleted: bool -> Promise<WorkItemTracking.QueryHierarchyItem>
+    abstract getQuery: project: string * query: string * ?expand: WorkItemTracking.QueryExpand * ?depth: int * ?includeDeleted: bool -> Promise<WorkItemTracking.QueryHierarchyItem>
     /// <summary>Searches all queries the user has access to in the current project</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="filter">- The text to filter the queries with.</param>
     /// <param name="top">- The number of queries to return (Default is 50 and maximum is 200).</param>
     /// <param name="expand">-</param>
     /// <param name="includeDeleted">- Include deleted queries and folders</param>
-    abstract searchQueries: project: string * filter: string * ?top: float * ?expand: WorkItemTracking.QueryExpand * ?includeDeleted: bool -> Promise<WorkItemTracking.QueryHierarchyItemsResult>
+    abstract searchQueries: project: string * filter: string * ?top: int * ?expand: WorkItemTracking.QueryExpand * ?includeDeleted: bool -> Promise<WorkItemTracking.QueryHierarchyItemsResult>
     /// <summary>Update a query or a folder. This allows you to update, rename and move queries and folders.</summary>
     /// <param name="queryUpdate">- The query to update.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -150,11 +150,11 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <summary>Destroys the specified work item permanently from the Recycle Bin. This action can not be undone.</summary>
     /// <param name="id">- ID of the work item to be destroyed permanently</param>
     /// <param name="project">- Project ID or project name</param>
-    abstract destroyWorkItem: id: float * ?project: string -> Promise<unit>
+    abstract destroyWorkItem: id: int * ?project: string -> Promise<unit>
     /// <summary>Gets a deleted work item from Recycle Bin.</summary>
     /// <param name="id">- ID of the work item to be returned</param>
     /// <param name="project">- Project ID or project name</param>
-    abstract getDeletedWorkItem: id: float * ?project: string -> Promise<WorkItemTracking.WorkItemDelete>
+    abstract getDeletedWorkItem: id: int * ?project: string -> Promise<WorkItemTracking.WorkItemDelete>
     /// <summary>Gets the work items from the recycle bin, whose IDs have been specified in the parameters</summary>
     /// <param name="ids">- Comma separated list of IDs of the deleted work items to be returned</param>
     /// <param name="project">- Project ID or project name</param>
@@ -166,20 +166,20 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="payload">- Paylod with instructions to update the IsDeleted flag to false</param>
     /// <param name="id">- ID of the work item to be restored</param>
     /// <param name="project">- Project ID or project name</param>
-    abstract restoreWorkItem: payload: WorkItemTracking.WorkItemDeleteUpdate * id: float * ?project: string -> Promise<WorkItemTracking.WorkItemDelete>
+    abstract restoreWorkItem: payload: WorkItemTracking.WorkItemDeleteUpdate * id: int * ?project: string -> Promise<WorkItemTracking.WorkItemDelete>
     /// <summary>Returns a fully hydrated work item for the requested revision</summary>
     /// <param name="id">-</param>
     /// <param name="revisionNumber">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="expand">-</param>
-    abstract getRevision: id: float * revisionNumber: float * ?project: string * ?expand: WorkItemTracking.WorkItemExpand -> Promise<WorkItemTracking.WorkItem>
+    abstract getRevision: id: int * revisionNumber: int * ?project: string * ?expand: WorkItemTracking.WorkItemExpand -> Promise<WorkItemTracking.WorkItem>
     /// <summary>Returns the list of fully hydrated work item revisions, paged.</summary>
     /// <param name="id">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="top">-</param>
     /// <param name="skip">-</param>
     /// <param name="expand">-</param>
-    abstract getRevisions: id: float * ?project: string * ?top: float * ?skip: float * ?expand: WorkItemTracking.WorkItemExpand -> Promise<ResizeArray<WorkItemTracking.WorkItem>>
+    abstract getRevisions: id: int * ?project: string * ?top: int * ?skip: int * ?expand: WorkItemTracking.WorkItemExpand -> Promise<ResizeArray<WorkItemTracking.WorkItem>>
     /// <summary>Creates a template</summary>
     /// <param name="template">- Template contents</param>
     /// <param name="project">- Project ID or project name</param>
@@ -210,51 +210,51 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="id">-</param>
     /// <param name="updateNumber">-</param>
     /// <param name="project">- Project ID or project name</param>
-    abstract getUpdate: id: float * updateNumber: float * ?project: string -> Promise<WorkItemTracking.WorkItemUpdate>
+    abstract getUpdate: id: int * updateNumber: int * ?project: string -> Promise<WorkItemTracking.WorkItemUpdate>
     /// <summary>Returns a the deltas between work item revisions</summary>
     /// <param name="id">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="top">-</param>
     /// <param name="skip">-</param>
-    abstract getUpdates: id: float * ?project: string * ?top: float * ?skip: float -> Promise<ResizeArray<WorkItemTracking.WorkItemUpdate>>
+    abstract getUpdates: id: int * ?project: string * ?top: int * ?skip: int -> Promise<ResizeArray<WorkItemTracking.WorkItemUpdate>>
     /// <summary>Gets the results of the query given its WIQL.</summary>
     /// <param name="wiql">- The query containing the WIQL.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="team">- Team ID or team name</param>
     /// <param name="timePrecision">- Whether or not to use time precision.</param>
     /// <param name="top">- The max number of results to return.</param>
-    abstract queryByWiql: wiql: WorkItemTracking.Wiql * ?project: string * ?team: string * ?timePrecision: bool * ?top: float -> Promise<WorkItemTracking.WorkItemQueryResult>
+    abstract queryByWiql: wiql: WorkItemTracking.Wiql * ?project: string * ?team: string * ?timePrecision: bool * ?top: int -> Promise<WorkItemTracking.WorkItemQueryResult>
     /// <summary>Gets the results of the query given the query ID.</summary>
     /// <param name="id">- The query ID.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="team">- Team ID or team name</param>
     /// <param name="timePrecision">- Whether or not to use time precision.</param>
     /// <param name="top">- The max number of results to return.</param>
-    abstract getQueryResultCount: id: string * ?project: string * ?team: string * ?timePrecision: bool * ?top: float -> Promise<float>
+    abstract getQueryResultCount: id: string * ?project: string * ?team: string * ?timePrecision: bool * ?top: int -> Promise<float>
     /// <summary>Gets the results of the query given the query ID.</summary>
     /// <param name="id">- The query ID.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="team">- Team ID or team name</param>
     /// <param name="timePrecision">- Whether or not to use time precision.</param>
     /// <param name="top">- The max number of results to return.</param>
-    abstract queryById: id: string * ?project: string * ?team: string * ?timePrecision: bool * ?top: float -> Promise<WorkItemTracking.WorkItemQueryResult>
+    abstract queryById: id: string * ?project: string * ?team: string * ?timePrecision: bool * ?top: int -> Promise<WorkItemTracking.WorkItemQueryResult>
     /// <summary>Get a work item icon given the friendly name and icon color.</summary>
     /// <param name="icon">- The name of the icon</param>
     /// <param name="color">- The 6-digit hex color for the icon</param>
     /// <param name="v">- The version of the icon (used only for cache invalidation)</param>
-    abstract getWorkItemIconJson: icon: string * ?color: string * ?v: float -> Promise<WorkItemTracking.WorkItemIcon>
+    abstract getWorkItemIconJson: icon: string * ?color: string * ?v: int -> Promise<WorkItemTracking.WorkItemIcon>
     /// Get a list of all work item icons.
     abstract getWorkItemIcons: unit -> Promise<ResizeArray<WorkItemTracking.WorkItemIcon>>
     /// <summary>Get a work item icon given the friendly name and icon color.</summary>
     /// <param name="icon">- The name of the icon</param>
     /// <param name="color">- The 6-digit hex color for the icon</param>
     /// <param name="v">- The version of the icon (used only for cache invalidation)</param>
-    abstract getWorkItemIconSvg: icon: string * ?color: string * ?v: float -> Promise<obj option>
+    abstract getWorkItemIconSvg: icon: string * ?color: string * ?v: int -> Promise<obj option>
     /// <summary>Get a work item icon given the friendly name and icon color.</summary>
     /// <param name="icon">- The name of the icon</param>
     /// <param name="color">- The 6-digit hex color for the icon</param>
     /// <param name="v">- The version of the icon (used only for cache invalidation)</param>
-    abstract getWorkItemIconXaml: icon: string * ?color: string * ?v: float -> Promise<obj option>
+    abstract getWorkItemIconXaml: icon: string * ?color: string * ?v: int -> Promise<obj option>
     /// <summary>Get a batch of work item links</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="linkTypes">- A list of types to filter the results to specific link types. Omit this parameter to get work item links of all link types.</param>
@@ -280,7 +280,7 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="expand">- Return all the fields in work item revisions, including long text fields which are not returned by default</param>
     /// <param name="includeDiscussionChangesOnly">- Return only the those revisions of work items, where only history field was changed</param>
     /// <param name="maxPageSize">- The maximum number of results to return in this batch</param>
-    abstract readReportingRevisionsGet: ?project: string * ?fields: ResizeArray<string> * ?types: ResizeArray<string> * ?continuationToken: string * ?startDateTime: DateTime * ?includeIdentityRef: bool * ?includeDeleted: bool * ?includeTagRef: bool * ?includeLatestOnly: bool * ?expand: WorkItemTracking.ReportingRevisionsExpand * ?includeDiscussionChangesOnly: bool * ?maxPageSize: float -> Promise<WorkItemTracking.ReportingWorkItemRevisionsBatch>
+    abstract readReportingRevisionsGet: ?project: string * ?fields: ResizeArray<string> * ?types: ResizeArray<string> * ?continuationToken: string * ?startDateTime: DateTime * ?includeIdentityRef: bool * ?includeDeleted: bool * ?includeTagRef: bool * ?includeLatestOnly: bool * ?expand: WorkItemTracking.ReportingRevisionsExpand * ?includeDiscussionChangesOnly: bool * ?maxPageSize: int -> Promise<WorkItemTracking.ReportingWorkItemRevisionsBatch>
     /// <summary>Get a batch of work item revisions. This request may be used if your list of fields is large enough that it may run the URL over the length limit.</summary>
     /// <param name="filter">- An object that contains request settings: field filter, type filter, identity format</param>
     /// <param name="project">- Project ID or project name</param>
@@ -308,14 +308,14 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="id">- ID of the work item to be deleted</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="destroy">- Optional parameter, if set to true, the work item is deleted permanently. Please note: the destroy action is PERMANENT and cannot be undone.</param>
-    abstract deleteWorkItem: id: float * ?project: string * ?destroy: bool -> Promise<WorkItemTracking.WorkItemDelete>
+    abstract deleteWorkItem: id: int * ?project: string * ?destroy: bool -> Promise<WorkItemTracking.WorkItemDelete>
     /// <summary>Returns a single work item.</summary>
     /// <param name="id">- The work item id</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="fields">- Comma-separated list of requested fields</param>
     /// <param name="asOf">- AsOf UTC date time string</param>
     /// <param name="expand">- The expand parameters for work item attributes. Possible options are \{ None, Relations, Fields, Links, All \}.</param>
-    abstract getWorkItem: id: float * ?project: string * ?fields: ResizeArray<string> * ?asOf: DateTime * ?expand: WorkItemTracking.WorkItemExpand -> Promise<WorkItemTracking.WorkItem>
+    abstract getWorkItem: id: int * ?project: string * ?fields: ResizeArray<string> * ?asOf: DateTime * ?expand: WorkItemTracking.WorkItemExpand -> Promise<WorkItemTracking.WorkItem>
     /// <summary>Returns a list of work items (Maximum 200)</summary>
     /// <param name="ids">- The comma-separated list of requested work item ids. (Maximum 200 ids allowed).</param>
     /// <param name="project">- Project ID or project name</param>
@@ -332,7 +332,7 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="bypassRules">- Do not enforce the work item type rules on this update</param>
     /// <param name="suppressNotifications">- Do not fire any notifications for this change</param>
     /// <param name="expand">- The expand parameters for work item attributes. Possible options are \{ None, Relations, Fields, Links, All \}.</param>
-    abstract updateWorkItem: document: WebApi.JsonPatchDocument * id: float * ?project: string * ?validateOnly: bool * ?bypassRules: bool * ?suppressNotifications: bool * ?expand: WorkItemTracking.WorkItemExpand -> Promise<WorkItemTracking.WorkItem>
+    abstract updateWorkItem: document: WebApi.JsonPatchDocument * id: int * ?project: string * ?validateOnly: bool * ?bypassRules: bool * ?suppressNotifications: bool * ?expand: WorkItemTracking.WorkItemExpand -> Promise<WorkItemTracking.WorkItem>
     /// <summary>Gets work items for a list of work item ids (Maximum 200)</summary>
     /// <param name="workItemGetRequest">-</param>
     /// <param name="project">- Project ID or project name</param>

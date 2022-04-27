@@ -44,7 +44,7 @@ type [<AllowNullLiteral>] CoreRestClient =
     /// <param name="teamId">- The name or ID (GUID) of the team .</param>
     /// <param name="top">-</param>
     /// <param name="skip">-</param>
-    abstract getTeamMembersWithExtendedProperties: projectId: string * teamId: string * ?top: float * ?skip: float -> Promise<ResizeArray<WebApi.TeamMember>>
+    abstract getTeamMembersWithExtendedProperties: projectId: string * teamId: string * ?top: int * ?skip: int -> Promise<ResizeArray<WebApi.TeamMember>>
     /// <summary>Get a process by ID.</summary>
     /// <param name="processId">- ID for a process.</param>
     abstract getProcessById: processId: string -> Promise<Core.Process>
@@ -56,10 +56,10 @@ type [<AllowNullLiteral>] CoreRestClient =
     /// <summary>Get project collection references for this application.</summary>
     /// <param name="top">-</param>
     /// <param name="skip">-</param>
-    abstract getProjectCollections: ?top: float * ?skip: float -> Promise<ResizeArray<Core.TeamProjectCollectionReference>>
+    abstract getProjectCollections: ?top: int * ?skip: int -> Promise<ResizeArray<Core.TeamProjectCollectionReference>>
     /// <summary>Gets the history of changes to the project.</summary>
     /// <param name="minRevision">- The minimum revision number to return in the history.</param>
-    abstract getProjectHistoryEntries: ?minRevision: float -> Promise<ResizeArray<Core.ProjectInfo>>
+    abstract getProjectHistoryEntries: ?minRevision: int -> Promise<ResizeArray<Core.ProjectInfo>>
     /// <summary>Get project with the specified id or name, optionally including capabilities.</summary>
     /// <param name="projectId">-</param>
     /// <param name="includeCapabilities">- Include capabilities (such as source control) in the team project result (default: false).</param>
@@ -71,7 +71,7 @@ type [<AllowNullLiteral>] CoreRestClient =
     /// <param name="skip">-</param>
     /// <param name="continuationToken">-</param>
     /// <param name="getDefaultTeamImageUrl">-</param>
-    abstract getProjects: ?stateFilter: obj * ?top: float * ?skip: float * ?continuationToken: string * ?getDefaultTeamImageUrl: bool -> Promise<ResizeArray<Core.TeamProjectReference>>
+    abstract getProjects: ?stateFilter: obj * ?top: int * ?skip: int * ?continuationToken: string * ?getDefaultTeamImageUrl: bool -> Promise<ResizeArray<Core.TeamProjectReference>>
     /// <summary>Queues a project to be created. Use the [GetOperation](../../operations/operations/get) to periodically check for create project status.</summary>
     /// <param name="projectToCreate">- The project to create.</param>
     abstract queueCreateProject: projectToCreate: Core.TeamProject -> Promise<Operations.OperationReference>
@@ -106,7 +106,7 @@ type [<AllowNullLiteral>] CoreRestClient =
     /// <param name="top">- Maximum number of teams to return.</param>
     /// <param name="skip">- Number of teams to skip.</param>
     /// <param name="expandIdentity">- A value indicating whether or not to expand Identity information in the result WebApiTeam object.</param>
-    abstract getAllTeams: ?mine: bool * ?top: float * ?skip: float * ?expandIdentity: bool -> Promise<ResizeArray<Core.WebApiTeam>>
+    abstract getAllTeams: ?mine: bool * ?top: int * ?skip: int * ?expandIdentity: bool -> Promise<ResizeArray<Core.WebApiTeam>>
     /// <summary>Create a team in a team project.</summary>
     /// <param name="team">- The team data used to create the team.</param>
     /// <param name="projectId">- The name or ID (GUID) of the team project in which to create the team.</param>
@@ -126,7 +126,7 @@ type [<AllowNullLiteral>] CoreRestClient =
     /// <param name="top">- Maximum number of teams to return.</param>
     /// <param name="skip">- Number of teams to skip.</param>
     /// <param name="expandIdentity">- A value indicating whether or not to expand Identity information in the result WebApiTeam object.</param>
-    abstract getTeams: projectId: string * ?mine: bool * ?top: float * ?skip: float * ?expandIdentity: bool -> Promise<ResizeArray<Core.WebApiTeam>>
+    abstract getTeams: projectId: string * ?mine: bool * ?top: int * ?skip: int * ?expandIdentity: bool -> Promise<ResizeArray<Core.WebApiTeam>>
     /// <summary>Update a team's name and/or description.</summary>
     /// <param name="teamData">-</param>
     /// <param name="projectId">- The name or ID (GUID) of the team project containing the team to update.</param>
@@ -136,3 +136,6 @@ type [<AllowNullLiteral>] CoreRestClient =
 type [<AllowNullLiteral>] CoreRestClientStatic =
     [<Emit "new $0($1...)">] abstract Create: options: IVssRestClientOptions -> CoreRestClient
     abstract RESOURCE_AREA_ID: string
+
+[<ImportAll("azure-devops-extension-api/Core/CoreClient")>]
+let exports: IExports = jsNative

@@ -7,7 +7,7 @@ open Fable.Core.JS
 /// The build definition reference resource
 type [<AllowNullLiteral>] BuildDefinitionReference =
     /// ID of the build definition
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the build definition
     abstract name: string with get, set
 
@@ -24,7 +24,7 @@ type [<AllowNullLiteral>] CloneOperationCommonResponse =
     /// Message related to the job
     abstract message: string with get, set
     /// Clone operation Id
-    abstract opId: float with get, set
+    abstract opId: int with get, set
     /// Clone operation state
     abstract state: Test.CloneOperationState with get, set
 
@@ -73,7 +73,7 @@ type [<AllowNullLiteral>] CloneTestSuiteParams =
 /// Configuration of the Test Point
 type [<AllowNullLiteral>] Configuration =
     /// Id of the Configuration Assigned to the Test Point
-    abstract configurationId: float with get, set
+    abstract configurationId: int with get, set
 
 /// Destination Test Plan create parameters
 type [<AllowNullLiteral>] DestinationTestPlanCloneParams =
@@ -84,7 +84,7 @@ type [<AllowNullLiteral>] DestinationTestPlanCloneParams =
 /// Destination Test Suite information for Test Suite clone operation
 type [<AllowNullLiteral>] DestinationTestSuiteInfo =
     /// Destination Suite Id
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Destination Project Name
     abstract project: string with get, set
 
@@ -135,7 +135,7 @@ type [<AllowNullLiteral>] PointAssignment =
     /// Name of the Configuration Assigned to the Test Point
     abstract configurationName: string with get, set
     /// Id of the Test Point
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Tester Assigned to the Test Point
     abstract tester: WebApi.IdentityRef with get, set
 
@@ -164,7 +164,7 @@ type [<RequireQualifiedAccess>] ResultState =
 /// Source Test Plan information for Test Plan clone operation
 type [<AllowNullLiteral>] SourceTestPlanInfo =
     /// ID of the source Test Plan
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Id of suites to be cloned inside source Test Plan
     abstract suiteIds: ResizeArray<float> with get, set
 
@@ -179,13 +179,13 @@ type [<AllowNullLiteral>] SourceTestplanResponse =
 /// Source Test Suite information for Test Suite clone operation
 type [<AllowNullLiteral>] SourceTestSuiteInfo =
     /// Id of the Source Test Suite
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 /// A suite entry defines properties for a test suite.
 type [<AllowNullLiteral>] SuiteEntry =
     inherit SuiteEntryUpdateParams
     /// Id for the test suite.
-    abstract suiteId: float with get, set
+    abstract suiteId: int with get, set
 
 type [<RequireQualifiedAccess>] SuiteEntryTypes =
     | TestCase = 0
@@ -194,9 +194,9 @@ type [<RequireQualifiedAccess>] SuiteEntryTypes =
 /// A suite entry defines properties for a test suite.
 type [<AllowNullLiteral>] SuiteEntryUpdateParams =
     /// Id of the suite entry in the test suite: either a test case id or child suite id.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Sequence number for the suite entry object in the test suite.
-    abstract sequenceNumber: float with get, set
+    abstract sequenceNumber: int with get, set
     /// Defines whether the entry is of type test case or suite.
     abstract suiteEntryType: SuiteEntryTypes with get, set
 
@@ -217,7 +217,7 @@ type [<AllowNullLiteral>] TestCase =
     /// Reference links
     abstract links: obj option with get, set
     /// Order of the TestCase in the Suite
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// List of Points associated with the Test Case
     abstract pointAssignments: ResizeArray<PointAssignment> with get, set
     /// Project under which the Test Case is
@@ -234,10 +234,10 @@ type [<AllowNullLiteral>] TestCaseAssociatedResult =
     abstract configuration: TestConfigurationReference with get, set
     abstract outcome: UserFriendlyTestOutcome with get, set
     abstract plan: TestPlanReference with get, set
-    abstract pointId: float with get, set
-    abstract resultId: float with get, set
+    abstract pointId: int with get, set
+    abstract resultId: int with get, set
     abstract runBy: WebApi.IdentityRef with get, set
-    abstract runId: float with get, set
+    abstract runId: int with get, set
     abstract suite: TestSuiteReference with get, set
     abstract tester: WebApi.IdentityRef with get, set
 
@@ -246,7 +246,7 @@ type [<AllowNullLiteral>] TestCaseReference =
     /// Identity to whom the test case is assigned
     abstract assignedTo: WebApi.IdentityRef with get, set
     /// Test Case Id
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Test Case Name
     abstract name: string with get, set
     /// State of the test case work item
@@ -265,7 +265,7 @@ type [<AllowNullLiteral>] TestCaseResultsData =
 type [<AllowNullLiteral>] TestConfiguration =
     inherit TestConfigurationCreateUpdateParameters
     /// Id of the configuration
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Id of the test configuration variable
     abstract project: Core.TeamProjectReference with get, set
 
@@ -285,7 +285,7 @@ type [<AllowNullLiteral>] TestConfigurationCreateUpdateParameters =
 /// Test Configuration Reference
 type [<AllowNullLiteral>] TestConfigurationReference =
     /// Id of the configuration
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the configuration
     abstract name: string with get, set
 
@@ -295,9 +295,9 @@ type [<AllowNullLiteral>] TestPlan =
     /// Relevant links
     abstract _links: obj option with get, set
     /// ID of the test plan.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Previous build Id associated with the test plan
-    abstract previousBuildId: float with get, set
+    abstract previousBuildId: int with get, set
     /// Project which contains the test plan.
     abstract project: Core.TeamProjectReference with get, set
     /// Root test suite of the test plan.
@@ -316,7 +316,7 @@ type [<AllowNullLiteral>] TestPlanCreateParams =
     /// The Build Definition that generates a build associated with this test plan.
     abstract buildDefinition: BuildDefinitionReference with get, set
     /// Build to be tested.
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
     /// Description of the test plan.
     abstract description: string with get, set
     /// End date for the test plan.
@@ -348,14 +348,14 @@ type [<AllowNullLiteral>] TestPlanDetailedReference =
     /// Iteration path of the test plan.
     abstract iteration: string with get, set
     /// Root Suite Id
-    abstract rootSuiteId: float with get, set
+    abstract rootSuiteId: int with get, set
     /// Start date for the test plan.
     abstract startDate: DateTime with get, set
 
 /// The test plan reference resource.
 type [<AllowNullLiteral>] TestPlanReference =
     /// ID of the test plan.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the test plan.
     abstract name: string with get, set
 
@@ -364,12 +364,12 @@ type [<AllowNullLiteral>] TestPlansHubRefreshData =
     abstract defineColumnOptionFields: ResizeArray<string> with get, set
     abstract executeColumnOptionFields: ResizeArray<string> with get, set
     abstract isAdvancedExtensionEnabled: bool with get, set
-    abstract selectedSuiteId: float with get, set
-    abstract testCasePageSize: float with get, set
+    abstract selectedSuiteId: int with get, set
+    abstract testCasePageSize: int with get, set
     abstract testCases: ResizeArray<TestCase> with get, set
     abstract testCasesContinuationToken: string with get, set
     abstract testPlan: TestPlanDetailedReference with get, set
-    abstract testPointPageSize: float with get, set
+    abstract testPointPageSize: int with get, set
     abstract testPoints: ResizeArray<TestPoint> with get, set
     abstract testPointsContinuationToken: string with get, set
     abstract testSuites: ResizeArray<TestSuite> with get, set
@@ -379,7 +379,7 @@ type [<AllowNullLiteral>] TestPlansHubRefreshData =
 type [<AllowNullLiteral>] TestPlanUpdateParams =
     inherit TestPlanCreateParams
     /// Revision of the test plan.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 /// Test Point Class
 type [<AllowNullLiteral>] TestPoint =
@@ -388,7 +388,7 @@ type [<AllowNullLiteral>] TestPoint =
     /// Configuration associated with the Test Point
     abstract configuration: TestConfigurationReference with get, set
     /// Id of the Test Point
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Variable to decide whether the test case is Active or not
     abstract isActive: bool with get, set
     /// Is the Test Point for Automated Test Case or Manual
@@ -417,16 +417,16 @@ type [<AllowNullLiteral>] TestPoint =
 /// Test Point Count
 type [<AllowNullLiteral>] TestPointCount =
     /// Test Point Count
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Test Plan under which the Test Points are
-    abstract testPlanId: float with get, set
+    abstract testPlanId: int with get, set
     /// Test Suite under which the Test Points are
-    abstract testSuiteId: float with get, set
+    abstract testSuiteId: int with get, set
 
 type [<AllowNullLiteral>] TestPointDetailedReference =
     abstract configuration: TestConfigurationReference with get, set
     abstract plan: TestPlanReference with get, set
-    abstract pointId: float with get, set
+    abstract pointId: int with get, set
     abstract suite: TestSuiteReference with get, set
     abstract tester: WebApi.IdentityRef with get, set
 
@@ -439,13 +439,13 @@ type [<AllowNullLiteral>] TestPointResults =
     /// Last Result Details for the Test Point
     abstract lastResultDetails: Test.LastResultDetails with get, set
     /// Last Result Id
-    abstract lastResultId: float with get, set
+    abstract lastResultId: int with get, set
     /// Last Result State of the Test Point
     abstract lastResultState: ResultState with get, set
     /// Last RUn Build Number for the Test Point
     abstract lastRunBuildNumber: string with get, set
     /// Last Test Run Id for the Test Point
-    abstract lastTestRunId: float with get, set
+    abstract lastTestRunId: int with get, set
     /// Outcome of the Test Point
     abstract outcome: Outcome with get, set
     /// State of the Test Point
@@ -454,7 +454,7 @@ type [<AllowNullLiteral>] TestPointResults =
 /// Test Point Update Parameters
 type [<AllowNullLiteral>] TestPointUpdateParams =
     /// Id of Test Point to be updated
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Reset the Test Point to Active
     abstract isActive: bool with get, set
     /// Results of the test point
@@ -472,7 +472,7 @@ type [<AllowNullLiteral>] TestSuite =
     /// Boolean value dictating if Child test suites are present
     abstract hasChildren: bool with get, set
     /// Id of test suite.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Last error for test suite.
     abstract lastError: string with get, set
     /// Last populated date.
@@ -486,13 +486,13 @@ type [<AllowNullLiteral>] TestSuite =
     /// Test suite project shallow reference.
     abstract project: Core.TeamProjectReference with get, set
     /// Test suite revision.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 /// Test suite Create Parameters
 type [<AllowNullLiteral>] TestSuiteCreateParams =
     inherit TestSuiteCreateUpdateCommonParams
     /// Test suite requirement id.
-    abstract requirementId: float with get, set
+    abstract requirementId: int with get, set
     /// Test suite type.
     abstract suiteType: TestSuiteType with get, set
 
@@ -514,7 +514,7 @@ type [<AllowNullLiteral>] TestSuiteCreateUpdateCommonParams =
 /// The test suite reference resource.
 type [<AllowNullLiteral>] TestSuiteReference =
     /// ID of the test suite.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the test suite.
     abstract name: string with get, set
 
@@ -534,13 +534,13 @@ type [<RequireQualifiedAccess>] TestSuiteType =
 type [<AllowNullLiteral>] TestSuiteUpdateParams =
     inherit TestSuiteCreateUpdateCommonParams
     /// Test suite revision.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 /// Test Variable
 type [<AllowNullLiteral>] TestVariable =
     inherit TestVariableCreateUpdateParameters
     /// Id of the test variable
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Id of the test variable
     abstract project: Core.TeamProjectReference with get, set
 
@@ -566,12 +566,12 @@ type [<RequireQualifiedAccess>] UserFriendlyTestOutcome =
 /// Work Item
 type [<AllowNullLiteral>] WorkItem =
     /// Id of the Work Item
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 /// Work Item Class
 type [<AllowNullLiteral>] WorkItemDetails =
     /// Work Item Id
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Work Item Name
     abstract name: string with get, set
     /// Work Item Fields

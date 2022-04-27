@@ -8,7 +8,7 @@ open Fable.Core.JS
 type [<AllowNullLiteral>] AgentPoolQueue =
     abstract _links: obj option with get, set
     /// The ID of the queue.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The name of the queue.
     abstract name: string with get, set
     /// The pool used by this queue.
@@ -20,7 +20,7 @@ type [<AllowNullLiteral>] AgentPoolQueue =
 type [<AllowNullLiteral>] AgentPoolQueueReference =
     inherit ResourceReference
     /// The ID of the queue.
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 /// Describes how a phase should run against an agent queue.
 type [<AllowNullLiteral>] AgentPoolQueueTarget =
@@ -48,7 +48,7 @@ type [<RequireQualifiedAccess>] AgentStatus =
 /// Additional options for running phases against an agent queue.
 type [<AllowNullLiteral>] AgentTargetExecutionOptions =
     /// Indicates the type of execution options.
-    abstract ``type``: float with get, set
+    abstract ``type``: int with get, set
 
 type [<AllowNullLiteral>] ArtifactResource =
     abstract _links: obj option with get, set
@@ -82,7 +82,7 @@ type [<AllowNullLiteral>] Build =
     /// The build number/name of the build.
     abstract buildNumber: string with get, set
     /// The build number revision.
-    abstract buildNumberRevision: float with get, set
+    abstract buildNumberRevision: int with get, set
     /// The build controller. This is only set if the definition type is Xaml.
     abstract controller: BuildController with get, set
     /// The definition associated with the build.
@@ -100,7 +100,7 @@ type [<AllowNullLiteral>] Build =
     /// The time that the build was completed.
     abstract finishTime: DateTime with get, set
     /// The ID of the build.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Indicates whether the build should be skipped by retention policies.
     abstract keepForever: bool with get, set
     /// The identity representing the process or person that last changed the build.
@@ -127,7 +127,7 @@ type [<AllowNullLiteral>] Build =
     /// Additional options for queueing the build.
     abstract queueOptions: QueueOptions with get, set
     /// The current position of the build in the queue.
-    abstract queuePosition: float with get, set
+    abstract queuePosition: int with get, set
     /// The time that the build was queued.
     abstract queueTime: DateTime with get, set
     /// The reason that the build was created.
@@ -167,7 +167,7 @@ type [<AllowNullLiteral>] BuildAgent =
     abstract createdDate: DateTime with get, set
     abstract description: string with get, set
     abstract enabled: bool with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract messageQueueUrl: string with get, set
     abstract name: string with get, set
     abstract reservedForBuild: string with get, set
@@ -180,7 +180,7 @@ type [<AllowNullLiteral>] BuildAgent =
 
 type [<AllowNullLiteral>] BuildAgentReference =
     /// Id of the resource
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the linked resource (definition name, controller name, etc.)
     abstract name: string with get, set
     /// Full http link to the resource
@@ -189,7 +189,7 @@ type [<AllowNullLiteral>] BuildAgentReference =
 /// Represents an artifact produced by a build.
 type [<AllowNullLiteral>] BuildArtifact =
     /// The artifact ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The name of the artifact.
     abstract name: string with get, set
     /// The actual resource.
@@ -204,7 +204,7 @@ type [<RequireQualifiedAccess>] BuildAuthorizationScope =
 /// Represents a build badge.
 type [<AllowNullLiteral>] BuildBadge =
     /// The ID of the build represented by this badge.
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
     /// A link to the SVG resource.
     abstract imageUrl: string with get, set
 
@@ -262,9 +262,9 @@ type [<AllowNullLiteral>] BuildDefinition =
     /// The job authorization scope for builds queued against this definition.
     abstract jobAuthorizationScope: BuildAuthorizationScope with get, set
     /// The job cancel timeout (in minutes) for builds cancelled by user for this definition.
-    abstract jobCancelTimeoutInMinutes: float with get, set
+    abstract jobCancelTimeoutInMinutes: int with get, set
     /// The job execution timeout (in minutes) for builds queued against this definition.
-    abstract jobTimeoutInMinutes: float with get, set
+    abstract jobTimeoutInMinutes: int with get, set
     abstract options: ResizeArray<BuildOption> with get, set
     /// The build process.
     abstract ``process``: BuildProcess with get, set
@@ -297,9 +297,9 @@ type [<AllowNullLiteral>] BuildDefinition3_2 =
     /// The job authorization scope for builds which are queued against this definition
     abstract jobAuthorizationScope: BuildAuthorizationScope with get, set
     /// The job cancel timeout in minutes for builds which are cancelled by user for this definition
-    abstract jobCancelTimeoutInMinutes: float with get, set
+    abstract jobCancelTimeoutInMinutes: int with get, set
     /// The job execution timeout in minutes for builds which are queued against this definition
-    abstract jobTimeoutInMinutes: float with get, set
+    abstract jobTimeoutInMinutes: int with get, set
     abstract latestBuild: Build with get, set
     abstract latestCompletedBuild: Build with get, set
     abstract options: ResizeArray<BuildOption> with get, set
@@ -362,7 +362,7 @@ type [<AllowNullLiteral>] BuildDefinitionRevision =
     /// The name of the definition.
     abstract name: string with get, set
     /// The revision number.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
 
 type [<AllowNullLiteral>] BuildDefinitionSourceProvider =
     /// Uri of the associated definition
@@ -370,7 +370,7 @@ type [<AllowNullLiteral>] BuildDefinitionSourceProvider =
     /// fields associated with this build definition
     abstract fields: ArtifactResourceProperties with get, set
     /// Id of this source provider
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The lst time this source provider was modified
     abstract lastModified: DateTime with get, set
     /// Name of the source provider
@@ -397,7 +397,7 @@ type [<AllowNullLiteral>] BuildDefinitionStep =
     /// The task associated with this step.
     abstract task: TaskDefinitionReference with get, set
     /// The time, in minutes, that this step is allowed to run.
-    abstract timeoutInMinutes: float with get, set
+    abstract timeoutInMinutes: int with get, set
 
 /// Represents a template from which new build definitions can be created.
 type [<AllowNullLiteral>] BuildDefinitionTemplate =
@@ -460,12 +460,12 @@ type [<AllowNullLiteral>] BuildLog =
     /// The date and time the log was last changed.
     abstract lastChangedOn: DateTime with get, set
     /// The number of lines in the log.
-    abstract lineCount: float with get, set
+    abstract lineCount: int with get, set
 
 /// Represents a reference to a build log.
 type [<AllowNullLiteral>] BuildLogReference =
     /// The ID of the log.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The type of the log location.
     abstract ``type``: string with get, set
     /// A full link to the log resource.
@@ -476,7 +476,7 @@ type [<AllowNullLiteral>] BuildMetric =
     /// The date for the scope.
     abstract date: DateTime with get, set
     /// The value.
-    abstract intValue: float with get, set
+    abstract intValue: int with get, set
     /// The name of the metric.
     abstract name: string with get, set
     /// The scope.
@@ -502,7 +502,7 @@ type [<AllowNullLiteral>] BuildOptionDefinition =
     /// The name of the build option.
     abstract name: string with get, set
     /// A value that indicates the relative order in which the behavior should be applied.
-    abstract ordinal: float with get, set
+    abstract ordinal: int with get, set
 
 /// Represents a reference to a build option definition.
 type [<AllowNullLiteral>] BuildOptionDefinitionReference =
@@ -554,7 +554,7 @@ type [<RequireQualifiedAccess>] BuildPhaseStatus =
 /// Represents a build process.
 type [<AllowNullLiteral>] BuildProcess =
     /// The type of the process.
-    abstract ``type``: float with get, set
+    abstract ``type``: int with get, set
 
 /// Represents resources used by a build process.
 type [<AllowNullLiteral>] BuildProcessResources =
@@ -566,7 +566,7 @@ type [<AllowNullLiteral>] BuildProcessResources =
 type [<AllowNullLiteral>] BuildProcessTemplate =
     abstract description: string with get, set
     abstract fileExists: bool with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract parameters: string with get, set
     abstract serverPath: string with get, set
     abstract supportedReasons: BuildReason with get, set
@@ -611,7 +611,7 @@ type [<AllowNullLiteral>] BuildReference =
     /// The time that the build was completed.
     abstract finishTime: DateTime with get, set
     /// The ID of the build.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The time that the build was queued.
     abstract queueTime: DateTime with get, set
     /// The identity on whose behalf the build was queued.
@@ -626,7 +626,7 @@ type [<AllowNullLiteral>] BuildReference =
 /// Represents information about a build report.
 type [<AllowNullLiteral>] BuildReportMetadata =
     /// The Id of the build.
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
     /// The content of the report.
     abstract content: string with get, set
     /// The type of the report.
@@ -662,13 +662,13 @@ type [<AllowNullLiteral>] BuildRequestValidationResult =
 /// Represents information about resources used by builds in the system.
 type [<AllowNullLiteral>] BuildResourceUsage =
     /// The number of build agents.
-    abstract distributedTaskAgents: float with get, set
+    abstract distributedTaskAgents: int with get, set
     /// The number of paid private agent slots.
-    abstract paidPrivateAgentSlots: float with get, set
+    abstract paidPrivateAgentSlots: int with get, set
     /// The total usage.
-    abstract totalUsage: float with get, set
+    abstract totalUsage: int with get, set
     /// The number of XAML controllers.
-    abstract xamlControllers: float with get, set
+    abstract xamlControllers: int with get, set
 
 type [<RequireQualifiedAccess>] BuildResult =
     | None = 0
@@ -683,14 +683,14 @@ type [<AllowNullLiteral>] BuildsDeletedEvent =
 type [<AllowNullLiteral>] BuildsDeletedEvent1 =
     abstract buildIds: ResizeArray<float> with get, set
     /// The ID of the definition.
-    abstract definitionId: float with get, set
+    abstract definitionId: int with get, set
     /// The ID of the project.
     abstract projectId: string with get, set
 
 type [<AllowNullLiteral>] BuildServer =
     abstract agents: ResizeArray<BuildAgentReference> with get, set
     abstract controller: XamlBuildControllerReference with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract isVirtual: bool with get, set
     abstract messageQueueUrl: string with get, set
     abstract name: string with get, set
@@ -699,12 +699,12 @@ type [<AllowNullLiteral>] BuildServer =
     abstract statusChangedDate: DateTime with get, set
     abstract uri: string with get, set
     abstract url: string with get, set
-    abstract version: float with get, set
+    abstract version: int with get, set
 
 /// Represents system-wide build settings.
 type [<AllowNullLiteral>] BuildSettings =
     /// The number of days to keep records of deleted builds.
-    abstract daysToKeepDeletedBuildsBeforeDestroy: float with get, set
+    abstract daysToKeepDeletedBuildsBeforeDestroy: int with get, set
     /// The default retention policy.
     abstract defaultRetentionPolicy: RetentionPolicy with get, set
     /// The maximum retention policy.
@@ -796,13 +796,13 @@ type [<AllowNullLiteral>] ContinuousIntegrationTrigger =
     abstract batchChanges: bool with get, set
     abstract branchFilters: ResizeArray<string> with get, set
     /// The maximum number of simultaneous CI builds that will run per branch.
-    abstract maxConcurrentBuildsPerBranch: float with get, set
+    abstract maxConcurrentBuildsPerBranch: int with get, set
     abstract pathFilters: ResizeArray<string> with get, set
     /// The polling interval, in seconds.
-    abstract pollingInterval: float with get, set
+    abstract pollingInterval: int with get, set
     /// The ID of the job used to poll an external repository.
     abstract pollingJobId: string with get, set
-    abstract settingsSourceType: float with get, set
+    abstract settingsSourceType: int with get, set
 
 type [<RequireQualifiedAccess>] ControllerStatus =
     | Unavailable = 0
@@ -830,7 +830,7 @@ type [<AllowNullLiteral>] DefinitionReference =
     /// The date this version of the definition was created.
     abstract createdDate: DateTime with get, set
     /// The ID of the referenced definition.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The name of the referenced definition.
     abstract name: string with get, set
     /// The folder path of the definition.
@@ -840,7 +840,7 @@ type [<AllowNullLiteral>] DefinitionReference =
     /// A value that indicates whether builds can be queued against this definition.
     abstract queueStatus: DefinitionQueueStatus with get, set
     /// The definition revision number.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// The type of the definition.
     abstract ``type``: DefinitionType with get, set
     /// The definition's URI.
@@ -903,7 +903,7 @@ type [<AllowNullLiteral>] Deployment =
 /// Deployment information for type "Build"
 type [<AllowNullLiteral>] DeploymentBuild =
     inherit Deployment
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
 
 /// Deployment information for type "Deploy"
 type [<AllowNullLiteral>] DeploymentDeploy =
@@ -913,7 +913,7 @@ type [<AllowNullLiteral>] DeploymentDeploy =
 /// Deployment information for type "Test"
 type [<AllowNullLiteral>] DeploymentTest =
     inherit Deployment
-    abstract runId: float with get, set
+    abstract runId: int with get, set
 
 /// Represents a build process supported by the build definition designer.
 type [<AllowNullLiteral>] DesignerProcess =
@@ -987,9 +987,9 @@ type [<AllowNullLiteral>] InformationNode =
     /// Date this node was last modified
     abstract lastModifiedDate: DateTime with get, set
     /// Node Id of this information node
-    abstract nodeId: float with get, set
+    abstract nodeId: int with get, set
     /// Id of parent node (xml tree)
-    abstract parentId: float with get, set
+    abstract parentId: int with get, set
     /// The type of the information node
     abstract ``type``: string with get, set
 
@@ -1025,7 +1025,7 @@ type [<AllowNullLiteral>] MultipleAgentExecutionOptions =
     /// Indicates whether failure on one agent should prevent the phase from running on other agents.
     abstract continueOnError: bool with get, set
     /// The maximum number of agents to use simultaneously.
-    abstract maxConcurrency: float with get, set
+    abstract maxConcurrency: int with get, set
 
 /// Represents a phase of a build definition.
 type [<AllowNullLiteral>] Phase =
@@ -1035,9 +1035,9 @@ type [<AllowNullLiteral>] Phase =
     /// The job authorization scope for builds queued against this definition.
     abstract jobAuthorizationScope: BuildAuthorizationScope with get, set
     /// The cancellation timeout, in minutes, for builds queued against this definition.
-    abstract jobCancelTimeoutInMinutes: float with get, set
+    abstract jobCancelTimeoutInMinutes: int with get, set
     /// The job execution timeout, in minutes, for builds queued against this definition.
-    abstract jobTimeoutInMinutes: float with get, set
+    abstract jobTimeoutInMinutes: int with get, set
     /// The name of the phase.
     abstract name: string with get, set
     /// The unique ref name of the phase.
@@ -1050,7 +1050,7 @@ type [<AllowNullLiteral>] Phase =
 /// Represents the target of a phase.
 type [<AllowNullLiteral>] PhaseTarget =
     /// The type of the target.
-    abstract ``type``: float with get, set
+    abstract ``type``: int with get, set
 
 type [<RequireQualifiedAccess>] ProcessTemplateType =
     | Custom = 0
@@ -1101,7 +1101,7 @@ type [<AllowNullLiteral>] PullRequestTrigger =
     abstract isCommentRequiredForPullRequest: bool with get, set
     abstract pathFilters: ResizeArray<string> with get, set
     abstract requireCommentsForNonTeamMembersOnly: bool with get, set
-    abstract settingsSourceType: float with get, set
+    abstract settingsSourceType: int with get, set
 
 type [<RequireQualifiedAccess>] QueryDeletedOption =
     | ExcludeDeleted = 0
@@ -1120,7 +1120,7 @@ type [<RequireQualifiedAccess>] QueuePriority =
     | High = 1
 
 type [<AllowNullLiteral>] RealtimeBuildEvent =
-    abstract buildId: float with get, set
+    abstract buildId: int with get, set
 
 type [<RequireQualifiedAccess>] RepositoryCleanOptions =
     | Source = 0
@@ -1151,19 +1151,19 @@ type [<AllowNullLiteral>] RetentionPolicy =
     abstract artifactTypesToDelete: ResizeArray<string> with get, set
     abstract branches: ResizeArray<string> with get, set
     /// The number of days to keep builds.
-    abstract daysToKeep: float with get, set
+    abstract daysToKeep: int with get, set
     /// Indicates whether the build record itself should be deleted.
     abstract deleteBuildRecord: bool with get, set
     /// Indicates whether to delete test results associated with the build.
     abstract deleteTestResults: bool with get, set
     /// The minimum number of builds to keep.
-    abstract minimumToKeep: float with get, set
+    abstract minimumToKeep: int with get, set
 
 /// Contains the minimum, maximum, and current value for a retention setting.
 type [<AllowNullLiteral>] RetentionSetting =
-    abstract max: float with get, set
-    abstract min: float with get, set
-    abstract value: float with get, set
+    abstract max: int with get, set
+    abstract min: int with get, set
+    abstract value: int with get, set
 
 type [<AllowNullLiteral>] Schedule =
     abstract branchFilters: ResizeArray<string> with get, set
@@ -1174,9 +1174,9 @@ type [<AllowNullLiteral>] Schedule =
     /// Flag to determine if this schedule should only build if the associated source has been changed.
     abstract scheduleOnlyWithChanges: bool with get, set
     /// Local timezone hour to start
-    abstract startHours: float with get, set
+    abstract startHours: int with get, set
     /// Local timezone minute to start
-    abstract startMinutes: float with get, set
+    abstract startMinutes: int with get, set
     /// Time zone of the build schedule (String representation of the time zone ID)
     abstract timeZoneId: string with get, set
 
@@ -1211,7 +1211,7 @@ type [<AllowNullLiteral>] ServerTarget =
 /// Represents options for running a phase on the server.
 type [<AllowNullLiteral>] ServerTargetExecutionOptions =
     /// The type.
-    abstract ``type``: float with get, set
+    abstract ``type``: int with get, set
 
 /// Represents a referenec to a service endpoint.
 type [<AllowNullLiteral>] ServiceEndpointReference =
@@ -1259,11 +1259,11 @@ type [<AllowNullLiteral>] SourceRepositories =
     /// A token used to continue this paged request; 'null' if the request is complete
     abstract continuationToken: string with get, set
     /// The number of repositories requested for each page
-    abstract pageLength: float with get, set
+    abstract pageLength: int with get, set
     /// A list of repositories
     abstract repositories: ResizeArray<SourceRepository> with get, set
     /// The total number of pages, or '-1' if unknown
-    abstract totalPageCount: float with get, set
+    abstract totalPageCount: int with get, set
 
 /// Represents a repository returned from a source provider.
 type [<AllowNullLiteral>] SourceRepository =
@@ -1298,7 +1298,7 @@ type [<RequireQualifiedAccess>] StageUpdateType =
 
 type [<AllowNullLiteral>] SupportedTrigger =
     /// The default interval to wait between polls (only relevant when NotificationType is Polling).
-    abstract defaultPollingInterval: float with get, set
+    abstract defaultPollingInterval: int with get, set
     /// How the trigger is notified of changes.
     abstract notificationType: string with get, set
     /// The capabilities supported by this trigger.
@@ -1314,7 +1314,7 @@ type [<RequireQualifiedAccess>] SupportLevel =
 /// Represents a Subversion mapping entry.
 type [<AllowNullLiteral>] SvnMappingDetails =
     /// The depth.
-    abstract depth: float with get, set
+    abstract depth: int with get, set
     /// Indicates whether to ignore externals.
     abstract ignoreExternals: bool with get, set
     /// The local path.
@@ -1331,7 +1331,7 @@ type [<AllowNullLiteral>] SvnWorkspace =
 /// Represents a reference to an agent pool.
 type [<AllowNullLiteral>] TaskAgentPoolReference =
     /// The pool ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// A value indicating whether or not this pool is managed by the service.
     abstract isHosted: bool with get, set
     /// The pool name.
@@ -1359,7 +1359,7 @@ type [<AllowNullLiteral>] TaskOrchestrationPlanGroupsStartedEvent =
 /// Represents a reference to an orchestration plan.
 type [<AllowNullLiteral>] TaskOrchestrationPlanReference =
     /// The type of the plan.
-    abstract orchestrationType: float with get, set
+    abstract orchestrationType: int with get, set
     /// The ID of the plan.
     abstract planId: string with get, set
 
@@ -1391,7 +1391,7 @@ type [<AllowNullLiteral>] Timeline =
 
 type [<AllowNullLiteral>] TimelineAttempt =
     /// Gets or sets the attempt of the record.
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// Gets or sets the record identifier located within the specified timeline.
     abstract recordId: string with get, set
     /// Gets or sets the timeline identifier which owns the record representing this attempt.
@@ -1401,15 +1401,15 @@ type [<AllowNullLiteral>] TimelineAttempt =
 type [<AllowNullLiteral>] TimelineRecord =
     abstract _links: obj option with get, set
     /// Attempt number of record.
-    abstract attempt: float with get, set
+    abstract attempt: int with get, set
     /// The change ID.
-    abstract changeId: float with get, set
+    abstract changeId: int with get, set
     /// A string that indicates the current operation.
     abstract currentOperation: string with get, set
     /// A reference to a sub-timeline.
     abstract details: TimelineReference with get, set
     /// The number of errors produced by this operation.
-    abstract errorCount: float with get, set
+    abstract errorCount: int with get, set
     /// The finish time.
     abstract finishTime: DateTime with get, set
     /// The ID of the record.
@@ -1424,11 +1424,11 @@ type [<AllowNullLiteral>] TimelineRecord =
     /// The name.
     abstract name: string with get, set
     /// An ordinal value relative to other records.
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// The ID of the record's parent.
     abstract parentId: string with get, set
     /// The current completion percentage.
-    abstract percentComplete: float with get, set
+    abstract percentComplete: int with get, set
     abstract previousAttempts: ResizeArray<TimelineAttempt> with get, set
     /// The result.
     abstract result: TaskResult with get, set
@@ -1445,7 +1445,7 @@ type [<AllowNullLiteral>] TimelineRecord =
     /// The REST URL of the timeline record.
     abstract url: string with get, set
     /// The number of warnings produced by this operation.
-    abstract warningCount: float with get, set
+    abstract warningCount: int with get, set
     /// The name of the agent running the operation.
     abstract workerName: string with get, set
 
@@ -1461,7 +1461,7 @@ type [<AllowNullLiteral>] TimelineRecordsUpdatedEvent =
 /// Represents a reference to a timeline.
 type [<AllowNullLiteral>] TimelineReference =
     /// The change ID.
-    abstract changeId: float with get, set
+    abstract changeId: int with get, set
     /// The ID of the timeline.
     abstract id: string with get, set
     /// The REST URL of the timeline.
@@ -1474,7 +1474,7 @@ type [<AllowNullLiteral>] UpdateProjectRetentionSettingModel =
     abstract runRetention: UpdateRetentionSettingModel with get, set
 
 type [<AllowNullLiteral>] UpdateRetentionSettingModel =
-    abstract value: float with get, set
+    abstract value: int with get, set
 
 type [<AllowNullLiteral>] UpdateStageParameters =
     abstract state: StageUpdateType with get, set
@@ -1500,7 +1500,7 @@ type [<AllowNullLiteral>] VariableGroupReference =
     /// The Name of the variable group.
     abstract alias: string with get, set
     /// The ID of the variable group.
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 /// Represents options for running a phase based on values specified by a list of variables.
 type [<AllowNullLiteral>] VariableMultipliersAgentExecutionOptions =
@@ -1508,7 +1508,7 @@ type [<AllowNullLiteral>] VariableMultipliersAgentExecutionOptions =
     /// Indicates whether failure on one agent should prevent the phase from running on other agents.
     abstract continueOnError: bool with get, set
     /// The maximum number of agents to use in parallel.
-    abstract maxConcurrency: float with get, set
+    abstract maxConcurrency: int with get, set
     abstract multipliers: ResizeArray<string> with get, set
 
 /// Represents options for running a phase based on values specified by a list of variables.
@@ -1517,7 +1517,7 @@ type [<AllowNullLiteral>] VariableMultipliersServerExecutionOptions =
     /// Indicates whether failure of one job should prevent the phase from running in other jobs.
     abstract continueOnError: bool with get, set
     /// The maximum number of server jobs to run in parallel.
-    abstract maxConcurrency: float with get, set
+    abstract maxConcurrency: int with get, set
     abstract multipliers: ResizeArray<string> with get, set
 
 /// Mapping for a workspace
@@ -1525,7 +1525,7 @@ type [<AllowNullLiteral>] WorkspaceMapping =
     /// Uri of the associated definition
     abstract definitionUri: string with get, set
     /// Depth of this mapping
-    abstract depth: float with get, set
+    abstract depth: int with get, set
     /// local location of the definition
     abstract localItem: string with get, set
     /// type of workspace mapping
@@ -1533,7 +1533,7 @@ type [<AllowNullLiteral>] WorkspaceMapping =
     /// Server location of the definition
     abstract serverItem: string with get, set
     /// Id of the workspace
-    abstract workspaceId: float with get, set
+    abstract workspaceId: int with get, set
 
 type [<RequireQualifiedAccess>] WorkspaceMappingType =
     | Map = 0
@@ -1549,11 +1549,11 @@ type [<AllowNullLiteral>] WorkspaceTemplate =
     /// List of workspace mappings
     abstract mappings: ResizeArray<WorkspaceMapping> with get, set
     /// Id of the workspace for this template
-    abstract workspaceId: float with get, set
+    abstract workspaceId: int with get, set
 
 type [<AllowNullLiteral>] XamlBuildControllerReference =
     /// Id of the resource
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the linked resource (definition name, controller name, etc.)
     abstract name: string with get, set
     /// Full http link to the resource
@@ -1563,10 +1563,10 @@ type [<AllowNullLiteral>] XamlBuildDefinition =
     inherit DefinitionReference
     abstract _links: obj option with get, set
     /// Batch size of the definition
-    abstract batchSize: float with get, set
+    abstract batchSize: int with get, set
     abstract buildArgs: string with get, set
     /// The continuous integration quiet period
-    abstract continuousIntegrationQuietPeriod: float with get, set
+    abstract continuousIntegrationQuietPeriod: int with get, set
     /// The build controller
     abstract controller: BuildController with get, set
     /// The date this definition was created
@@ -1586,7 +1586,7 @@ type [<AllowNullLiteral>] XamlBuildDefinition =
 
 type [<AllowNullLiteral>] XamlBuildReference =
     /// Id of the resource
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the linked resource (definition name, controller name, etc.)
     abstract name: string with get, set
     /// Full http link to the resource
@@ -1594,7 +1594,7 @@ type [<AllowNullLiteral>] XamlBuildReference =
 
 type [<AllowNullLiteral>] XamlBuildServerReference =
     /// Id of the resource
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the linked resource (definition name, controller name, etc.)
     abstract name: string with get, set
     /// Full http link to the resource
@@ -1602,7 +1602,7 @@ type [<AllowNullLiteral>] XamlBuildServerReference =
 
 type [<AllowNullLiteral>] XamlDefinitionReference =
     /// Id of the resource
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Name of the linked resource (definition name, controller name, etc.)
     abstract name: string with get, set
     /// Full http link to the resource

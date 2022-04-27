@@ -89,6 +89,7 @@
     <Compile Include="bindings\WikiClient.fs" />
     <Compile Include="bindings\SDK.fs" />
     <Compile Include="bindings\XDM.fs" />
+    <None Include="styles/global.sass" />
     <None Include="index.html" />
     <Compile Include="Common.fs" />
     <Compile Include="Extensions.fs" />

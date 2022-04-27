@@ -21,7 +21,7 @@ type [<AllowNullLiteral>] IWorkItemFormNavigationService =
     /// or it may update the current page view, depending on the current page.</summary>
     /// <param name="workItemId">The id of the work item to open</param>
     /// <param name="openInNewTab">(Optional) If true, opens the work item in a new tab. Default is false</param>
-    abstract openWorkItem: workItemId: float * ?openInNewTab: bool -> Promise<WorkItem>
+    abstract openWorkItem: workItemId: int * ?openInNewTab: bool -> Promise<WorkItem>
     /// <summary>Opens a new work item of the specified type. The host page will display the new work item in a dialog,
     /// or it may update the current page view, depending on the current page.</summary>
     /// <param name="workItemTypeName">The name of the work item type to open</param>
@@ -102,7 +102,7 @@ type [<AllowNullLiteral>] IWorkItemFormService =
     abstract getWorkItemRelations: unit -> Promise<ResizeArray<WorkItemRelation>>
     /// <summary>Returns the REST API url of the specified work item resource.</summary>
     /// <param name="workItemId">Id of the work item that the resource url is requested for.</param>
-    abstract getWorkItemResourceUrl: workItemId: float -> Promise<string>
+    abstract getWorkItemResourceUrl: workItemId: int -> Promise<string>
     /// Returns an array of work item relation types.
     abstract getWorkItemRelationTypes: unit -> Promise<ResizeArray<WorkItemRelationType>>
     /// Returns true if the active work item available.
@@ -115,7 +115,7 @@ type [<AllowNullLiteral>] IWorkItemFormServiceSetFieldValuesFields =
 /// Interface defining the arguments for notifications sent by the ActiveWorkItemService
 type [<AllowNullLiteral>] IWorkItemChangedArgs =
     /// Id of the work item.
-    abstract id: float with get, set
+    abstract id: int with get, set
 
 /// Interface defining the arguments for the 'onLoaded' notification sent by the ActiveWorkItemService
 type [<AllowNullLiteral>] IWorkItemLoadedArgs =

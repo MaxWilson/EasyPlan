@@ -43,9 +43,9 @@ type [<AllowNullLiteral>] NotificationRestClient =
     /// <param name="publisherId">- Limit to event types for this publisher</param>
     abstract listEventTypes: ?publisherId: string -> Promise<ResizeArray<Notification.NotificationEventType>>
     /// <param name="notificationId">-</param>
-    abstract getNotificationReasons: notificationId: float -> Promise<Notification.NotificationReason>
+    abstract getNotificationReasons: notificationId: int -> Promise<Notification.NotificationReason>
     /// <param name="notificationIds">-</param>
-    abstract listNotificationReasons: ?notificationIds: float -> Promise<ResizeArray<Notification.NotificationReason>>
+    abstract listNotificationReasons: ?notificationIds: int -> Promise<ResizeArray<Notification.NotificationReason>>
     abstract getSettings: unit -> Promise<Notification.NotificationAdminSettings>
     /// <param name="updateParameters">-</param>
     abstract updateSettings: updateParameters: Notification.NotificationAdminSettingsUpdateParameters -> Promise<Notification.NotificationAdminSettings>

@@ -76,7 +76,7 @@ type [<AllowNullLiteral>] ServiceEndpointRestClient =
     /// <param name="endpointId">- Id of the service endpoint.</param>
     /// <param name="top">- Number of service endpoint execution records to get.</param>
     /// <param name="continuationToken">- A continuation token, returned by a previous call to this method, that can be used to return the next set of records</param>
-    abstract getServiceEndpointExecutionRecords: project: string * endpointId: string * ?top: float * ?continuationToken: float -> Promise<ResizeArray<ServiceEndpoint.ServiceEndpointExecutionRecord>>
+    abstract getServiceEndpointExecutionRecords: project: string * endpointId: string * ?top: int * ?continuationToken: int -> Promise<ResizeArray<ServiceEndpoint.ServiceEndpointExecutionRecord>>
     /// <summary>Add service endpoint execution records.</summary>
     /// <param name="input">- Service endpoint execution records to add.</param>
     /// <param name="project">- Project ID or project name</param>

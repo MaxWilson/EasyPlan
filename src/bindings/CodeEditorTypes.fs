@@ -173,7 +173,7 @@ type [<AllowNullLiteral>] EnterAction =
     /// Describes text to be appended after the new line and after the indentation.
     abstract appendText: string option with get, set
     /// Describes the number of characters to remove from the new line's indentation.
-    abstract removeText: float option with get, set
+    abstract removeText: int option with get, set
 
 /// Definition of documentation comments (e.g. Javadoc/JSdoc)
 type [<AllowNullLiteral>] IDocComment =

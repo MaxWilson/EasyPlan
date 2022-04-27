@@ -29,7 +29,7 @@ type [<AllowNullLiteral>] GraphRestClient =
     /// <param name="subjectDescriptor">- the descriptor of the graph subject that we should acquire data for</param>
     /// <param name="providerName">- the name of the provider to acquire data for, e.g. "github.com"</param>
     /// <param name="versionHint">- a version hint that can be used for optimistic cache concurrency and to support retries on access token failures; note that this is a hint only and does not guarantee a particular version on the response</param>
-    abstract getFederatedProviderData: subjectDescriptor: string * providerName: string * ?versionHint: float -> Promise<Graph.GraphFederatedProviderData>
+    abstract getFederatedProviderData: subjectDescriptor: string * providerName: string * ?versionHint: int -> Promise<Graph.GraphFederatedProviderData>
     /// <summary>Create a new Azure DevOps group or materialize an existing AAD group.</summary>
     /// <param name="creationContext">- The subset of the full graph group used to uniquely find the graph subject in an external provider.</param>
     /// <param name="scopeDescriptor">- A descriptor referencing the scope (collection, project) in which the group should be created. If omitted, will be created in the scope of the enclosing account or organization. Valid only for VSTS groups.</param>
@@ -70,7 +70,7 @@ type [<AllowNullLiteral>] GraphRestClient =
     /// <param name="subjectDescriptor">- Fetch all direct memberships of this descriptor.</param>
     /// <param name="direction">- Defaults to Up.</param>
     /// <param name="depth">- The maximum number of edges to traverse up or down the membership tree. Currently the only supported value is '1'.</param>
-    abstract listMemberships: subjectDescriptor: string * ?direction: Graph.GraphTraversalDirection * ?depth: float -> Promise<ResizeArray<Graph.GraphMembership>>
+    abstract listMemberships: subjectDescriptor: string * ?direction: Graph.GraphTraversalDirection * ?depth: int -> Promise<ResizeArray<Graph.GraphMembership>>
     /// <summary>Check whether a subject is active or inactive.</summary>
     /// <param name="subjectDescriptor">- Descriptor of the subject (user, group, scope, etc.) to check state of</param>
     abstract getMembershipState: subjectDescriptor: string -> Promise<Graph.GraphMembershipState>
@@ -78,12 +78,12 @@ type [<AllowNullLiteral>] GraphRestClient =
     /// <param name="membershipTraversalLookup">- Fetch the descendants/ancestors of the list of descriptors depending on direction.</param>
     /// <param name="direction">- The default value is Unknown.</param>
     /// <param name="depth">- The default value is '1'.</param>
-    abstract lookupMembershipTraversals: membershipTraversalLookup: Graph.GraphSubjectLookup * ?direction: Graph.GraphTraversalDirection * ?depth: float -> Promise<GraphRestClientLookupMembershipTraversalsPromise>
+    abstract lookupMembershipTraversals: membershipTraversalLookup: Graph.GraphSubjectLookup * ?direction: Graph.GraphTraversalDirection * ?depth: int -> Promise<GraphRestClientLookupMembershipTraversalsPromise>
     /// <summary>Traverse memberships of the given subject descriptor.</summary>
     /// <param name="subjectDescriptor">- Fetch the descendants/ancestors of this descriptor depending on direction.</param>
     /// <param name="direction">- The default value is Unknown.</param>
     /// <param name="depth">- The default value is '1'.</param>
-    abstract traverseMemberships: subjectDescriptor: string * ?direction: Graph.GraphTraversalDirection * ?depth: float -> Promise<Graph.GraphMembershipTraversal>
+    abstract traverseMemberships: subjectDescriptor: string * ?direction: Graph.GraphTraversalDirection * ?depth: int -> Promise<Graph.GraphMembershipTraversal>
     /// <param name="userDescriptor">-</param>
     abstract getProviderInfo: userDescriptor: string -> Promise<Graph.GraphProviderInfo>
     /// <param name="jsondocument">-</param>

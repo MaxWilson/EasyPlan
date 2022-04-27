@@ -76,7 +76,7 @@ type [<AllowNullLiteral>] Uri =
     /// The uri hostname (does not include port or scheme)
     abstract host: string with get, set
     /// The port number of the uri as supplied in the url. 0 if left out in the url (e.g. the default port for the scheme).
-    abstract port: float with get, set
+    abstract port: int with get, set
     /// The relative path of the uri
     abstract path: string with get, set
     /// The array of query parameters in the uri
@@ -139,7 +139,7 @@ type [<AllowNullLiteral>] IRouteMatchResult =
     /// Dictionary of the route value keys that were used as replacements
     abstract matchedParameters: IRouteMatchResultMatchedParameters with get, set
     /// The number of parameter replacements made
-    abstract matchedParametersCount: float with get, set
+    abstract matchedParametersCount: int with get, set
 
 type [<AllowNullLiteral>] IRouteMatchResultMatchedParameters =
     [<Emit "$0[$1]{{=$2}}">] abstract Item: key: string -> bool with get, set

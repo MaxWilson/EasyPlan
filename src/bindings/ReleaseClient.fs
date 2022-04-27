@@ -15,7 +15,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <summary>Returns the artifact details that automation agent requires</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
-    abstract getAgentArtifactDefinitions: project: string * releaseId: float -> Promise<ResizeArray<Release.AgentArtifactDefinition>>
+    abstract getAgentArtifactDefinitions: project: string * releaseId: int -> Promise<ResizeArray<Release.AgentArtifactDefinition>>
     /// <summary>Get a list of approvals</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="assignedToFilter">- Approvals assigned to this user.</param>
@@ -26,21 +26,21 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="continuationToken">- Gets the approvals after the continuation token provided.</param>
     /// <param name="queryOrder">- Gets the results in the defined order of created approvals. Default is 'descending'.</param>
     /// <param name="includeMyGroupApprovals">- 'true' to include my group approvals. Default is 'false'.</param>
-    abstract getApprovals: project: string * ?assignedToFilter: string * ?statusFilter: Release.ApprovalStatus * ?releaseIdsFilter: ResizeArray<float> * ?typeFilter: Release.ApprovalType * ?top: float * ?continuationToken: float * ?queryOrder: Release.ReleaseQueryOrder * ?includeMyGroupApprovals: bool -> Promise<ResizeArray<Release.ReleaseApproval>>
+    abstract getApprovals: project: string * ?assignedToFilter: string * ?statusFilter: Release.ApprovalStatus * ?releaseIdsFilter: ResizeArray<float> * ?typeFilter: Release.ApprovalType * ?top: int * ?continuationToken: int * ?queryOrder: Release.ReleaseQueryOrder * ?includeMyGroupApprovals: bool -> Promise<ResizeArray<Release.ReleaseApproval>>
     /// <summary>Get approval history.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="approvalStepId">- Id of the approval.</param>
-    abstract getApprovalHistory: project: string * approvalStepId: float -> Promise<Release.ReleaseApproval>
+    abstract getApprovalHistory: project: string * approvalStepId: int -> Promise<Release.ReleaseApproval>
     /// <summary>Get an approval.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="approvalId">- Id of the approval.</param>
     /// <param name="includeHistory">- 'true' to include history of the approval. Default is 'false'.</param>
-    abstract getApproval: project: string * approvalId: float * ?includeHistory: bool -> Promise<Release.ReleaseApproval>
+    abstract getApproval: project: string * approvalId: int * ?includeHistory: bool -> Promise<Release.ReleaseApproval>
     /// <summary>Update status of an approval</summary>
     /// <param name="approval">- ReleaseApproval object having status, approver and comments.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="approvalId">- Id of the approval.</param>
-    abstract updateReleaseApproval: approval: Release.ReleaseApproval * project: string * approvalId: float -> Promise<Release.ReleaseApproval>
+    abstract updateReleaseApproval: approval: Release.ReleaseApproval * project: string * approvalId: int -> Promise<Release.ReleaseApproval>
     /// <param name="approvals">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract updateReleaseApprovals: approvals: ResizeArray<Release.ReleaseApproval> * project: string -> Promise<ResizeArray<Release.ReleaseApproval>>
@@ -53,7 +53,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="recordId">- Record Id of attachment.</param>
     /// <param name="type">- Type of the attachment.</param>
     /// <param name="name">- Name of the attachment.</param>
-    abstract getTaskAttachmentContent: project: string * releaseId: float * environmentId: float * attemptId: float * timelineId: string * recordId: string * ``type``: string * name: string -> Promise<ArrayBuffer>
+    abstract getTaskAttachmentContent: project: string * releaseId: int * environmentId: int * attemptId: int * timelineId: string * recordId: string * ``type``: string * name: string -> Promise<ArrayBuffer>
     /// <summary>Get a release task attachment.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
@@ -64,7 +64,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="recordId">- Record Id of attachment.</param>
     /// <param name="type">- Type of the attachment.</param>
     /// <param name="name">- Name of the attachment.</param>
-    abstract getReleaseTaskAttachmentContent: project: string * releaseId: float * environmentId: float * attemptId: float * planId: string * timelineId: string * recordId: string * ``type``: string * name: string -> Promise<ArrayBuffer>
+    abstract getReleaseTaskAttachmentContent: project: string * releaseId: int * environmentId: int * attemptId: int * planId: string * timelineId: string * recordId: string * ``type``: string * name: string -> Promise<ArrayBuffer>
     /// <summary>Get the task attachments.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
@@ -72,7 +72,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="attemptId">- Attempt number of deployment.</param>
     /// <param name="timelineId">- Timeline Id of the task.</param>
     /// <param name="type">- Type of the attachment.</param>
-    abstract getTaskAttachments: project: string * releaseId: float * environmentId: float * attemptId: float * timelineId: string * ``type``: string -> Promise<ResizeArray<Release.ReleaseTaskAttachment>>
+    abstract getTaskAttachments: project: string * releaseId: int * environmentId: int * attemptId: int * timelineId: string * ``type``: string -> Promise<ResizeArray<Release.ReleaseTaskAttachment>>
     /// <summary>Get the release task attachments.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
@@ -80,7 +80,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="attemptId">- Attempt number of deployment.</param>
     /// <param name="planId">- Plan Id of the deploy phase.</param>
     /// <param name="type">- Type of the attachment.</param>
-    abstract getReleaseTaskAttachments: project: string * releaseId: float * environmentId: float * attemptId: float * planId: string * ``type``: string -> Promise<ResizeArray<Release.ReleaseTaskAttachment>>
+    abstract getReleaseTaskAttachments: project: string * releaseId: int * environmentId: int * attemptId: int * planId: string * ``type``: string -> Promise<ResizeArray<Release.ReleaseTaskAttachment>>
     /// <param name="artifactType">-</param>
     /// <param name="sourceId">-</param>
     /// <param name="artifactVersionId">-</param>
@@ -91,13 +91,13 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="releaseDefinitionId">- The ID of the Release Definition.</param>
     /// <param name="environmentId">- The ID of the Environment.</param>
     /// <param name="branchName">- The name of the branch.</param>
-    abstract getDeploymentBadge: projectId: string * releaseDefinitionId: float * environmentId: float * ?branchName: string -> Promise<string>
+    abstract getDeploymentBadge: projectId: string * releaseDefinitionId: int * environmentId: int * ?branchName: string -> Promise<string>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="baseReleaseId">-</param>
     /// <param name="top">-</param>
     /// <param name="artifactAlias">-</param>
-    abstract getReleaseChanges: project: string * releaseId: float * ?baseReleaseId: float * ?top: float * ?artifactAlias: string -> Promise<ResizeArray<Release.Change>>
+    abstract getReleaseChanges: project: string * releaseId: int * ?baseReleaseId: int * ?top: int * ?artifactAlias: string -> Promise<ResizeArray<Release.Change>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="taskGroupId">-</param>
     /// <param name="propertyFilters">-</param>
@@ -111,17 +111,17 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="definitionId">- Id of the release definition.</param>
     /// <param name="comment">- Comment for deleting a release definition.</param>
     /// <param name="forceDelete">- 'true' to automatically cancel any in-progress release deployments and proceed with release definition deletion . Default is 'false'.</param>
-    abstract deleteReleaseDefinition: project: string * definitionId: float * ?comment: string * ?forceDelete: bool -> Promise<unit>
+    abstract deleteReleaseDefinition: project: string * definitionId: int * ?comment: string * ?forceDelete: bool -> Promise<unit>
     /// <summary>Get a release definition.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- Id of the release definition.</param>
     /// <param name="propertyFilters">- A comma-delimited list of extended properties to be retrieved. If set, the returned Release Definition will contain values for the specified property Ids (if they exist). If not set, properties will not be included.</param>
-    abstract getReleaseDefinition: project: string * definitionId: float * ?propertyFilters: ResizeArray<string> -> Promise<Release.ReleaseDefinition>
+    abstract getReleaseDefinition: project: string * definitionId: int * ?propertyFilters: ResizeArray<string> -> Promise<Release.ReleaseDefinition>
     /// <summary>Get release definition of a given revision.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- Id of the release definition.</param>
     /// <param name="revision">- Revision number of the release definition.</param>
-    abstract getReleaseDefinitionRevision: project: string * definitionId: float * revision: float -> Promise<string>
+    abstract getReleaseDefinitionRevision: project: string * definitionId: int * revision: int -> Promise<string>
     /// <summary>Get a list of release definitions.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="searchText">- Get release definitions with names containing searchText.</param>
@@ -138,12 +138,12 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="definitionIdFilter">- A comma-delimited list of release definitions to retrieve.</param>
     /// <param name="isDeleted">- 'true' to get release definitions that has been deleted. Default is 'false'</param>
     /// <param name="searchTextContainsFolderName">- 'true' to get the release definitions under the folder with name as specified in searchText. Default is 'false'.</param>
-    abstract getReleaseDefinitions: project: string * ?searchText: string * ?expand: Release.ReleaseDefinitionExpands * ?artifactType: string * ?artifactSourceId: string * ?top: float * ?continuationToken: string * ?queryOrder: Release.ReleaseDefinitionQueryOrder * ?path: string * ?isExactNameMatch: bool * ?tagFilter: ResizeArray<string> * ?propertyFilters: ResizeArray<string> * ?definitionIdFilter: ResizeArray<string> * ?isDeleted: bool * ?searchTextContainsFolderName: bool -> Promise<ResizeArray<Release.ReleaseDefinition>>
+    abstract getReleaseDefinitions: project: string * ?searchText: string * ?expand: Release.ReleaseDefinitionExpands * ?artifactType: string * ?artifactSourceId: string * ?top: int * ?continuationToken: string * ?queryOrder: Release.ReleaseDefinitionQueryOrder * ?path: string * ?isExactNameMatch: bool * ?tagFilter: ResizeArray<string> * ?propertyFilters: ResizeArray<string> * ?definitionIdFilter: ResizeArray<string> * ?isDeleted: bool * ?searchTextContainsFolderName: bool -> Promise<ResizeArray<Release.ReleaseDefinition>>
     /// <summary>Undelete a release definition.</summary>
     /// <param name="releaseDefinitionUndeleteParameter">- Object for undelete release definition.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- Id of the release definition to be undeleted</param>
-    abstract undeleteReleaseDefinition: releaseDefinitionUndeleteParameter: Release.ReleaseDefinitionUndeleteParameter * project: string * definitionId: float -> Promise<Release.ReleaseDefinition>
+    abstract undeleteReleaseDefinition: releaseDefinitionUndeleteParameter: Release.ReleaseDefinitionUndeleteParameter * project: string * definitionId: int -> Promise<Release.ReleaseDefinition>
     /// <summary>Update a release definition.</summary>
     /// <param name="releaseDefinition">- Release definition object to update.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -164,7 +164,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="minStartedTime">-</param>
     /// <param name="maxStartedTime">-</param>
     /// <param name="sourceBranch">-</param>
-    abstract getDeployments: project: string * ?definitionId: float * ?definitionEnvironmentId: float * ?createdBy: string * ?minModifiedTime: DateTime * ?maxModifiedTime: DateTime * ?deploymentStatus: Release.DeploymentStatus * ?operationStatus: Release.DeploymentOperationStatus * ?latestAttemptsOnly: bool * ?queryOrder: Release.ReleaseQueryOrder * ?top: float * ?continuationToken: float * ?createdFor: string * ?minStartedTime: DateTime * ?maxStartedTime: DateTime * ?sourceBranch: string -> Promise<ResizeArray<Release.Deployment>>
+    abstract getDeployments: project: string * ?definitionId: int * ?definitionEnvironmentId: int * ?createdBy: string * ?minModifiedTime: DateTime * ?maxModifiedTime: DateTime * ?deploymentStatus: Release.DeploymentStatus * ?operationStatus: Release.DeploymentOperationStatus * ?latestAttemptsOnly: bool * ?queryOrder: Release.ReleaseQueryOrder * ?top: int * ?continuationToken: int * ?createdFor: string * ?minStartedTime: DateTime * ?maxStartedTime: DateTime * ?sourceBranch: string -> Promise<ResizeArray<Release.Deployment>>
     /// <param name="queryParameters">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract getDeploymentsForMultipleEnvironments: queryParameters: Release.DeploymentQueryParameters * project: string -> Promise<ResizeArray<Release.Deployment>>
@@ -172,13 +172,13 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
     /// <param name="environmentId">- Id of the release environment.</param>
-    abstract getReleaseEnvironment: project: string * releaseId: float * environmentId: float -> Promise<Release.ReleaseEnvironment>
+    abstract getReleaseEnvironment: project: string * releaseId: int * environmentId: int -> Promise<Release.ReleaseEnvironment>
     /// <summary>Update the status of a release environment</summary>
     /// <param name="environmentUpdateData">- Environment update meta data.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
     /// <param name="environmentId">- Id of release environment.</param>
-    abstract updateReleaseEnvironment: environmentUpdateData: Release.ReleaseEnvironmentUpdateMetadata * project: string * releaseId: float * environmentId: float -> Promise<Release.ReleaseEnvironment>
+    abstract updateReleaseEnvironment: environmentUpdateData: Release.ReleaseEnvironmentUpdateMetadata * project: string * releaseId: int * environmentId: int -> Promise<Release.ReleaseEnvironment>
     /// <summary>Creates a definition environment template</summary>
     /// <param name="template">- Definition environment template to create</param>
     /// <param name="project">- Project ID or project name</param>
@@ -238,35 +238,35 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="gateUpdateMetadata">- Metadata to patch the Release Gates.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="gateStepId">- Gate step Id.</param>
-    abstract updateGates: gateUpdateMetadata: Release.GateUpdateMetadata * project: string * gateStepId: float -> Promise<Release.ReleaseGates>
+    abstract updateGates: gateUpdateMetadata: Release.GateUpdateMetadata * project: string * gateStepId: int -> Promise<Release.ReleaseGates>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
-    abstract getReleaseHistory: project: string * releaseId: float -> Promise<ResizeArray<Release.ReleaseRevision>>
+    abstract getReleaseHistory: project: string * releaseId: int -> Promise<ResizeArray<Release.ReleaseRevision>>
     /// <param name="query">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract getInputValues: query: FormInput.InputValuesQuery * project: string -> Promise<FormInput.InputValuesQuery>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="sourceId">-</param>
-    abstract getIssues: project: string * buildId: float * ?sourceId: string -> Promise<ResizeArray<Release.AutoTriggerIssue>>
+    abstract getIssues: project: string * buildId: int * ?sourceId: string -> Promise<ResizeArray<Release.AutoTriggerIssue>>
     /// <summary>Gets gate logs</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
     /// <param name="environmentId">- Id of release environment.</param>
     /// <param name="gateId">- Id of the gate.</param>
     /// <param name="taskId">- ReleaseTask Id for the log.</param>
-    abstract getGateLog: project: string * releaseId: float * environmentId: float * gateId: float * taskId: float -> Promise<string>
+    abstract getGateLog: project: string * releaseId: int * environmentId: int * gateId: int * taskId: int -> Promise<string>
     /// <summary>Get logs for a release Id.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
-    abstract getLogs: project: string * releaseId: float -> Promise<ArrayBuffer>
+    abstract getLogs: project: string * releaseId: int -> Promise<ArrayBuffer>
     /// <summary>Gets logs</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
     /// <param name="environmentId">- Id of release environment.</param>
     /// <param name="taskId">- ReleaseTask Id for the log.</param>
     /// <param name="attemptId">- Id of the attempt.</param>
-    abstract getLog: project: string * releaseId: float * environmentId: float * taskId: float * ?attemptId: float -> Promise<string>
+    abstract getLog: project: string * releaseId: int * environmentId: int * taskId: int * ?attemptId: int -> Promise<string>
     /// <summary>Gets the task log of a release as a plain text file.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
@@ -276,7 +276,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="taskId">- ReleaseTask Id for the log.</param>
     /// <param name="startLine">- Starting line number for logs</param>
     /// <param name="endLine">- Ending line number for logs</param>
-    abstract getTaskLog2: project: string * releaseId: float * environmentId: float * attemptId: float * timelineId: string * taskId: float * ?startLine: float * ?endLine: float -> Promise<string>
+    abstract getTaskLog2: project: string * releaseId: int * environmentId: int * attemptId: int * timelineId: string * taskId: int * ?startLine: int * ?endLine: int -> Promise<string>
     /// <summary>Gets the task log of a release as a plain text file.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
@@ -285,22 +285,22 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="taskId">- ReleaseTask Id for the log.</param>
     /// <param name="startLine">- Starting line number for logs</param>
     /// <param name="endLine">- Ending line number for logs</param>
-    abstract getTaskLog: project: string * releaseId: float * environmentId: float * releaseDeployPhaseId: float * taskId: float * ?startLine: float * ?endLine: float -> Promise<string>
+    abstract getTaskLog: project: string * releaseId: int * environmentId: int * releaseDeployPhaseId: int * taskId: int * ?startLine: int * ?endLine: int -> Promise<string>
     /// <summary>Get manual intervention for a given release and manual intervention id.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
     /// <param name="manualInterventionId">- Id of the manual intervention.</param>
-    abstract getManualIntervention: project: string * releaseId: float * manualInterventionId: float -> Promise<Release.ManualIntervention>
+    abstract getManualIntervention: project: string * releaseId: int * manualInterventionId: int -> Promise<Release.ManualIntervention>
     /// <summary>List all manual interventions for a given release.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
-    abstract getManualInterventions: project: string * releaseId: float -> Promise<ResizeArray<Release.ManualIntervention>>
+    abstract getManualInterventions: project: string * releaseId: int -> Promise<ResizeArray<Release.ManualIntervention>>
     /// <summary>Update manual intervention.</summary>
     /// <param name="manualInterventionUpdateMetadata">- Meta data to update manual intervention.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
     /// <param name="manualInterventionId">- Id of the manual intervention.</param>
-    abstract updateManualIntervention: manualInterventionUpdateMetadata: Release.ManualInterventionUpdateMetadata * project: string * releaseId: float * manualInterventionId: float -> Promise<Release.ManualIntervention>
+    abstract updateManualIntervention: manualInterventionUpdateMetadata: Release.ManualInterventionUpdateMetadata * project: string * releaseId: int * manualInterventionId: int -> Promise<Release.ManualIntervention>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="minMetricsTime">-</param>
     abstract getMetrics: project: string * ?minMetricsTime: DateTime -> Promise<ResizeArray<Release.Metric>>
@@ -330,7 +330,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="propertyFilters">- A comma-delimited list of extended properties to be retrieved. If set, the returned Releases will contain values for the specified property Ids (if they exist). If not set, properties will not be included. Note that this will not filter out any Release from results irrespective of whether it has property set or not.</param>
     /// <param name="releaseIdFilter">- A comma-delimited list of releases Ids. Only releases with these Ids will be returned.</param>
     /// <param name="path">- Releases under this folder path will be returned</param>
-    abstract getReleases: ?project: string * ?definitionId: float * ?definitionEnvironmentId: float * ?searchText: string * ?createdBy: string * ?statusFilter: Release.ReleaseStatus * ?environmentStatusFilter: float * ?minCreatedTime: DateTime * ?maxCreatedTime: DateTime * ?queryOrder: Release.ReleaseQueryOrder * ?top: float * ?continuationToken: float * ?expand: Release.ReleaseExpands * ?artifactTypeId: string * ?sourceId: string * ?artifactVersionId: string * ?sourceBranchFilter: string * ?isDeleted: bool * ?tagFilter: ResizeArray<string> * ?propertyFilters: ResizeArray<string> * ?releaseIdFilter: ResizeArray<float> * ?path: string -> Promise<ResizeArray<Release.Release>>
+    abstract getReleases: ?project: string * ?definitionId: int * ?definitionEnvironmentId: int * ?searchText: string * ?createdBy: string * ?statusFilter: Release.ReleaseStatus * ?environmentStatusFilter: int * ?minCreatedTime: DateTime * ?maxCreatedTime: DateTime * ?queryOrder: Release.ReleaseQueryOrder * ?top: int * ?continuationToken: int * ?expand: Release.ReleaseExpands * ?artifactTypeId: string * ?sourceId: string * ?artifactVersionId: string * ?sourceBranchFilter: string * ?isDeleted: bool * ?tagFilter: ResizeArray<string> * ?propertyFilters: ResizeArray<string> * ?releaseIdFilter: ResizeArray<float> * ?path: string -> Promise<ResizeArray<Release.Release>>
     /// <summary>Create a release.</summary>
     /// <param name="releaseStartMetadata">- Metadata to create a release.</param>
     /// <param name="project">- Project ID or project name</param>
@@ -339,7 +339,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
     /// <param name="comment">- Comment for deleting a release.</param>
-    abstract deleteRelease: project: string * releaseId: float * ?comment: string -> Promise<unit>
+    abstract deleteRelease: project: string * releaseId: int * ?comment: string -> Promise<unit>
     /// <summary>Get a Release</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
@@ -347,34 +347,34 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="propertyFilters">- A comma-delimited list of extended properties to be retrieved. If set, the returned Release will contain values for the specified property Ids (if they exist). If not set, properties will not be included.</param>
     /// <param name="expand">- A property that should be expanded in the release.</param>
     /// <param name="topGateRecords">- Number of release gate records to get. Default is 5.</param>
-    abstract getRelease: project: string * releaseId: float * ?approvalFilters: Release.ApprovalFilters * ?propertyFilters: ResizeArray<string> * ?expand: Release.SingleReleaseExpands * ?topGateRecords: float -> Promise<Release.Release>
+    abstract getRelease: project: string * releaseId: int * ?approvalFilters: Release.ApprovalFilters * ?propertyFilters: ResizeArray<string> * ?expand: Release.SingleReleaseExpands * ?topGateRecords: int -> Promise<Release.Release>
     /// <summary>Get release summary of a given definition Id.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- Id of the definition to get release summary.</param>
     /// <param name="releaseCount">- Count of releases to be included in summary.</param>
     /// <param name="includeArtifact">- Include artifact details.Default is 'false'.</param>
     /// <param name="definitionEnvironmentIdsFilter">-</param>
-    abstract getReleaseDefinitionSummary: project: string * definitionId: float * releaseCount: float * ?includeArtifact: bool * ?definitionEnvironmentIdsFilter: ResizeArray<float> -> Promise<Release.ReleaseDefinitionSummary>
+    abstract getReleaseDefinitionSummary: project: string * definitionId: int * releaseCount: int * ?includeArtifact: bool * ?definitionEnvironmentIdsFilter: ResizeArray<float> -> Promise<Release.ReleaseDefinitionSummary>
     /// <summary>Get release for a given revision number.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release.</param>
     /// <param name="definitionSnapshotRevision">- Definition snapshot revision number.</param>
-    abstract getReleaseRevision: project: string * releaseId: float * definitionSnapshotRevision: float -> Promise<string>
+    abstract getReleaseRevision: project: string * releaseId: int * definitionSnapshotRevision: int -> Promise<string>
     /// <summary>Undelete a soft deleted release.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of release to be undeleted.</param>
     /// <param name="comment">- Any comment for undeleting.</param>
-    abstract undeleteRelease: project: string * releaseId: float * comment: string -> Promise<unit>
+    abstract undeleteRelease: project: string * releaseId: int * comment: string -> Promise<unit>
     /// <summary>Update a complete release object.</summary>
     /// <param name="release">- Release object for update.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release to update.</param>
-    abstract updateRelease: release: Release.Release * project: string * releaseId: float -> Promise<Release.Release>
+    abstract updateRelease: release: Release.Release * project: string * releaseId: int -> Promise<Release.Release>
     /// <summary>Update few properties of a release.</summary>
     /// <param name="releaseUpdateMetadata">- Properties of release to update.</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">- Id of the release to update.</param>
-    abstract updateReleaseResource: releaseUpdateMetadata: Release.ReleaseUpdateMetadata * project: string * releaseId: float -> Promise<Release.Release>
+    abstract updateReleaseResource: releaseUpdateMetadata: Release.ReleaseUpdateMetadata * project: string * releaseId: int -> Promise<Release.Release>
     /// <summary>Gets the release settings</summary>
     /// <param name="project">- Project ID or project name</param>
     abstract getReleaseSettings: project: string -> Promise<Release.ReleaseSettings>
@@ -386,82 +386,82 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- Id of the definition.</param>
     /// <param name="revision">- Id of the revision.</param>
-    abstract getDefinitionRevision: project: string * definitionId: float * revision: float -> Promise<string>
+    abstract getDefinitionRevision: project: string * definitionId: int * revision: int -> Promise<string>
     /// <summary>Get revision history for a release definition</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">- Id of the definition.</param>
-    abstract getReleaseDefinitionHistory: project: string * definitionId: float -> Promise<ResizeArray<Release.ReleaseDefinitionRevision>>
+    abstract getReleaseDefinitionHistory: project: string * definitionId: int -> Promise<ResizeArray<Release.ReleaseDefinitionRevision>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
-    abstract getSummaryMailSections: project: string * releaseId: float -> Promise<ResizeArray<Release.SummaryMailSection>>
+    abstract getSummaryMailSections: project: string * releaseId: int -> Promise<ResizeArray<Release.SummaryMailSection>>
     /// <param name="mailMessage">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
-    abstract sendSummaryMail: mailMessage: Release.MailMessage * project: string * releaseId: float -> Promise<unit>
+    abstract sendSummaryMail: mailMessage: Release.MailMessage * project: string * releaseId: int -> Promise<unit>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definitionId">-</param>
-    abstract getSourceBranches: project: string * definitionId: float -> Promise<ResizeArray<string>>
+    abstract getSourceBranches: project: string * definitionId: int -> Promise<ResizeArray<string>>
     /// <summary>Adds a tag to a definition</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseDefinitionId">-</param>
     /// <param name="tag">-</param>
-    abstract addDefinitionTag: project: string * releaseDefinitionId: float * tag: string -> Promise<ResizeArray<string>>
+    abstract addDefinitionTag: project: string * releaseDefinitionId: int * tag: string -> Promise<ResizeArray<string>>
     /// <summary>Adds multiple tags to a definition</summary>
     /// <param name="tags">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseDefinitionId">-</param>
-    abstract addDefinitionTags: tags: ResizeArray<string> * project: string * releaseDefinitionId: float -> Promise<ResizeArray<string>>
+    abstract addDefinitionTags: tags: ResizeArray<string> * project: string * releaseDefinitionId: int -> Promise<ResizeArray<string>>
     /// <summary>Deletes a tag from a definition</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseDefinitionId">-</param>
     /// <param name="tag">-</param>
-    abstract deleteDefinitionTag: project: string * releaseDefinitionId: float * tag: string -> Promise<ResizeArray<string>>
+    abstract deleteDefinitionTag: project: string * releaseDefinitionId: int * tag: string -> Promise<ResizeArray<string>>
     /// <summary>Gets the tags for a definition</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseDefinitionId">-</param>
-    abstract getDefinitionTags: project: string * releaseDefinitionId: float -> Promise<ResizeArray<string>>
+    abstract getDefinitionTags: project: string * releaseDefinitionId: int -> Promise<ResizeArray<string>>
     /// <summary>Adds a tag to a releaseId</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="tag">-</param>
-    abstract addReleaseTag: project: string * releaseId: float * tag: string -> Promise<ResizeArray<string>>
+    abstract addReleaseTag: project: string * releaseId: int * tag: string -> Promise<ResizeArray<string>>
     /// <summary>Adds tag to a release</summary>
     /// <param name="tags">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
-    abstract addReleaseTags: tags: ResizeArray<string> * project: string * releaseId: float -> Promise<ResizeArray<string>>
+    abstract addReleaseTags: tags: ResizeArray<string> * project: string * releaseId: int -> Promise<ResizeArray<string>>
     /// <summary>Deletes a tag from a release</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="tag">-</param>
-    abstract deleteReleaseTag: project: string * releaseId: float * tag: string -> Promise<ResizeArray<string>>
+    abstract deleteReleaseTag: project: string * releaseId: int * tag: string -> Promise<ResizeArray<string>>
     /// <summary>Gets the tags for a release</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
-    abstract getReleaseTags: project: string * releaseId: float -> Promise<ResizeArray<string>>
+    abstract getReleaseTags: project: string * releaseId: int -> Promise<ResizeArray<string>>
     /// <param name="project">- Project ID or project name</param>
     abstract getTags: project: string -> Promise<ResizeArray<string>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="environmentId">-</param>
     /// <param name="releaseDeployPhaseId">-</param>
-    abstract getTasksForTaskGroup: project: string * releaseId: float * environmentId: float * releaseDeployPhaseId: float -> Promise<ResizeArray<Release.ReleaseTask>>
+    abstract getTasksForTaskGroup: project: string * releaseId: int * environmentId: int * releaseDeployPhaseId: int -> Promise<ResizeArray<Release.ReleaseTask>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="environmentId">-</param>
     /// <param name="attemptId">-</param>
     /// <param name="timelineId">-</param>
-    abstract getTasks2: project: string * releaseId: float * environmentId: float * attemptId: float * timelineId: string -> Promise<ResizeArray<Release.ReleaseTask>>
+    abstract getTasks2: project: string * releaseId: int * environmentId: int * attemptId: int * timelineId: string -> Promise<ResizeArray<Release.ReleaseTask>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="environmentId">-</param>
     /// <param name="attemptId">-</param>
-    abstract getTasks: project: string * releaseId: float * environmentId: float * ?attemptId: float -> Promise<ResizeArray<Release.ReleaseTask>>
+    abstract getTasks: project: string * releaseId: int * environmentId: int * ?attemptId: int -> Promise<ResizeArray<Release.ReleaseTask>>
     /// <param name="project">- Project ID or project name</param>
     abstract getArtifactTypeDefinitions: project: string -> Promise<ResizeArray<Release.ArtifactTypeDefinition>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseDefinitionId">-</param>
-    abstract getArtifactVersions: project: string * releaseDefinitionId: float -> Promise<Release.ArtifactVersionQueryResult>
+    abstract getArtifactVersions: project: string * releaseDefinitionId: int -> Promise<Release.ArtifactVersionQueryResult>
     /// <param name="artifacts">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract getArtifactVersionsForSources: artifacts: ResizeArray<Release.Artifact> * project: string -> Promise<Release.ArtifactVersionQueryResult>
@@ -470,7 +470,7 @@ type [<AllowNullLiteral>] ReleaseRestClient =
     /// <param name="baseReleaseId">-</param>
     /// <param name="top">-</param>
     /// <param name="artifactAlias">-</param>
-    abstract getReleaseWorkItemsRefs: project: string * releaseId: float * ?baseReleaseId: float * ?top: float * ?artifactAlias: string -> Promise<ResizeArray<Release.ReleaseWorkItemRef>>
+    abstract getReleaseWorkItemsRefs: project: string * releaseId: int * ?baseReleaseId: int * ?top: int * ?artifactAlias: string -> Promise<ResizeArray<Release.ReleaseWorkItemRef>>
 
 type [<AllowNullLiteral>] ReleaseRestClientStatic =
     [<Emit "new $0($1...)">] abstract Create: options: IVssRestClientOptions -> ReleaseRestClient

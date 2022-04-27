@@ -119,7 +119,7 @@ type [<AllowNullLiteral>] ContributionBase =
 /// Specifies a constraint that can be used to dynamically include/exclude a given contribution
 type [<AllowNullLiteral>] ContributionConstraint =
     /// An optional property that can be specified to group constraints together. All constraints within a group are AND'd together (all must be evaluate to True in order for the contribution to be included). Different groups of constraints are OR'd (only one group needs to evaluate to True for the contribution to be included).
-    abstract group: float with get, set
+    abstract group: int with get, set
     /// Fully qualified identifier of a shared constraint
     abstract id: string with get, set
     /// If true, negate the result of the filter (include the contribution if the applied filter returns false instead of true)
@@ -260,7 +260,7 @@ type [<AllowNullLiteral>] ExtensionAcquisitionRequest =
     /// Additional properties which can be added to the request.
     abstract properties: obj option with get, set
     /// How many licenses should be purchased
-    abstract quantity: float with get, set
+    abstract quantity: int with get, set
 
 /// Audit log for an extension
 type [<AllowNullLiteral>] ExtensionAuditLog =
@@ -377,7 +377,7 @@ type [<AllowNullLiteral>] ExtensionManifest =
     /// How this extension behaves with respect to licensing
     abstract licensing: ExtensionLicensing with get, set
     /// Version of the extension manifest format/content
-    abstract manifestVersion: float with get, set
+    abstract manifestVersion: int with get, set
     /// Default user claims applied to all contributions (except the ones which have been specified restrictedTo explicitly) to control the visibility of a contribution.
     abstract restrictedTo: ResizeArray<string> with get, set
     /// List of all oauth scopes required by this extension
@@ -549,12 +549,12 @@ type [<AllowNullLiteral>] RequestedExtension =
     /// Represents the Publisher of the requested extension
     abstract publisherName: string with get, set
     /// The total number of requests for an extension
-    abstract requestCount: float with get, set
+    abstract requestCount: int with get, set
 
 /// Entry for a specific data provider's resulting data
 type [<AllowNullLiteral>] ResolvedDataProvider =
     /// The total time the data provider took to resolve its data (in milliseconds)
-    abstract duration: float with get, set
+    abstract duration: int with get, set
     abstract error: string with get, set
     abstract id: string with get, set
 

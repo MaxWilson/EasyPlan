@@ -18,101 +18,101 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="testCaseResultId">-</param>
     /// <param name="iterationId">-</param>
     /// <param name="actionPath">-</param>
-    abstract createTestIterationResultAttachment: attachmentRequestModel: Test.TestAttachmentRequestModel * project: string * runId: float * testCaseResultId: float * iterationId: float * ?actionPath: string -> Promise<Test.TestAttachmentReference>
+    abstract createTestIterationResultAttachment: attachmentRequestModel: Test.TestAttachmentRequestModel * project: string * runId: int * testCaseResultId: int * iterationId: int * ?actionPath: string -> Promise<Test.TestAttachmentReference>
     /// <param name="attachmentRequestModel">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
-    abstract createTestResultAttachment: attachmentRequestModel: Test.TestAttachmentRequestModel * project: string * runId: float * testCaseResultId: float -> Promise<Test.TestAttachmentReference>
+    abstract createTestResultAttachment: attachmentRequestModel: Test.TestAttachmentRequestModel * project: string * runId: int * testCaseResultId: int -> Promise<Test.TestAttachmentReference>
     /// <param name="attachmentRequestModel">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
     /// <param name="testSubResultId">-</param>
-    abstract createTestSubResultAttachment: attachmentRequestModel: Test.TestAttachmentRequestModel * project: string * runId: float * testCaseResultId: float * testSubResultId: float -> Promise<Test.TestAttachmentReference>
+    abstract createTestSubResultAttachment: attachmentRequestModel: Test.TestAttachmentRequestModel * project: string * runId: int * testCaseResultId: int * testSubResultId: int -> Promise<Test.TestAttachmentReference>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
     /// <param name="attachmentId">-</param>
-    abstract deleteTestResultAttachment: project: string * runId: float * testCaseResultId: float * attachmentId: float -> Promise<unit>
+    abstract deleteTestResultAttachment: project: string * runId: int * testCaseResultId: int * attachmentId: int -> Promise<unit>
     /// <summary>Returns a test result attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
     /// <param name="attachmentId">-</param>
-    abstract getTestResultAttachmentContent: project: string * runId: float * testCaseResultId: float * attachmentId: float -> Promise<ArrayBuffer>
+    abstract getTestResultAttachmentContent: project: string * runId: int * testCaseResultId: int * attachmentId: int -> Promise<ArrayBuffer>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
-    abstract getTestResultAttachments: project: string * runId: float * testCaseResultId: float -> Promise<ResizeArray<Test.TestAttachment>>
+    abstract getTestResultAttachments: project: string * runId: int * testCaseResultId: int -> Promise<ResizeArray<Test.TestAttachment>>
     /// <summary>Returns a test result attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
     /// <param name="attachmentId">-</param>
-    abstract getTestResultAttachmentZip: project: string * runId: float * testCaseResultId: float * attachmentId: float -> Promise<ArrayBuffer>
+    abstract getTestResultAttachmentZip: project: string * runId: int * testCaseResultId: int * attachmentId: int -> Promise<ArrayBuffer>
     /// <summary>Returns a test sub result attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
     /// <param name="attachmentId">-</param>
     /// <param name="testSubResultId">-</param>
-    abstract getTestSubResultAttachmentContent: project: string * runId: float * testCaseResultId: float * attachmentId: float * testSubResultId: float -> Promise<ArrayBuffer>
+    abstract getTestSubResultAttachmentContent: project: string * runId: int * testCaseResultId: int * attachmentId: int * testSubResultId: int -> Promise<ArrayBuffer>
     /// <summary>Returns attachment references for test sub result.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
     /// <param name="testSubResultId">-</param>
-    abstract getTestSubResultAttachments: project: string * runId: float * testCaseResultId: float * testSubResultId: float -> Promise<ResizeArray<Test.TestAttachment>>
+    abstract getTestSubResultAttachments: project: string * runId: int * testCaseResultId: int * testSubResultId: int -> Promise<ResizeArray<Test.TestAttachment>>
     /// <summary>Returns a test sub result attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
     /// <param name="attachmentId">-</param>
     /// <param name="testSubResultId">-</param>
-    abstract getTestSubResultAttachmentZip: project: string * runId: float * testCaseResultId: float * attachmentId: float * testSubResultId: float -> Promise<ArrayBuffer>
+    abstract getTestSubResultAttachmentZip: project: string * runId: int * testCaseResultId: int * attachmentId: int * testSubResultId: int -> Promise<ArrayBuffer>
     /// <param name="attachmentRequestModel">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
-    abstract createTestRunAttachment: attachmentRequestModel: Test.TestAttachmentRequestModel * project: string * runId: float -> Promise<Test.TestAttachmentReference>
+    abstract createTestRunAttachment: attachmentRequestModel: Test.TestAttachmentRequestModel * project: string * runId: int -> Promise<Test.TestAttachmentReference>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="attachmentId">-</param>
-    abstract deleteTestRunAttachment: project: string * runId: float * attachmentId: float -> Promise<unit>
+    abstract deleteTestRunAttachment: project: string * runId: int * attachmentId: int -> Promise<unit>
     /// <summary>Returns a test run attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="attachmentId">-</param>
-    abstract getTestRunAttachmentContent: project: string * runId: float * attachmentId: float -> Promise<ArrayBuffer>
+    abstract getTestRunAttachmentContent: project: string * runId: int * attachmentId: int -> Promise<ArrayBuffer>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
-    abstract getTestRunAttachments: project: string * runId: float -> Promise<ResizeArray<Test.TestAttachment>>
+    abstract getTestRunAttachments: project: string * runId: int -> Promise<ResizeArray<Test.TestAttachment>>
     /// <summary>Returns a test run attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="attachmentId">-</param>
-    abstract getTestRunAttachmentZip: project: string * runId: float * attachmentId: float -> Promise<ArrayBuffer>
+    abstract getTestRunAttachmentZip: project: string * runId: int * attachmentId: int -> Promise<ArrayBuffer>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testCaseResultId">-</param>
-    abstract getBugsLinkedToTestResult: project: string * runId: float * testCaseResultId: float -> Promise<ResizeArray<Test.WorkItemReference>>
+    abstract getBugsLinkedToTestResult: project: string * runId: int * testCaseResultId: int -> Promise<ResizeArray<Test.WorkItemReference>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="flags">-</param>
-    abstract getBuildCodeCoverage: project: string * buildId: float * flags: float -> Promise<ResizeArray<Test.BuildCoverage>>
+    abstract getBuildCodeCoverage: project: string * buildId: int * flags: int -> Promise<ResizeArray<Test.BuildCoverage>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="deltaBuildId">-</param>
-    abstract getCodeCoverageSummary: project: string * buildId: float * ?deltaBuildId: float -> Promise<Test.CodeCoverageSummary>
+    abstract getCodeCoverageSummary: project: string * buildId: int * ?deltaBuildId: int -> Promise<Test.CodeCoverageSummary>
     /// <summary>http://(tfsserver):8080/tfs/DefaultCollection/_apis/test/CodeCoverage?buildId=10 Request: Json of code coverage summary</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="coverageData">-</param>
-    abstract updateCodeCoverageSummary: project: string * buildId: float * ?coverageData: Test.CodeCoverageData -> Promise<unit>
+    abstract updateCodeCoverageSummary: project: string * buildId: int * ?coverageData: Test.CodeCoverageData -> Promise<unit>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="flags">-</param>
-    abstract getTestRunCodeCoverage: project: string * runId: float * flags: float -> Promise<ResizeArray<Test.TestRunCoverage>>
+    abstract getTestRunCodeCoverage: project: string * runId: int * flags: int -> Promise<ResizeArray<Test.TestRunCoverage>>
     /// <summary>Get file coverage for the specified file</summary>
     /// <param name="fileCoverageRequest">- File details with pull request iteration context</param>
     /// <param name="project">- Project ID or project name</param>
@@ -123,7 +123,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <summary>Get test run message logs</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- ID of the run to get.</param>
-    abstract getTestRunMessageLogs: project: string * runId: float -> Promise<ResizeArray<Test.TestMessageLogDetails>>
+    abstract getTestRunMessageLogs: project: string * runId: int -> Promise<ResizeArray<Test.TestMessageLogDetails>>
     /// <summary>Get summary of test results.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="pipelineId">- Pipeline Id. This is same as build Id.</param>
@@ -132,7 +132,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="jobName">- Matrixing in YAML generates copies of a job with different inputs in matrix. JobName is the name of those input. Maximum supported length for name is 256 character.</param>
     /// <param name="metricNames">-</param>
     /// <param name="groupByNode">- Group summary for each node of the pipleine heirarchy</param>
-    abstract getTestPipelineMetrics: project: string * pipelineId: float * ?stageName: string * ?phaseName: string * ?jobName: string * ?metricNames: ResizeArray<Test.Metrics> * ?groupByNode: bool -> Promise<Test.PipelineTestMetrics>
+    abstract getTestPipelineMetrics: project: string * pipelineId: int * ?stageName: string * ?phaseName: string * ?jobName: string * ?metricNames: ResizeArray<Test.Metrics> * ?groupByNode: bool -> Promise<Test.PipelineTestMetrics>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="publishContext">-</param>
@@ -141,7 +141,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="orderby">-</param>
     /// <param name="shouldIncludeResults">-</param>
     /// <param name="queryRunSummaryForInProgress">-</param>
-    abstract getTestResultDetailsForBuild: project: string * buildId: float * ?publishContext: string * ?groupBy: string * ?filter: string * ?orderby: string * ?shouldIncludeResults: bool * ?queryRunSummaryForInProgress: bool -> Promise<Test.TestResultsDetails>
+    abstract getTestResultDetailsForBuild: project: string * buildId: int * ?publishContext: string * ?groupBy: string * ?filter: string * ?orderby: string * ?shouldIncludeResults: bool * ?queryRunSummaryForInProgress: bool -> Promise<Test.TestResultsDetails>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="releaseEnvId">-</param>
@@ -151,24 +151,24 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="orderby">-</param>
     /// <param name="shouldIncludeResults">-</param>
     /// <param name="queryRunSummaryForInProgress">-</param>
-    abstract getTestResultDetailsForRelease: project: string * releaseId: float * releaseEnvId: float * ?publishContext: string * ?groupBy: string * ?filter: string * ?orderby: string * ?shouldIncludeResults: bool * ?queryRunSummaryForInProgress: bool -> Promise<Test.TestResultsDetails>
+    abstract getTestResultDetailsForRelease: project: string * releaseId: int * releaseEnvId: int * ?publishContext: string * ?groupBy: string * ?filter: string * ?orderby: string * ?shouldIncludeResults: bool * ?queryRunSummaryForInProgress: bool -> Promise<Test.TestResultsDetails>
     /// <param name="document">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
-    abstract publishTestResultDocument: document: Test.TestResultDocument * project: string * runId: float -> Promise<Test.TestResultDocument>
+    abstract publishTestResultDocument: document: Test.TestResultDocument * project: string * runId: int -> Promise<Test.TestResultDocument>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="publishContext">-</param>
     /// <param name="fields">-</param>
     /// <param name="continuationToken">-</param>
-    abstract getResultGroupsByBuild: project: string * buildId: float * publishContext: string * ?fields: ResizeArray<string> * ?continuationToken: string -> Promise<ResizeArray<Test.FieldDetailsForTestResults>>
+    abstract getResultGroupsByBuild: project: string * buildId: int * publishContext: string * ?fields: ResizeArray<string> * ?continuationToken: string -> Promise<ResizeArray<Test.FieldDetailsForTestResults>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="publishContext">-</param>
     /// <param name="releaseEnvId">-</param>
     /// <param name="fields">-</param>
     /// <param name="continuationToken">-</param>
-    abstract getResultGroupsByRelease: project: string * releaseId: float * publishContext: string * ?releaseEnvId: float * ?fields: ResizeArray<string> * ?continuationToken: string -> Promise<ResizeArray<Test.FieldDetailsForTestResults>>
+    abstract getResultGroupsByRelease: project: string * releaseId: int * publishContext: string * ?releaseEnvId: int * ?fields: ResizeArray<string> * ?continuationToken: string -> Promise<ResizeArray<Test.FieldDetailsForTestResults>>
     /// <summary>Get list of test Result meta data details for corresponding testcasereferenceId</summary>
     /// <param name="testCaseReferenceIds">-</param>
     /// <param name="project">- Project ID or project name</param>
@@ -178,7 +178,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="testResultMetaDataUpdateInput">- TestResultMetaData update input TestResultMetaDataUpdateInput</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="testCaseReferenceId">- TestCaseReference Id of Test Result to be updated.</param>
-    abstract updateTestResultsMetaData: testResultMetaDataUpdateInput: Test.TestResultMetaDataUpdateInput * project: string * testCaseReferenceId: float -> Promise<Test.TestResultMetaData>
+    abstract updateTestResultsMetaData: testResultMetaDataUpdateInput: Test.TestResultMetaDataUpdateInput * project: string * testCaseReferenceId: int -> Promise<Test.TestResultMetaData>
     /// <param name="query">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract getTestResultsByQuery: query: Test.TestResultsQuery * project: string -> Promise<Test.TestResultsQuery>
@@ -188,34 +188,34 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="includeIterationDetails">-</param>
     /// <param name="skip">-</param>
     /// <param name="top">-</param>
-    abstract getTestResultsByQueryWiql: queryModel: Test.QueryModel * project: string * ?includeResultDetails: bool * ?includeIterationDetails: bool * ?skip: float * ?top: float -> Promise<ResizeArray<Test.TestCaseResult>>
+    abstract getTestResultsByQueryWiql: queryModel: Test.QueryModel * project: string * ?includeResultDetails: bool * ?includeIterationDetails: bool * ?skip: int * ?top: int -> Promise<ResizeArray<Test.TestCaseResult>>
     /// <param name="results">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
-    abstract addTestResultsToTestRun: results: ResizeArray<Test.TestCaseResult> * project: string * runId: float -> Promise<ResizeArray<Test.TestCaseResult>>
+    abstract addTestResultsToTestRun: results: ResizeArray<Test.TestCaseResult> * project: string * runId: int -> Promise<ResizeArray<Test.TestCaseResult>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="testResultId">-</param>
     /// <param name="detailsToInclude">-</param>
-    abstract getTestResultById: project: string * runId: float * testResultId: float * ?detailsToInclude: Test.ResultDetails -> Promise<Test.TestCaseResult>
+    abstract getTestResultById: project: string * runId: int * testResultId: int * ?detailsToInclude: Test.ResultDetails -> Promise<Test.TestCaseResult>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="detailsToInclude">-</param>
     /// <param name="skip">-</param>
     /// <param name="top">-</param>
     /// <param name="outcomes">-</param>
-    abstract getTestResults: project: string * runId: float * ?detailsToInclude: Test.ResultDetails * ?skip: float * ?top: float * ?outcomes: ResizeArray<Test.TestOutcome> -> Promise<ResizeArray<Test.TestCaseResult>>
+    abstract getTestResults: project: string * runId: int * ?detailsToInclude: Test.ResultDetails * ?skip: int * ?top: int * ?outcomes: ResizeArray<Test.TestOutcome> -> Promise<ResizeArray<Test.TestCaseResult>>
     /// <param name="results">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
-    abstract updateTestResults: results: ResizeArray<Test.TestCaseResult> * project: string * runId: float -> Promise<ResizeArray<Test.TestCaseResult>>
+    abstract updateTestResults: results: ResizeArray<Test.TestCaseResult> * project: string * runId: int -> Promise<ResizeArray<Test.TestCaseResult>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="publishContext">-</param>
     /// <param name="outcomes">-</param>
     /// <param name="top">-</param>
     /// <param name="continuationToken">-</param>
-    abstract getTestResultsByBuild: project: string * buildId: float * ?publishContext: string * ?outcomes: ResizeArray<Test.TestOutcome> * ?top: float * ?continuationToken: string -> Promise<ResizeArray<Test.ShallowTestCaseResult>>
+    abstract getTestResultsByBuild: project: string * buildId: int * ?publishContext: string * ?outcomes: ResizeArray<Test.TestOutcome> * ?top: int * ?continuationToken: string -> Promise<ResizeArray<Test.ShallowTestCaseResult>>
     /// <summary>Get a list of results.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="pipelineId">- Pipeline Id. This is same as build Id.</param>
@@ -225,7 +225,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="outcomes">- List of outcome of results</param>
     /// <param name="top">- Maximum number of results to return</param>
     /// <param name="continuationToken">- Header to pass the continuationToken</param>
-    abstract getTestResultsByPipeline: project: string * pipelineId: float * ?stageName: string * ?phaseName: string * ?jobName: string * ?outcomes: ResizeArray<Test.TestOutcome> * ?top: float * ?continuationToken: String -> Promise<ResizeArray<Test.ShallowTestCaseResult>>
+    abstract getTestResultsByPipeline: project: string * pipelineId: int * ?stageName: string * ?phaseName: string * ?jobName: string * ?outcomes: ResizeArray<Test.TestOutcome> * ?top: int * ?continuationToken: String -> Promise<ResizeArray<Test.ShallowTestCaseResult>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="releaseEnvid">-</param>
@@ -233,7 +233,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="outcomes">-</param>
     /// <param name="top">-</param>
     /// <param name="continuationToken">-</param>
-    abstract getTestResultsByRelease: project: string * releaseId: float * ?releaseEnvid: float * ?publishContext: string * ?outcomes: ResizeArray<Test.TestOutcome> * ?top: float * ?continuationToken: string -> Promise<ResizeArray<Test.ShallowTestCaseResult>>
+    abstract getTestResultsByRelease: project: string * releaseId: int * ?releaseEnvid: int * ?publishContext: string * ?outcomes: ResizeArray<Test.TestOutcome> * ?top: int * ?continuationToken: string -> Promise<ResizeArray<Test.ShallowTestCaseResult>>
     /// <summary>Get all the available groups details and for these groups get failed and aborted results.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="pipelineId">- Pipeline Id. This is same as build Id.</param>
@@ -242,13 +242,13 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="jobName">- Matrixing in YAML generates copies of a job with different inputs in matrix. JobName is the name of those input. Maximum supported length for name is 256 character.</param>
     /// <param name="shouldIncludeFailedAndAbortedResults">- If true, it will return Ids of failed and aborted results for each test group</param>
     /// <param name="queryGroupSummaryForInProgress">- If true, it will calculate summary for InProgress runs as well.</param>
-    abstract testResultsGroupDetails: project: string * pipelineId: float * ?stageName: string * ?phaseName: string * ?jobName: string * ?shouldIncludeFailedAndAbortedResults: bool * ?queryGroupSummaryForInProgress: bool -> Promise<Test.TestResultsDetails>
+    abstract testResultsGroupDetails: project: string * pipelineId: int * ?stageName: string * ?phaseName: string * ?jobName: string * ?shouldIncludeFailedAndAbortedResults: bool * ?queryGroupSummaryForInProgress: bool -> Promise<Test.TestResultsDetails>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
     /// <param name="publishContext">-</param>
     /// <param name="includeFailureDetails">-</param>
     /// <param name="buildToCompare">-</param>
-    abstract queryTestResultsReportForBuild: project: string * buildId: float * ?publishContext: string * ?includeFailureDetails: bool * ?buildToCompare: Test.BuildReference -> Promise<Test.TestResultSummary>
+    abstract queryTestResultsReportForBuild: project: string * buildId: int * ?publishContext: string * ?includeFailureDetails: bool * ?buildToCompare: Test.BuildReference -> Promise<Test.TestResultSummary>
     /// <summary>Get summary of test results.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="pipelineId">- Pipeline Id. This is same as build Id.</param>
@@ -256,14 +256,14 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="phaseName">- Name of the phase. Maximum supported length for name is 256 character.</param>
     /// <param name="jobName">- Matrixing in YAML generates copies of a job with different inputs in matrix. JobName is the name of those input. Maximum supported length for name is 256 character.</param>
     /// <param name="includeFailureDetails">- If true returns failure insights</param>
-    abstract queryTestResultsReportForPipeline: project: string * pipelineId: float * ?stageName: string * ?phaseName: string * ?jobName: string * ?includeFailureDetails: bool -> Promise<Test.TestResultSummary>
+    abstract queryTestResultsReportForPipeline: project: string * pipelineId: int * ?stageName: string * ?phaseName: string * ?jobName: string * ?includeFailureDetails: bool -> Promise<Test.TestResultSummary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="releaseEnvId">-</param>
     /// <param name="publishContext">-</param>
     /// <param name="includeFailureDetails">-</param>
     /// <param name="releaseToCompare">-</param>
-    abstract queryTestResultsReportForRelease: project: string * releaseId: float * releaseEnvId: float * ?publishContext: string * ?includeFailureDetails: bool * ?releaseToCompare: Test.ReleaseReference -> Promise<Test.TestResultSummary>
+    abstract queryTestResultsReportForRelease: project: string * releaseId: int * releaseEnvId: int * ?publishContext: string * ?includeFailureDetails: bool * ?releaseToCompare: Test.ReleaseReference -> Promise<Test.TestResultSummary>
     /// <param name="releases">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract queryTestResultsSummaryForReleases: releases: ResizeArray<Test.ReleaseReference> * project: string -> Promise<ResizeArray<Test.TestResultSummary>>
@@ -280,18 +280,18 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <summary>Get test run statistics , used when we want to get summary of a run by outcome.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- ID of the run to get.</param>
-    abstract getTestRunStatistics: project: string * runId: float -> Promise<Test.TestRunStatistic>
+    abstract getTestRunStatistics: project: string * runId: int -> Promise<Test.TestRunStatistic>
     /// <param name="testRun">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract createTestRun: testRun: Test.RunCreateModel * project: string -> Promise<Test.TestRun>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
-    abstract deleteTestRun: project: string * runId: float -> Promise<unit>
+    abstract deleteTestRun: project: string * runId: int -> Promise<unit>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
     /// <param name="includeDetails">-</param>
     /// <param name="includeTags">-</param>
-    abstract getTestRunById: project: string * runId: float * ?includeDetails: bool * ?includeTags: bool -> Promise<Test.TestRun>
+    abstract getTestRunById: project: string * runId: int * ?includeDetails: bool * ?includeTags: bool -> Promise<Test.TestRun>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildUri">-</param>
     /// <param name="owner">-</param>
@@ -301,7 +301,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="automated">-</param>
     /// <param name="skip">-</param>
     /// <param name="top">-</param>
-    abstract getTestRuns: project: string * ?buildUri: string * ?owner: string * ?tmiRunId: string * ?planId: float * ?includeRunDetails: bool * ?automated: bool * ?skip: float * ?top: float -> Promise<ResizeArray<Test.TestRun>>
+    abstract getTestRuns: project: string * ?buildUri: string * ?owner: string * ?tmiRunId: string * ?planId: int * ?includeRunDetails: bool * ?automated: bool * ?skip: int * ?top: int -> Promise<ResizeArray<Test.TestRun>>
     /// <summary>Query Test Runs based on filters. Mandatory fields are minLastUpdatedDate and maxLastUpdatedDate.</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="minLastUpdatedDate">- Minimum Last Modified Date of run to be queried (Mandatory).</param>
@@ -320,11 +320,11 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="runTitle">- Run Title of the Runs to be queried.</param>
     /// <param name="top">- Number of runs to be queried. Limit is 100</param>
     /// <param name="continuationToken">- continuationToken received from previous batch or null for first batch. It is not supposed to be created (or altered, if received from last batch) by user.</param>
-    abstract queryTestRuns: project: string * minLastUpdatedDate: DateTime * maxLastUpdatedDate: DateTime * ?state: Test.TestRunState * ?planIds: ResizeArray<float> * ?isAutomated: bool * ?publishContext: Test.TestRunPublishContext * ?buildIds: ResizeArray<float> * ?buildDefIds: ResizeArray<float> * ?branchName: string * ?releaseIds: ResizeArray<float> * ?releaseDefIds: ResizeArray<float> * ?releaseEnvIds: ResizeArray<float> * ?releaseEnvDefIds: ResizeArray<float> * ?runTitle: string * ?top: float * ?continuationToken: string -> Promise<ResizeArray<Test.TestRun>>
+    abstract queryTestRuns: project: string * minLastUpdatedDate: DateTime * maxLastUpdatedDate: DateTime * ?state: Test.TestRunState * ?planIds: ResizeArray<float> * ?isAutomated: bool * ?publishContext: Test.TestRunPublishContext * ?buildIds: ResizeArray<float> * ?buildDefIds: ResizeArray<float> * ?branchName: string * ?releaseIds: ResizeArray<float> * ?releaseDefIds: ResizeArray<float> * ?releaseEnvIds: ResizeArray<float> * ?releaseEnvDefIds: ResizeArray<float> * ?runTitle: string * ?top: int * ?continuationToken: string -> Promise<ResizeArray<Test.TestRun>>
     /// <param name="runUpdateModel">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
-    abstract updateTestRun: runUpdateModel: Test.RunUpdateModel * project: string * runId: float -> Promise<Test.TestRun>
+    abstract updateTestRun: runUpdateModel: Test.RunUpdateModel * project: string * runId: int -> Promise<Test.TestRun>
     /// <summary>Get TestResultsSettings data</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="settingsType">-</param>
@@ -340,7 +340,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="testSubResultId">- id of subresult inside a test result</param>
     /// <param name="top">- Maximum number of results to return</param>
     /// <param name="continuationToken">- Header to pass the continuationToken</param>
-    abstract getSimilarTestResults: project: string * runId: float * testResultId: float * testSubResultId: float * ?top: float * ?continuationToken: String -> Promise<ResizeArray<Test.TestCaseResult>>
+    abstract getSimilarTestResults: project: string * runId: int * testResultId: int * testSubResultId: int * ?top: int * ?continuationToken: String -> Promise<ResizeArray<Test.TestCaseResult>>
     /// <summary>\<p\>Gets the coverage status for the last successful build of a definition, optionally scoped to a specific branch\</p\></summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="definition">- The ID or name of the definition.</param>
@@ -349,22 +349,22 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     abstract getCoverageStatusBadge: project: string * definition: string * ?branchName: string * ?label: string -> Promise<string>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
-    abstract getTestTagsForBuild: project: string * buildId: float -> Promise<ResizeArray<Test.TestTag>>
+    abstract getTestTagsForBuild: project: string * buildId: int -> Promise<ResizeArray<Test.TestTag>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="releaseEnvId">-</param>
-    abstract getTestTagsForRelease: project: string * releaseId: float * releaseEnvId: float -> Promise<ResizeArray<Test.TestTag>>
+    abstract getTestTagsForRelease: project: string * releaseId: int * releaseEnvId: int -> Promise<ResizeArray<Test.TestTag>>
     /// <param name="testTagsUpdateModel">-</param>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">-</param>
-    abstract updateTestRunTags: testTagsUpdateModel: Test.TestTagsUpdateModel * project: string * runId: float -> Promise<ResizeArray<Test.TestTag>>
+    abstract updateTestRunTags: testTagsUpdateModel: Test.TestTagsUpdateModel * project: string * runId: int -> Promise<ResizeArray<Test.TestTag>>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">-</param>
-    abstract getTestTagSummaryForBuild: project: string * buildId: float -> Promise<Test.TestTagSummary>
+    abstract getTestTagSummaryForBuild: project: string * buildId: int -> Promise<Test.TestTagSummary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="releaseId">-</param>
     /// <param name="releaseEnvId">-</param>
-    abstract getTestTagSummaryForRelease: project: string * releaseId: float * releaseEnvId: float -> Promise<Test.TestTagSummary>
+    abstract getTestTagSummaryForRelease: project: string * releaseId: int * releaseEnvId: int -> Promise<Test.TestTagSummary>
     /// <summary>Get history of a test method using TestHistoryQuery</summary>
     /// <param name="filter">- TestHistoryQuery to get history</param>
     /// <param name="project">- Project ID or project name</param>
@@ -378,7 +378,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="fetchMetaData">- Default is false, set if metadata is needed</param>
     /// <param name="top">- Number of test attachments reference to return</param>
     /// <param name="continuationToken">- Header to pass the continuationToken</param>
-    abstract getTestLogsForBuild: project: string * buildId: float * ``type``: Test.TestLogType * ?directoryPath: string * ?fileNamePrefix: string * ?fetchMetaData: bool * ?top: float * ?continuationToken: String -> Promise<ResizeArray<Test.TestLog>>
+    abstract getTestLogsForBuild: project: string * buildId: int * ``type``: Test.TestLogType * ?directoryPath: string * ?fileNamePrefix: string * ?fetchMetaData: bool * ?top: int * ?continuationToken: String -> Promise<ResizeArray<Test.TestLog>>
     /// <summary>Get list of test result attachments reference</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- Id of the test run that contains the result</param>
@@ -389,7 +389,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="fetchMetaData">- Default is false, set if metadata is needed</param>
     /// <param name="top">- Numbe of attachments reference to return</param>
     /// <param name="continuationToken">- Header to pass the continuationToken</param>
-    abstract getTestResultLogs: project: string * runId: float * resultId: float * ``type``: Test.TestLogType * ?directoryPath: string * ?fileNamePrefix: string * ?fetchMetaData: bool * ?top: float * ?continuationToken: String -> Promise<ResizeArray<Test.TestLog>>
+    abstract getTestResultLogs: project: string * runId: int * resultId: int * ``type``: Test.TestLogType * ?directoryPath: string * ?fileNamePrefix: string * ?fetchMetaData: bool * ?top: int * ?continuationToken: String -> Promise<ResizeArray<Test.TestLog>>
     /// <summary>Get list of test subresult attachments reference</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- Id of the test run that contains the results</param>
@@ -401,7 +401,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="fetchMetaData">- Default is false, set if metadata is needed</param>
     /// <param name="top">- Number of attachments reference to return</param>
     /// <param name="continuationToken">- Header to pass the continuationToken</param>
-    abstract getTestSubResultLogs: project: string * runId: float * resultId: float * subResultId: float * ``type``: Test.TestLogType * ?directoryPath: string * ?fileNamePrefix: string * ?fetchMetaData: bool * ?top: float * ?continuationToken: String -> Promise<ResizeArray<Test.TestLog>>
+    abstract getTestSubResultLogs: project: string * runId: int * resultId: int * subResultId: int * ``type``: Test.TestLogType * ?directoryPath: string * ?fileNamePrefix: string * ?fetchMetaData: bool * ?top: int * ?continuationToken: String -> Promise<ResizeArray<Test.TestLog>>
     /// <summary>Get list of test run attachments reference</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- Id of the test run</param>
@@ -411,25 +411,25 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="fetchMetaData">- Default is false, set if metadata is needed</param>
     /// <param name="top">- Number of attachments reference to return</param>
     /// <param name="continuationToken">- Header to pass the continuationToken</param>
-    abstract getTestRunLogs: project: string * runId: float * ``type``: Test.TestLogType * ?directoryPath: string * ?fileNamePrefix: string * ?fetchMetaData: bool * ?top: float * ?continuationToken: String -> Promise<ResizeArray<Test.TestLog>>
+    abstract getTestRunLogs: project: string * runId: int * ``type``: Test.TestLogType * ?directoryPath: string * ?fileNamePrefix: string * ?fetchMetaData: bool * ?top: int * ?continuationToken: String -> Promise<ResizeArray<Test.TestLog>>
     /// <summary>Get SAS Uri of a build attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="build">- Id of the build to get</param>
     /// <param name="type">- type of the file</param>
     /// <param name="filePath">- filePath for which sas uri is needed</param>
-    abstract getTestLogStoreEndpointDetailsForBuildLog: project: string * build: float * ``type``: Test.TestLogType * filePath: string -> Promise<Test.TestLogStoreEndpointDetails>
+    abstract getTestLogStoreEndpointDetailsForBuildLog: project: string * build: int * ``type``: Test.TestLogType * filePath: string -> Promise<Test.TestLogStoreEndpointDetails>
     /// <summary>Create and Get sas uri of the build container</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="buildId">- Id of the build to get</param>
     /// <param name="testLogStoreOperationType">- Type of operation to perform using sas uri</param>
-    abstract testLogStoreEndpointDetailsForBuild: project: string * buildId: float * testLogStoreOperationType: Test.TestLogStoreOperationType -> Promise<Test.TestLogStoreEndpointDetails>
+    abstract testLogStoreEndpointDetailsForBuild: project: string * buildId: int * testLogStoreOperationType: Test.TestLogStoreOperationType -> Promise<Test.TestLogStoreEndpointDetails>
     /// <summary>Get SAS Uri of a test results attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- Id of the test run that contains result</param>
     /// <param name="resultId">- Id of the test result whose files need to be downloaded</param>
     /// <param name="type">- type of the file</param>
     /// <param name="filePath">- filePath for which sas uri is needed</param>
-    abstract getTestLogStoreEndpointDetailsForResultLog: project: string * runId: float * resultId: float * ``type``: Test.TestLogType * filePath: string -> Promise<Test.TestLogStoreEndpointDetails>
+    abstract getTestLogStoreEndpointDetailsForResultLog: project: string * runId: int * resultId: int * ``type``: Test.TestLogType * filePath: string -> Promise<Test.TestLogStoreEndpointDetails>
     /// <summary>Get SAS Uri of a test subresults attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- Id of the test run that contains result</param>
@@ -437,7 +437,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="subResultId">- Id of the test subresult whose file sas uri is needed</param>
     /// <param name="type">- type of the file</param>
     /// <param name="filePath">- filePath for which sas uri is needed</param>
-    abstract getTestLogStoreEndpointDetailsForSubResultLog: project: string * runId: float * resultId: float * subResultId: float * ``type``: Test.TestLogType * filePath: string -> Promise<Test.TestLogStoreEndpointDetails>
+    abstract getTestLogStoreEndpointDetailsForSubResultLog: project: string * runId: int * resultId: int * subResultId: int * ``type``: Test.TestLogType * filePath: string -> Promise<Test.TestLogStoreEndpointDetails>
     /// <summary>Create empty file for a result and Get Sas uri for the file</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- Id of the test run that contains the result</param>
@@ -445,36 +445,36 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="subResultId">- Id of the test sub result whose file sas uri is needed</param>
     /// <param name="filePath">- file path inside the sub result for which sas uri is needed</param>
     /// <param name="type">- Type of the file for download</param>
-    abstract testLogStoreEndpointDetailsForResult: project: string * runId: float * resultId: float * subResultId: float * filePath: string * ``type``: Test.TestLogType -> Promise<Test.TestLogStoreEndpointDetails>
+    abstract testLogStoreEndpointDetailsForResult: project: string * runId: int * resultId: int * subResultId: int * filePath: string * ``type``: Test.TestLogType -> Promise<Test.TestLogStoreEndpointDetails>
     /// <summary>Get SAS Uri of a test run attachment</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- Id of the test run whose file has to be downloaded</param>
     /// <param name="type">- type of the file</param>
     /// <param name="filePath">- filePath for which sas uri is needed</param>
-    abstract getTestLogStoreEndpointDetailsForRunLog: project: string * runId: float * ``type``: Test.TestLogType * filePath: string -> Promise<Test.TestLogStoreEndpointDetails>
+    abstract getTestLogStoreEndpointDetailsForRunLog: project: string * runId: int * ``type``: Test.TestLogType * filePath: string -> Promise<Test.TestLogStoreEndpointDetails>
     /// <summary>Create empty file for a run and Get Sas uri for the file</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="runId">- Id of the run to get endpoint details</param>
     /// <param name="testLogStoreOperationType">- Type of operation to perform using sas uri</param>
     /// <param name="filePath">- file path to create an empty file</param>
     /// <param name="type">- Default is GeneralAttachment, type of empty file to be created</param>
-    abstract testLogStoreEndpointDetailsForRun: project: string * runId: float * testLogStoreOperationType: Test.TestLogStoreOperationType * ?filePath: string * ?``type``: Test.TestLogType -> Promise<Test.TestLogStoreEndpointDetails>
+    abstract testLogStoreEndpointDetailsForRun: project: string * runId: int * testLogStoreOperationType: Test.TestLogStoreOperationType * ?filePath: string * ?``type``: Test.TestLogType -> Promise<Test.TestLogStoreEndpointDetails>
     /// <param name="testSettings">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract createTestSettings: testSettings: Test.TestSettings * project: string -> Promise<float>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="testSettingsId">-</param>
-    abstract deleteTestSettings: project: string * testSettingsId: float -> Promise<unit>
+    abstract deleteTestSettings: project: string * testSettingsId: int -> Promise<unit>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="testSettingsId">-</param>
-    abstract getTestSettingsById: project: string * testSettingsId: float -> Promise<Test.TestSettings>
+    abstract getTestSettingsById: project: string * testSettingsId: int -> Promise<Test.TestSettings>
     /// <param name="workItemToTestLinks">-</param>
     /// <param name="project">- Project ID or project name</param>
     abstract addWorkItemToTestLinks: workItemToTestLinks: Test.WorkItemToTestLinks * project: string -> Promise<Test.WorkItemToTestLinks>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="testName">-</param>
     /// <param name="workItemId">-</param>
-    abstract deleteTestMethodToWorkItemLink: project: string * testName: string * workItemId: float -> Promise<bool>
+    abstract deleteTestMethodToWorkItemLink: project: string * testName: string * workItemId: int -> Promise<bool>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="testName">-</param>
     abstract queryTestMethodLinkedWorkItems: project: string * testName: string -> Promise<Test.TestToWorkItemLinks>
@@ -485,7 +485,7 @@ type [<AllowNullLiteral>] TestResultsRestClient =
     /// <param name="maxCompleteDate">-</param>
     /// <param name="days">-</param>
     /// <param name="workItemCount">-</param>
-    abstract queryTestResultWorkItems: project: string * workItemCategory: string * ?automatedTestName: string * ?testCaseId: float * ?maxCompleteDate: DateTime * ?days: float * ?workItemCount: float -> Promise<ResizeArray<Test.WorkItemReference>>
+    abstract queryTestResultWorkItems: project: string * workItemCategory: string * ?automatedTestName: string * ?testCaseId: int * ?maxCompleteDate: DateTime * ?days: int * ?workItemCount: int -> Promise<ResizeArray<Test.WorkItemReference>>
 
 type [<AllowNullLiteral>] TestResultsRestClientStatic =
     [<Emit "new $0($1...)">] abstract Create: options: IVssRestClientOptions -> TestResultsRestClient

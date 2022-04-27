@@ -31,7 +31,7 @@ type [<AllowNullLiteral>] AccountRecentActivityWorkItemModelBase =
     /// Last changed date of the work item
     abstract changedDate: DateTime with get, set
     /// Work Item Id
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// TeamFoundationId of the user this activity belongs to
     abstract identityId: string with get, set
     /// State of the work item
@@ -48,7 +48,7 @@ type [<AllowNullLiteral>] AccountRecentMentionWorkItemModel =
     /// Assigned To
     abstract assignedTo: string with get, set
     /// Work Item Id
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Latest date that the user were mentioned
     abstract mentionedDateField: DateTime with get, set
     /// State of the work item
@@ -63,7 +63,7 @@ type [<AllowNullLiteral>] AccountRecentMentionWorkItemModel =
 type [<AllowNullLiteral>] AccountWorkWorkItemModel =
     abstract assignedTo: string with get, set
     abstract changedDate: DateTime with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract state: string with get, set
     abstract teamProject: string with get, set
     abstract title: string with get, set
@@ -99,7 +99,7 @@ type [<AllowNullLiteral>] Comment =
     /// Identity on whose behalf this comment has been added. Can be optionally different from CreatedBy.
     abstract createdOnBehalfOf: WebApi.IdentityRef with get, set
     /// The id assigned to the comment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Indicates if the comment has been deleted.
     abstract isDeleted: bool with get, set
     /// The mentions of the comment.
@@ -113,9 +113,9 @@ type [<AllowNullLiteral>] Comment =
     /// The text of the comment.
     abstract text: string with get, set
     /// The current version of the comment.
-    abstract version: float with get, set
+    abstract version: int with get, set
     /// The id of the work item this comment belongs to.
-    abstract workItemId: float with get, set
+    abstract workItemId: int with get, set
 
 /// Represents a request to create a work item comment.
 type [<AllowNullLiteral>] CommentCreate =
@@ -137,11 +137,11 @@ type [<AllowNullLiteral>] CommentList =
     /// A string token that can be used to retrieving next page of comments if available. Otherwise null.
     abstract continuationToken: string with get, set
     /// The count of comments in the current batch.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Uri to the next page of comments if it is available. Otherwise null.
     abstract nextPage: string with get, set
     /// Total count of comments on a work item.
-    abstract totalCount: float with get, set
+    abstract totalCount: int with get, set
 
 type [<AllowNullLiteral>] CommentMention =
     inherit WorkItemTrackingResource
@@ -150,7 +150,7 @@ type [<AllowNullLiteral>] CommentMention =
     /// The type the parser assigned to the mention. (i.e. person, work item, etc)
     abstract artifactType: string with get, set
     /// The comment id of the mention.
-    abstract commentId: float with get, set
+    abstract commentId: int with get, set
     /// The resolved target of the mention. An example of this could be a user's tfid
     abstract targetId: string with get, set
 
@@ -158,9 +158,9 @@ type [<AllowNullLiteral>] CommentMention =
 type [<AllowNullLiteral>] CommentReaction =
     inherit WorkItemTrackingResource
     /// The id of the comment this reaction belongs to.
-    abstract commentId: float with get, set
+    abstract commentId: int with get, set
     /// Total number of reactions for the CommentReactionType.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Flag to indicate if the current user has engaged on this particular EngagementType (e.g. if they liked the associated comment).
     abstract isCurrentUserEngaged: bool with get, set
     /// Type of the reaction.
@@ -195,7 +195,7 @@ type [<AllowNullLiteral>] CommentVersion =
     /// Identity on whose behalf this comment has been added. Can be optionally different from CreatedBy.
     abstract createdOnBehalfOf: WebApi.IdentityRef with get, set
     /// The id assigned to the comment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Indicates if the comment has been deleted at this version.
     abstract isDeleted: bool with get, set
     /// IdentityRef of the user who modified the comment at this version.
@@ -207,7 +207,7 @@ type [<AllowNullLiteral>] CommentVersion =
     /// The text of the comment at this version.
     abstract text: string with get, set
     /// The version number.
-    abstract version: float with get, set
+    abstract version: int with get, set
 
 type [<AllowNullLiteral>] ExternalDeployment =
     abstract artifactId: string with get, set
@@ -218,20 +218,20 @@ type [<AllowNullLiteral>] ExternalDeployment =
     abstract group: string with get, set
     abstract pipeline: ExternalPipeline with get, set
     abstract relatedWorkItemIds: ResizeArray<float> with get, set
-    abstract runId: float with get, set
-    abstract sequenceNumber: float with get, set
+    abstract runId: int with get, set
+    abstract sequenceNumber: int with get, set
     abstract status: string with get, set
     abstract statusDate: DateTime with get, set
     abstract url: string with get, set
 
 type [<AllowNullLiteral>] ExternalEnvironment =
     abstract displayName: string with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract ``type``: string with get, set
 
 type [<AllowNullLiteral>] ExternalPipeline =
     abstract displayName: string with get, set
-    abstract id: float with get, set
+    abstract id: int with get, set
     abstract url: string with get, set
 
 /// Describes a list of dependent fields for a rule.
@@ -390,7 +390,7 @@ type [<AllowNullLiteral>] QueryHierarchyItem =
 
 type [<AllowNullLiteral>] QueryHierarchyItemsResult =
     /// The count of items.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Indicates if the max return limit was hit but there are still more items
     abstract hasMore: bool with get, set
     /// The list of items
@@ -484,11 +484,11 @@ type [<AllowNullLiteral>] WorkItem =
     /// Map of field and values for the work item.
     abstract fields: LinkAttributes with get, set
     /// The work item ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Relations of the work item.
     abstract relations: ResizeArray<WorkItemRelation> with get, set
     /// Revision number of the work item.
-    abstract rev: float with get, set
+    abstract rev: int with get, set
 
 /// Describes a request to get a set of work items
 type [<AllowNullLiteral>] WorkItemBatchGetRequest =
@@ -513,7 +513,7 @@ type [<AllowNullLiteral>] WorkItemClassificationNode =
     /// Flag that indicates if the classification node has any child nodes.
     abstract hasChildren: bool with get, set
     /// Integer ID of the classification node.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// GUID ID of the classification node.
     abstract identifier: string with get, set
     /// Name of the classification node.
@@ -531,7 +531,7 @@ type [<AllowNullLiteral>] WorkItemComment =
     /// The date of comment.
     abstract revisedDate: DateTime with get, set
     /// The work item revision number.
-    abstract revision: float with get, set
+    abstract revision: int with get, set
     /// The text of the comment.
     abstract text: string with get, set
 
@@ -541,25 +541,25 @@ type [<AllowNullLiteral>] WorkItemComments =
     /// Comments collection.
     abstract comments: ResizeArray<WorkItemComment> with get, set
     /// The count of comments.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Count of comments from the revision.
-    abstract fromRevisionCount: float with get, set
+    abstract fromRevisionCount: int with get, set
     /// Total count of comments.
-    abstract totalCount: float with get, set
+    abstract totalCount: int with get, set
 
 /// Represents the reference to a specific version of a comment on a Work Item.
 type [<AllowNullLiteral>] WorkItemCommentVersionRef =
     inherit WorkItemTrackingResourceReference
     /// The id assigned to the comment.
-    abstract commentId: float with get, set
+    abstract commentId: int with get, set
     /// [Internal] The work item revision where this comment was originally added.
-    abstract createdInRevision: float with get, set
+    abstract createdInRevision: int with get, set
     /// [Internal] Specifies whether comment was deleted.
     abstract isDeleted: bool with get, set
     /// [Internal] The text of the comment.
     abstract text: string with get, set
     /// The version number.
-    abstract version: float with get, set
+    abstract version: int with get, set
 
 /// Full deleted work item object. Includes the work item itself.
 type [<AllowNullLiteral>] WorkItemDelete =
@@ -570,13 +570,13 @@ type [<AllowNullLiteral>] WorkItemDelete =
 /// Reference to a deleted work item.
 type [<AllowNullLiteral>] WorkItemDeleteReference =
     /// The HTTP status code for work item operation in a batch request.
-    abstract code: float with get, set
+    abstract code: int with get, set
     /// The user who deleted the work item type.
     abstract deletedBy: string with get, set
     /// The work item deletion date.
     abstract deletedDate: string with get, set
     /// Work item ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// The exception message for work item operation in a batch request.
     abstract message: string with get, set
     /// Name or title of the work item.
@@ -591,7 +591,7 @@ type [<AllowNullLiteral>] WorkItemDeleteReference =
 /// Shallow Reference to a deleted work item.
 type [<AllowNullLiteral>] WorkItemDeleteShallowReference =
     /// Work item ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// REST API URL of the resource
     abstract url: string with get, set
 
@@ -668,7 +668,7 @@ type [<AllowNullLiteral>] WorkItemFieldUpdate =
 
 type [<AllowNullLiteral>] WorkItemHistory =
     inherit WorkItemTrackingResource
-    abstract rev: float with get, set
+    abstract rev: int with get, set
     abstract revisedBy: IdentityReference with get, set
     abstract revisedDate: DateTime with get, set
     abstract value: string with get, set
@@ -694,7 +694,7 @@ type [<AllowNullLiteral>] WorkItemNextStateOnTransition =
     /// Error code if there is no next state transition possible.
     abstract errorCode: string with get, set
     /// Work item ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Error message if there is no next state transition possible.
     abstract message: string with get, set
     /// Name of the next state on transition.
@@ -750,7 +750,7 @@ type [<RequireQualifiedAccess>] WorkItemRecentActivityType =
 /// Contains reference to a work item.
 type [<AllowNullLiteral>] WorkItemReference =
     /// Work item ID.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// REST API URL of the resource
     abstract url: string with get, set
 
@@ -951,17 +951,17 @@ type [<AllowNullLiteral>] WorkItemUpdate =
     /// List of updates to fields.
     abstract fields: WorkItemUpdateFields with get, set
     /// ID of update.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// List of updates to relations.
     abstract relations: WorkItemRelationUpdates with get, set
     /// The revision number of work item update.
-    abstract rev: float with get, set
+    abstract rev: int with get, set
     /// Identity for the work item update.
     abstract revisedBy: IdentityReference with get, set
     /// The work item updates revision date.
     abstract revisedDate: DateTime with get, set
     /// The work item ID.
-    abstract workItemId: float with get, set
+    abstract workItemId: int with get, set
 
 type [<AllowNullLiteral>] ArtifactUriQueryResultArtifactUrisQueryResult =
     [<Emit "$0[$1]{{=$2}}">] abstract Item: key: string -> ResizeArray<WorkItemReference> with get, set

@@ -305,7 +305,7 @@ type [<AllowNullLiteral>] IToast =
     /// Optional text for the Call to Action
     abstract callToAction: string option with get, set
     /// Duration in ms the toast will appear for
-    abstract duration: float with get, set
+    abstract duration: int with get, set
     /// If true, we'll immediately take down any existing toast and display this instead
     /// Otherwise, it adds it to an internal queue in the GlobalToast and will display after others in the queue
     abstract forceOverrideExisting: bool option with get, set
@@ -327,11 +327,11 @@ type [<AllowNullLiteral>] IGlobalMessagesService =
 /// Color used in some UI components
 type [<AllowNullLiteral>] IColor =
     /// Red coordinate: 0-255
-    abstract red: float with get, set
+    abstract red: int with get, set
     /// Blue coordinate: 0-255
-    abstract blue: float with get, set
+    abstract blue: int with get, set
     /// Green coordinate: 0-255
-    abstract green: float with get, set
+    abstract green: int with get, set
     /// Optional color name; may or may not be used by various controls
     abstract name: string option with get, set
 

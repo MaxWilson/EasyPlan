@@ -60,13 +60,13 @@ type [<AllowNullLiteral>] WikiPage =
     /// Path of the git item corresponding to the wiki page stored in the backing Git repository.
     abstract gitItemPath: string with get, set
     /// When present, permanent identifier for the wiki page
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// True if a page is non-conforming, i.e. 1) if the name doesn't match page naming standards. 2) if the page does not have a valid entry in the appropriate order file.
     abstract isNonConformant: bool with get, set
     /// True if this page has subpages under its path.
     abstract isParentPage: bool with get, set
     /// Order of the wiki page, relative to other pages in the same hierarchy level.
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// Path of the wiki page.
     abstract path: string with get, set
     /// Remote web url to the wiki page.
@@ -90,7 +90,7 @@ type [<AllowNullLiteral>] WikiPageMove =
 /// Contract encapsulating parameters for the page move operation.
 type [<AllowNullLiteral>] WikiPageMoveParameters =
     /// New order of the wiki page.
-    abstract newOrder: float with get, set
+    abstract newOrder: int with get, set
     /// New path of the wiki page.
     abstract newPath: string with get, set
     /// Current path of the wiki page.
@@ -113,7 +113,7 @@ type [<AllowNullLiteral>] WikiPageResponse =
 /// Defines properties for wiki page view stats.
 type [<AllowNullLiteral>] WikiPageViewStats =
     /// Wiki page view count.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Wiki page last viewed time.
     abstract lastViewedTime: DateTime with get, set
     /// Wiki page path.

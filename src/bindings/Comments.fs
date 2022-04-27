@@ -14,7 +14,7 @@ type [<AllowNullLiteral>] Comment =
     /// The creation date of the comment.
     abstract createdDate: DateTime with get, set
     /// The id assigned to the comment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Indicates if the comment has been deleted.
     abstract isDeleted: bool with get, set
     /// The mentions of the comment.
@@ -24,7 +24,7 @@ type [<AllowNullLiteral>] Comment =
     /// The last modification date of the comment.
     abstract modifiedDate: DateTime with get, set
     /// The comment id of the parent comment, if any
-    abstract parentId: float with get, set
+    abstract parentId: int with get, set
     /// The reactions on the comment.
     abstract reactions: ResizeArray<CommentReaction> with get, set
     /// The rendered text of the comment
@@ -36,7 +36,7 @@ type [<AllowNullLiteral>] Comment =
     /// The plaintext/markdown version of the comment
     abstract text: string with get, set
     /// The current version of the comment
-    abstract version: float with get, set
+    abstract version: int with get, set
 
 /// Represents an attachment to a comment.
 type [<AllowNullLiteral>] CommentAttachment =
@@ -51,7 +51,7 @@ type [<AllowNullLiteral>] CommentAttachment =
 /// Represents a request to create a work item comment.
 type [<AllowNullLiteral>] CommentCreateParameters =
     /// Optional CommentId of the parent in order to add a reply for an existing comment
-    abstract parentId: float with get, set
+    abstract parentId: int with get, set
     abstract text: string with get, set
 
 type [<RequireQualifiedAccess>] CommentExpandOptions =
@@ -74,11 +74,11 @@ type [<AllowNullLiteral>] CommentList =
     /// A string token that can be used to retrieving next page of comments if available. Otherwise null.
     abstract continuationToken: string with get, set
     /// The count of comments in the current batch.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Uri to the next page of comments if it is available. Otherwise null.
     abstract nextPage: string with get, set
     /// Total count of comments on a work item.
-    abstract totalCount: float with get, set
+    abstract totalCount: int with get, set
 
 /// Contains information about various artifacts mentioned in the comment
 type [<AllowNullLiteral>] CommentMention =
@@ -86,7 +86,7 @@ type [<AllowNullLiteral>] CommentMention =
     /// Id of the artifact this mention belongs to
     abstract artifactId: string with get, set
     /// Id of the comment associated with this mention. Nullable to support legacy mentions which can potentially have null commentId
-    abstract commentId: float with get, set
+    abstract commentId: int with get, set
     /// Value of the mentioned artifact. Expected Value varies by CommentMentionType: Person:         VSID associated with the identity Work Item:      ID of the work item Pull Request:   ID of the Pull Request
     abstract mentionedArtifact: string with get, set
     /// The context which represent where this mentioned was parsed from
@@ -101,9 +101,9 @@ type [<RequireQualifiedAccess>] CommentMentionType =
 type [<AllowNullLiteral>] CommentReaction =
     inherit CommentResourceReference
     /// The id of the comment this reaction belongs to.
-    abstract commentId: float with get, set
+    abstract commentId: int with get, set
     /// Total number of reactions for the CommentReactionType.
-    abstract count: float with get, set
+    abstract count: int with get, set
     /// Flag to indicate if the current user has engaged on this particular EngagementType (e.g. if they liked the associated comment).
     abstract isCurrentUserEngaged: bool with get, set
     /// Type of the reaction.
@@ -145,7 +145,7 @@ type [<AllowNullLiteral>] CommentVersion =
     /// The creation date of the comment.
     abstract createdDate: DateTime with get, set
     /// The id assigned to the comment.
-    abstract id: float with get, set
+    abstract id: int with get, set
     /// Indicates if the comment has been deleted at this version.
     abstract isDeleted: bool with get, set
     /// IdentityRef of the user who modified the comment at this version.
@@ -159,4 +159,4 @@ type [<AllowNullLiteral>] CommentVersion =
     /// The text of the comment at this version.
     abstract text: string with get, set
     /// The version number.
-    abstract version: float with get, set
+    abstract version: int with get, set

@@ -35,7 +35,7 @@ type [<AllowNullLiteral>] TfvcRestClient =
     /// <param name="id">- ID of the changeset. Default: null</param>
     /// <param name="skip">- Number of results to skip. Default: null</param>
     /// <param name="top">- The maximum number of results to return. Default: null</param>
-    abstract getChangesetChanges: ?id: float * ?skip: float * ?top: float -> Promise<ResizeArray<Tfvc.TfvcChange>>
+    abstract getChangesetChanges: ?id: int * ?skip: int * ?top: int -> Promise<ResizeArray<Tfvc.TfvcChange>>
     /// <summary>Create a new changeset.</summary>
     /// <param name="changeset">-</param>
     /// <param name="project">- Project ID or project name</param>
@@ -52,7 +52,7 @@ type [<AllowNullLiteral>] TfvcRestClient =
     /// <param name="top">- The maximum number of results to return. Default: null</param>
     /// <param name="orderby">- Results are sorted by ID in descending order by default. Use id asc to sort by ID in ascending order.</param>
     /// <param name="searchCriteria">- Following criteria available (.itemPath, .version, .versionType, .versionOption, .author, .fromId, .toId, .fromDate, .toDate) Default: null</param>
-    abstract getChangeset: id: float * ?project: string * ?maxChangeCount: float * ?includeDetails: bool * ?includeWorkItems: bool * ?maxCommentLength: float * ?includeSourceRename: bool * ?skip: float * ?top: float * ?orderby: string * ?searchCriteria: Tfvc.TfvcChangesetSearchCriteria -> Promise<Tfvc.TfvcChangeset>
+    abstract getChangeset: id: int * ?project: string * ?maxChangeCount: int * ?includeDetails: bool * ?includeWorkItems: bool * ?maxCommentLength: int * ?includeSourceRename: bool * ?skip: int * ?top: int * ?orderby: string * ?searchCriteria: Tfvc.TfvcChangesetSearchCriteria -> Promise<Tfvc.TfvcChangeset>
     /// <summary>Retrieve Tfvc Changesets</summary>
     /// <param name="project">- Project ID or project name</param>
     /// <param name="maxCommentLength">- Include details about associated work items in the response. Default: null</param>
@@ -60,13 +60,13 @@ type [<AllowNullLiteral>] TfvcRestClient =
     /// <param name="top">- The maximum number of results to return. Default: null</param>
     /// <param name="orderby">- Results are sorted by ID in descending order by default. Use id asc to sort by ID in ascending order.</param>
     /// <param name="searchCriteria">- Following criteria available (.itemPath, .version, .versionType, .versionOption, .author, .fromId, .toId, .fromDate, .toDate) Default: null</param>
-    abstract getChangesets: ?project: string * ?maxCommentLength: float * ?skip: float * ?top: float * ?orderby: string * ?searchCriteria: Tfvc.TfvcChangesetSearchCriteria -> Promise<ResizeArray<Tfvc.TfvcChangesetRef>>
+    abstract getChangesets: ?project: string * ?maxCommentLength: int * ?skip: int * ?top: int * ?orderby: string * ?searchCriteria: Tfvc.TfvcChangesetSearchCriteria -> Promise<ResizeArray<Tfvc.TfvcChangesetRef>>
     /// <summary>Returns changesets for a given list of changeset Ids.</summary>
     /// <param name="changesetsRequestData">- List of changeset IDs.</param>
     abstract getBatchedChangesets: changesetsRequestData: Tfvc.TfvcChangesetsRequestData -> Promise<ResizeArray<Tfvc.TfvcChangesetRef>>
     /// <summary>Retrieves the work items associated with a particular changeset.</summary>
     /// <param name="id">- ID of the changeset.</param>
-    abstract getChangesetWorkItems: ?id: float -> Promise<ResizeArray<Tfvc.AssociatedWorkItem>>
+    abstract getChangesetWorkItems: ?id: int -> Promise<ResizeArray<Tfvc.AssociatedWorkItem>>
     /// <summary>Post for retrieving a set of items given a list of paths or a long path. Allows for specifying the recursionLevel and version descriptors for each path.</summary>
     /// <param name="itemRequestData">-</param>
     /// <param name="project">- Project ID or project name</param>
@@ -126,7 +126,7 @@ type [<AllowNullLiteral>] TfvcRestClient =
     /// <param name="labelId">- Unique identifier of label</param>
     /// <param name="top">- Max number of items to return</param>
     /// <param name="skip">- Number of items to skip</param>
-    abstract getLabelItems: labelId: string * ?top: float * ?skip: float -> Promise<ResizeArray<Tfvc.TfvcItem>>
+    abstract getLabelItems: labelId: string * ?top: int * ?skip: int -> Promise<ResizeArray<Tfvc.TfvcItem>>
     /// <summary>Get a single deep label.</summary>
     /// <param name="labelId">- Unique identifier of label</param>
     /// <param name="requestData">- maxItemCount</param>
@@ -137,12 +137,12 @@ type [<AllowNullLiteral>] TfvcRestClient =
     /// <param name="project">- Project ID or project name</param>
     /// <param name="top">- Max number of labels to return</param>
     /// <param name="skip">- Number of labels to skip</param>
-    abstract getLabels: requestData: Tfvc.TfvcLabelRequestData * ?project: string * ?top: float * ?skip: float -> Promise<ResizeArray<Tfvc.TfvcLabelRef>>
+    abstract getLabels: requestData: Tfvc.TfvcLabelRequestData * ?project: string * ?top: int * ?skip: int -> Promise<ResizeArray<Tfvc.TfvcLabelRef>>
     /// <summary>Get changes included in a shelveset.</summary>
     /// <param name="shelvesetId">- Shelveset's unique ID</param>
     /// <param name="top">- Max number of changes to return</param>
     /// <param name="skip">- Number of changes to skip</param>
-    abstract getShelvesetChanges: shelvesetId: string * ?top: float * ?skip: float -> Promise<ResizeArray<Tfvc.TfvcChange>>
+    abstract getShelvesetChanges: shelvesetId: string * ?top: int * ?skip: int -> Promise<ResizeArray<Tfvc.TfvcChange>>
     /// <summary>Get a single deep shelveset.</summary>
     /// <param name="shelvesetId">- Shelveset's unique ID</param>
     /// <param name="requestData">- includeDetails, includeWorkItems, maxChangeCount, and maxCommentLength</param>
@@ -151,7 +151,7 @@ type [<AllowNullLiteral>] TfvcRestClient =
     /// <param name="requestData">- name, owner, and maxCommentLength</param>
     /// <param name="top">- Max number of shelvesets to return</param>
     /// <param name="skip">- Number of shelvesets to skip</param>
-    abstract getShelvesets: ?requestData: Tfvc.TfvcShelvesetRequestData * ?top: float * ?skip: float -> Promise<ResizeArray<Tfvc.TfvcShelvesetRef>>
+    abstract getShelvesets: ?requestData: Tfvc.TfvcShelvesetRequestData * ?top: int * ?skip: int -> Promise<ResizeArray<Tfvc.TfvcShelvesetRef>>
     /// <summary>Get work items associated with a shelveset.</summary>
     /// <param name="shelvesetId">- Shelveset's unique ID</param>
     abstract getShelvesetWorkItems: shelvesetId: string -> Promise<ResizeArray<Tfvc.AssociatedWorkItem>>

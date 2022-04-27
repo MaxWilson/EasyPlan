@@ -6,7 +6,7 @@ open Fable.Core.JS
 
 type [<AllowNullLiteral>] GraphCachePolicies =
     /// Size of the cache
-    abstract cacheSize: float with get, set
+    abstract cacheSize: int with get, set
 
 /// Subject descriptor of a Graph entity
 type [<AllowNullLiteral>] GraphDescriptorResult =
@@ -23,7 +23,7 @@ type [<AllowNullLiteral>] GraphFederatedProviderData =
     /// The descriptor of the graph subject to which this federated provider data corresponds.
     abstract subjectDescriptor: string with get, set
     /// The version number of this federated provider data, which corresponds to when it was last updated. Can be used to prevent returning stale provider data from the cache when the caller is aware of a newer version, such as to prevent local cache poisoning from a remote cache or store. This is the app layer equivalent of the data layer sequence ID.
-    abstract version: float with get, set
+    abstract version: int with get, set
 
 type [<AllowNullLiteral>] GraphGlobalExtendedPropertyBatch =
     abstract propertyNameFilters: ResizeArray<string> with get, set

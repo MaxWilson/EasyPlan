@@ -27,7 +27,7 @@ type [<AllowNullLiteral>] Control =
     /// Type of the control.
     abstract controlType: string with get, set
     /// Height of the control, for html controls.
-    abstract height: float with get, set
+    abstract height: int with get, set
     /// The id for the layout node.
     abstract id: string with get, set
     /// A value indicating whether this layout node has been inherited. from a parent layout.  This is expected to only be only set by the combiner.
@@ -39,7 +39,7 @@ type [<AllowNullLiteral>] Control =
     /// Inner text of the control.
     abstract metadata: string with get, set
     /// Order in which the control should appear in its group.
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// A value indicating whether this layout node has been overridden . by a child layout.
     abstract overridden: bool with get, set
     /// A value indicating if the control is readonly.
@@ -159,7 +159,7 @@ type [<AllowNullLiteral>] Group =
     /// Controls to be put in the group.
     abstract controls: ResizeArray<Control> with get, set
     /// The height for the contribution.
-    abstract height: float with get, set
+    abstract height: int with get, set
     /// The id for the layout node.
     abstract id: string with get, set
     /// A value indicating whether this layout node has been inherited from a parent layout.  This is expected to only be only set by the combiner.
@@ -169,7 +169,7 @@ type [<AllowNullLiteral>] Group =
     /// Label for the group.
     abstract label: string with get, set
     /// Order in which the group should appear in the section.
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// A value indicating whether this layout node has been overridden by a child layout.
     abstract overridden: bool with get, set
     /// A value indicating if the group should be hidden or not.
@@ -195,7 +195,7 @@ type [<AllowNullLiteral>] Page =
     /// A value indicating whether any user operations are permitted on this page and the contents of this page
     abstract locked: bool with get, set
     /// Order in which the page should appear in the layout.
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// A value indicating whether this layout node has been overridden by a child layout.
     abstract overridden: bool with get, set
     /// The icon for the page.
@@ -245,7 +245,7 @@ type [<AllowNullLiteral>] ProcessBehavior =
     /// Behavior Name.
     abstract name: string with get, set
     /// Rank of the behavior
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     /// Behavior Id
     abstract referenceName: string with get, set
     /// Url of the behavior.
@@ -527,7 +527,7 @@ type [<AllowNullLiteral>] WitContribution =
     /// The id for the contribution.
     abstract contributionId: string with get, set
     /// The height for the contribution.
-    abstract height: float with get, set
+    abstract height: int with get, set
     /// A dictionary holding key value pairs for contribution inputs.
     abstract inputs: WitContributionInputs with get, set
     /// A value indicating if the contribution should be show on deleted workItem.
@@ -542,7 +542,7 @@ type [<AllowNullLiteral>] WorkItemBehavior =
     abstract inherits: WorkItemBehaviorReference with get, set
     abstract name: string with get, set
     abstract overriden: bool with get, set
-    abstract rank: float with get, set
+    abstract rank: int with get, set
     abstract url: string with get, set
 
 type [<AllowNullLiteral>] WorkItemBehaviorField =
@@ -564,7 +564,7 @@ type [<AllowNullLiteral>] WorkItemStateInputModel =
     /// Name of the state
     abstract name: string with get, set
     /// Order in which state should appear
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// Category of the state
     abstract stateCategory: string with get, set
 
@@ -581,7 +581,7 @@ type [<AllowNullLiteral>] WorkItemStateResultModel =
     /// Work item state name.
     abstract name: string with get, set
     /// Work item state order.
-    abstract order: float with get, set
+    abstract order: int with get, set
     /// Work item state statecategory.
     abstract stateCategory: string with get, set
     /// Work item state url.

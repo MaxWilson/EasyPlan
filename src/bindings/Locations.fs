@@ -50,13 +50,13 @@ type [<AllowNullLiteral>] LocationServiceData =
     /// Data that the location service holds.
     abstract clientCacheFresh: bool with get, set
     /// The time to live on the location service cache.
-    abstract clientCacheTimeToLive: float with get, set
+    abstract clientCacheTimeToLive: int with get, set
     /// The default access mapping moniker for the server.
     abstract defaultAccessMappingMoniker: string with get, set
     /// The obsolete id for the last change that took place on the server (use LastChangeId64).
-    abstract lastChangeId: float with get, set
+    abstract lastChangeId: int with get, set
     /// The non-truncated 64-bit id for the last change that took place on the server.
-    abstract lastChangeId64: float with get, set
+    abstract lastChangeId64: int with get, set
     /// Data about the service definitions contained by this location service.
     abstract serviceDefinitions: ResizeArray<ServiceDefinition> with get, set
     /// The identifier of the deployment which is hosting this location data (e.g. SPS, TFS, ELS, Napa, etc.)
@@ -90,7 +90,7 @@ type [<AllowNullLiteral>] ServiceDefinition =
     /// The latest version of this resource location that is in "Release" (non-preview) mode. Copied from \<c\>ApiResourceLocation\</c\>.
     abstract releasedVersion: string with get, set
     /// The current resource version supported by this resource location. Copied from \<c\>ApiResourceLocation\</c\>.
-    abstract resourceVersion: float with get, set
+    abstract resourceVersion: int with get, set
     /// The service which owns this definition e.g. TFS, ELS, etc.
     abstract serviceOwner: string with get, set
     abstract serviceType: string with get, set
