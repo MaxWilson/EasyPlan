@@ -12,6 +12,7 @@ open Elmish
 open Elmish.React
 open WorkItemTracking
 open WorkItemTrackingClient
+open CommonServices
 
 let sdk = SDK.sdk;
 
@@ -52,13 +53,17 @@ let initializeSdk() = promise {
 
 let getWorkItems() = promise {
     let options = jsOptions<IVssRestClientOptions>(fun o ->
-        ()
+#if DEBUG
+        o.rootPath <- Some (Fable.Core.Case1 "https://dev.azure.com/maxw0485/") // there must be a better way to do this
+#endif
     )
-    let coreClient = CoreClient.exports.CoreRestClient.Create(options)
-    let! proj = coreClient.getProjects(None, 1)
+    let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
+    let! project = projectService.getProject();
 
     let client = WorkItemTrackingClient.exports.WorkItemTrackingRestClient.Create options
-    return proj |> Seq.map (fun p -> p.name) |> List.ofSeq
+    let! wiTypes = client.getWorkItemTypes(project.Value.name)
+    return wiTypes |> List.ofSeq |> List.map (fun wit -> wit.name)
+    //return proj |> Seq.map (fun p -> p.name) |> List.ofSeq
     }
 
 let init _ = Model.fresh

@@ -3,6 +3,7 @@ module rec SDK
 open System
 open Fable.Core
 open Fable.Core.JS
+open CommonServices
 
 type Error = System.Exception
 
@@ -31,7 +32,7 @@ type [<ImportMember("azure-devops-extension-sdk/SDK")>] [<AllowNullLiteral>] IEx
     abstract getExtensionContext: unit -> IExtensionContext
     /// <summary>Get the contribution with the given contribution id. The returned contribution has a method to get a registered object within that contribution.</summary>
     /// <param name="contributionId">- Id of the contribution to get</param>
-    abstract getService: contributionId: string -> Promise<'T>
+    abstract getService: contributionId: CommonServiceIds -> Promise<'T>
     /// <summary>Register an object (instance or factory method) that this extension exposes to the host frame.</summary>
     /// <param name="instanceId">- unique id of the registered object</param>
     /// <param name="instance">- Either: (1) an object instance, or (2) a function that takes optional context data and returns an object instance.</param>
