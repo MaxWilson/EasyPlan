@@ -1,107 +1,107 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="bindings\Context.fs" />
-        <Compile Include="bindings\RestClientBase.fs" />
-        <Compile Include="bindings\Identities.fs" />
-        <Compile Include="bindings\IdentityService.fs" />
-		<Compile Include="bindings\IdentityProvider.fs" />
-		<Compile Include="bindings\Profile.fs" />
-		<Compile Include="bindings\Graph.fs" />
-		<Compile Include="bindings\WebApi.fs" />
-        <Compile Include="bindings\GraphClient.fs" />
-		<Compile Include="bindings\ProfileClient.fs" />
-		<Compile Include="bindings\WorkItemTracking.fs" />
-		<Compile Include="bindings\WorkItemTrackingClient.fs" />
-		<Compile Include="bindings\WorkItemTrackingProcess.fs" />
-		<Compile Include="bindings\WorkItemTrackingProcessClient.fs" />
-		<Compile Include="bindings\WorkItemTrackingProcessDefinitions.fs" />
-		<Compile Include="bindings\WorkItemTrackingProcessDefinitionsClient.fs" />
-		<Compile Include="bindings\WorkItemTrackingServices.fs" />
-		<Compile Include="bindings\Work.fs" />
-		<Compile Include="bindings\Core.fs" />
-		<Compile Include="bindings\Client.fs" />
-		<Compile Include="bindings\WorkClient.fs" />
-		<Compile Include="bindings\Accounts.fs" />
-        <Compile Include="bindings\AccountsClient.fs" />
-        <Compile Include="bindings\Boards.fs" />
-        <Compile Include="bindings\Tfvc.fs" />
-		<Compile Include="bindings\TfvcClient.fs" />
-		<Compile Include="bindings\BoardsClient.fs" />
-        <Compile Include="bindings\Comments.fs" />
-        <Compile Include="bindings\CommonServices.fs" />
-        <Compile Include="bindings\Gallery.fs" />
-		<Compile Include="bindings\Contributions.fs" />
-		<Compile Include="bindings\ContributionsClient.fs" />
-		<Compile Include="bindings\Operations.fs" />
-        <Compile Include="bindings\CoreClient.fs" />
-        <Compile Include="bindings\Dashboard.fs" />
-        <Compile Include="bindings\DashboardClient.fs" />
-        <Compile Include="bindings\DistributedTaskCommon.fs" />
-        <Compile Include="bindings\ExtensionManagement.fs" />
-        <Compile Include="bindings\ExtensionManagementClient.fs" />
-        <Compile Include="bindings\FeatureAvailability.fs" />
-        <Compile Include="bindings\FeatureAvailabilityClient.fs" />
-        <Compile Include="bindings\FeatureManagement.fs" />
-        <Compile Include="bindings\FeatureManagementClient.fs" />
-        <Compile Include="bindings\Fetch.fs" />
-        <Compile Include="bindings\FileContainer.fs" />
-        <Compile Include="bindings\FileContainerClient.fs" />
-        <Compile Include="bindings\FormInput.fs" />
-        <Compile Include="bindings\GalleryClient.fs" />
-        <Compile Include="bindings\Policy.fs" />
-        <Compile Include="bindings\Git.fs" />
-        <Compile Include="bindings\GitClient.fs" />
-        <Compile Include="bindings\GitServices.fs" />
-		<Compile Include="bindings\CodeEditorTypes.fs" />
-		<Compile Include="bindings\Locations.fs" />
-        <Compile Include="bindings\LocationsClient.fs" />
-        <Compile Include="bindings\Notification.fs" />
-        <Compile Include="bindings\NotificationClient.fs" />
-        <Compile Include="bindings\OperationsClient.fs" />
-        <Compile Include="bindings\PolicyClient.fs" />
-        <Compile Include="bindings\ProjectAnalysis.fs" />
-        <Compile Include="bindings\ProjectAnalysisClient.fs" />
-        <Compile Include="bindings\Release.fs" />
-        <Compile Include="bindings\ReleaseClient.fs" />
-        <Compile Include="bindings\Serialization.fs" />
-        <Compile Include="bindings\ServiceEndpoint.fs" />
-        <Compile Include="bindings\ServiceEndpointClient.fs" />
-        <Compile Include="bindings\ServiceHooks.fs" />
-        <Compile Include="bindings\ServiceHooksClient.fs" />
-        <Compile Include="bindings\System.fs" />
-        <Compile Include="bindings\SystemData.fs" />
-        <Compile Include="bindings\TaskAgent.fs" />
-        <Compile Include="bindings\TaskAgentClient.fs" />
-        <Compile Include="bindings\Test.fs" />
-        <Compile Include="bindings\TestClient.fs" />
-        <Compile Include="bindings\TestPlan.fs" />
-        <Compile Include="bindings\TestPlanClient.fs" />
-        <Compile Include="bindings\TestResults.fs" />
-        <Compile Include="bindings\TestResultsClient.fs" />
-		<Compile Include="bindings\Build.fs" />
-		<Compile Include="bindings\BuildClient.fs" />
-		<Compile Include="bindings\BuildServices.fs" />
-		<Compile Include="bindings\Url.fs" />
-        <Compile Include="bindings\Wiki.fs" />
-        <Compile Include="bindings\WikiClient.fs" />
-		<Compile Include="bindings\SDK.fs" />
-		<Compile Include="bindings\XDM.fs" />
-		<None Include="index.html" />
-		<Compile Include="Common.fs" />
-        <Compile Include="Extensions.fs" />
-        <Compile Include="Components.fs" />
-        <Compile Include="Main.fs" />
+    <Compile Include="bindings\Context.fs" />
+    <Compile Include="bindings\RestClientBase.fs" />
+    <Compile Include="bindings\Identities.fs" />
+    <Compile Include="bindings\IdentityService.fs" />
+    <Compile Include="bindings\IdentityProvider.fs" />
+    <Compile Include="bindings\Profile.fs" />
+    <Compile Include="bindings\Graph.fs" />
+    <Compile Include="bindings\WebApi.fs" />
+    <Compile Include="bindings\GraphClient.fs" />
+    <Compile Include="bindings\ProfileClient.fs" />
+    <Compile Include="bindings\WorkItemTracking.fs" />
+    <Compile Include="bindings\WorkItemTrackingClient.fs" />
+    <Compile Include="bindings\WorkItemTrackingProcess.fs" />
+    <Compile Include="bindings\WorkItemTrackingProcessClient.fs" />
+    <Compile Include="bindings\WorkItemTrackingProcessDefinitions.fs" />
+    <Compile Include="bindings\WorkItemTrackingProcessDefinitionsClient.fs" />
+    <Compile Include="bindings\WorkItemTrackingServices.fs" />
+    <Compile Include="bindings\Work.fs" />
+    <Compile Include="bindings\Core.fs" />
+    <Compile Include="bindings\Client.fs" />
+    <Compile Include="bindings\WorkClient.fs" />
+    <Compile Include="bindings\Accounts.fs" />
+    <Compile Include="bindings\AccountsClient.fs" />
+    <Compile Include="bindings\Boards.fs" />
+    <Compile Include="bindings\Tfvc.fs" />
+    <Compile Include="bindings\TfvcClient.fs" />
+    <Compile Include="bindings\BoardsClient.fs" />
+    <Compile Include="bindings\Comments.fs" />
+    <Compile Include="bindings\CommonServices.fs" />
+    <Compile Include="bindings\Gallery.fs" />
+    <Compile Include="bindings\Contributions.fs" />
+    <Compile Include="bindings\ContributionsClient.fs" />
+    <Compile Include="bindings\Operations.fs" />
+    <Compile Include="bindings\CoreClient.fs" />
+    <Compile Include="bindings\Dashboard.fs" />
+    <Compile Include="bindings\DashboardClient.fs" />
+    <Compile Include="bindings\DistributedTaskCommon.fs" />
+    <Compile Include="bindings\ExtensionManagement.fs" />
+    <Compile Include="bindings\ExtensionManagementClient.fs" />
+    <Compile Include="bindings\FeatureAvailability.fs" />
+    <Compile Include="bindings\FeatureAvailabilityClient.fs" />
+    <Compile Include="bindings\FeatureManagement.fs" />
+    <Compile Include="bindings\FeatureManagementClient.fs" />
+    <Compile Include="bindings\Fetch.fs" />
+    <Compile Include="bindings\FileContainer.fs" />
+    <Compile Include="bindings\FileContainerClient.fs" />
+    <Compile Include="bindings\FormInput.fs" />
+    <Compile Include="bindings\GalleryClient.fs" />
+    <Compile Include="bindings\Policy.fs" />
+    <Compile Include="bindings\Git.fs" />
+    <Compile Include="bindings\GitClient.fs" />
+    <Compile Include="bindings\GitServices.fs" />
+    <Compile Include="bindings\CodeEditorTypes.fs" />
+    <Compile Include="bindings\Locations.fs" />
+    <Compile Include="bindings\LocationsClient.fs" />
+    <Compile Include="bindings\Notification.fs" />
+    <Compile Include="bindings\NotificationClient.fs" />
+    <Compile Include="bindings\OperationsClient.fs" />
+    <Compile Include="bindings\PolicyClient.fs" />
+    <Compile Include="bindings\ProjectAnalysis.fs" />
+    <Compile Include="bindings\ProjectAnalysisClient.fs" />
+    <Compile Include="bindings\Release.fs" />
+    <Compile Include="bindings\ReleaseClient.fs" />
+    <Compile Include="bindings\Serialization.fs" />
+    <Compile Include="bindings\ServiceEndpoint.fs" />
+    <Compile Include="bindings\ServiceEndpointClient.fs" />
+    <Compile Include="bindings\ServiceHooks.fs" />
+    <Compile Include="bindings\ServiceHooksClient.fs" />
+    <Compile Include="bindings\System.fs" />
+    <Compile Include="bindings\SystemData.fs" />
+    <Compile Include="bindings\TaskAgent.fs" />
+    <Compile Include="bindings\TaskAgentClient.fs" />
+    <Compile Include="bindings\Test.fs" />
+    <Compile Include="bindings\TestClient.fs" />
+    <Compile Include="bindings\TestPlan.fs" />
+    <Compile Include="bindings\TestPlanClient.fs" />
+    <Compile Include="bindings\TestResults.fs" />
+    <Compile Include="bindings\TestResultsClient.fs" />
+    <Compile Include="bindings\Build.fs" />
+    <Compile Include="bindings\BuildClient.fs" />
+    <Compile Include="bindings\BuildServices.fs" />
+    <Compile Include="bindings\Url.fs" />
+    <Compile Include="bindings\Wiki.fs" />
+    <Compile Include="bindings\WikiClient.fs" />
+    <Compile Include="bindings\SDK.fs" />
+    <Compile Include="bindings\XDM.fs" />
+    <None Include="index.html" />
+    <Compile Include="Common.fs" />
+    <Compile Include="Extensions.fs" />
+    <Compile Include="Components.fs" />
+    <Compile Include="Main.fs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Fable.Elmish.Browser" Version="3.0.4" />
-        <PackageReference Include="Fable.Elmish.React" Version="3.0.1" />
-        <PackageReference Include="Fable.Promise" Version="3.1.3" />
-        <PackageReference Include="Feliz" Version="1.62.0" />
-        <PackageReference Include="Feliz.Router" Version="3.8.0" />
-        <PackageReference Include="Fable.DateFunctions" Version="3.9.0" />
+    <PackageReference Include="Fable.Elmish.Browser" Version="3.0.4" />
+    <PackageReference Include="Fable.Elmish.React" Version="3.0.1" />
+    <PackageReference Include="Fable.Promise" Version="3.1.3" />
+    <PackageReference Include="Feliz" Version="1.62.0" />
+    <PackageReference Include="Feliz.Router" Version="3.8.0" />
+    <PackageReference Include="Fable.DateFunctions" Version="3.9.0" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Update="FSharp.Core" Version="6.0.3" />

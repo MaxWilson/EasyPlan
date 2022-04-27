@@ -38,10 +38,11 @@ Program.mkSimple init update view
     promise {
         Message "Initializing..." |> dispatch
         try
-            let p = SDK.sdk.init()
+            let p = sdk.init()
             let p2 = Promise.catch(fun err -> Message $"Oops, error! {err}" |> dispatch) p
             do! p2
-            Message "OK, ready to go." |> dispatch
+
+            Message $"Hello, {sdk.getUser().name}" |> dispatch
         with exn ->
             Message $"Oops, error! {exn}" |> dispatch
         }
