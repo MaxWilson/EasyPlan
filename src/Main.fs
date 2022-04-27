@@ -26,16 +26,18 @@ let receive = function
     | Finished result -> Ready result
 
 type Msg =
+    | SetWiql of string
     | Message of string
     | SdkInitializationMsg of string OperationTransition
-    | WorkItemMsg of string list OperationTransition
+    | WorkItemMsg of WorkItem list OperationTransition
 type Model = {
     userName: string Deferred
+    wiql: string
     userFacingMessage: string option;
     ready: bool;
-    workItems: string list Deferred }
+    workItems: WorkItem list Deferred }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted  }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = "" }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -51,19 +53,19 @@ let initializeSdk() = promise {
     return sdk.getUser().name
     }
 
-let getWorkItems() = promise {
-    let options = jsOptions<IVssRestClientOptions>(fun o ->
-#if DEBUG
-        o.rootPath <- Some (Fable.Core.Case1 "https://dev.azure.com/maxw0485/") // there must be a better way to do this
-#endif
-    )
+module ResizeArray =
+    let map f input =
+        input |> Seq.map f |> ResizeArray
+let getWorkItems(wiql) = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
     let! project = projectService.getProject();
 
-    let client = WorkItemTrackingClient.exports.WorkItemTrackingRestClient.Create options
-    let! wiTypes = client.getWorkItemTypes(project.Value.name)
-    return wiTypes |> List.ofSeq |> List.map (fun wit -> wit.name)
-    //return proj |> Seq.map (fun p -> p.name) |> List.ofSeq
+    let query = jsOptions<Wiql>(fun o ->
+        o.query <- wiql)
+    let client = Client.exports.getClient<WorkItemTrackingClient.WorkItemTrackingRestClient>(unbox WorkItemTrackingClient.exports.WorkItemTrackingRestClient)
+    let! wiqlResult = client.queryByWiql(query)
+    let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id))
+    return details |> List.ofSeq
     }
 
 let init _ = Model.fresh
@@ -71,7 +73,8 @@ let update msg model =
     match msg with
     | Message msg -> { model with userFacingMessage = msg |> Some }
     | WorkItemMsg op -> { model with workItems = receive op }
-    | SdkInitializationMsg op -> { model with userName = receive op }
+    | SdkInitializationMsg op -> { model with userName = receive op; wiql = "Select [System.Id], [System.Title], [System.State] From WorkItems Where System.CreatedBy=@me" }
+    | SetWiql wiql -> { model with wiql = wiql }
 
 let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
 let view (model: Model) dispatch =
@@ -88,18 +91,19 @@ let view (model: Model) dispatch =
 
             Html.div [prop.text $"Hello, {userName}"]
             Html.div [prop.text (model.userFacingMessage |> Option.defaultValue "")]
+            Html.textarea [prop.value model.wiql; prop.className "wiql"; prop.placeholder "Enter a WIQL query"; prop.onChange(fun e -> e |> SetWiql |> dispatch)]
+            Html.button [prop.text "Get work items"; prop.onClick (operation WorkItemMsg (thunk1 getWorkItems model.wiql))]
             Html.unorderedList [
                 match model.workItems with
-                | NotStarted ->
-                    Html.button [prop.text "Get work items"; prop.onClick (operation WorkItemMsg getWorkItems)]
+                | NotStarted -> ()
                 | InProgress ->
                     Html.div [prop.text "Fetching..."]
                 | Ready(Error err) ->
                     viewError err
-                    Html.button [prop.text "Get work items"; prop.onClick (operation WorkItemMsg getWorkItems)]
                 | Ready(Ok workItems) ->
                     for item in workItems do
-                        Html.div [prop.text item; prop.key item]
+                        let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
+                        Html.div [prop.text $"""{item.id}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
                 ]
             ]
 

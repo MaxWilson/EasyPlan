@@ -12,3 +12,6 @@ type [<AllowNullLiteral>] IExports =
 type [<AllowNullLiteral>] RestClientFactory<'T> =
     [<Emit "new $0($1...)">] abstract Create: options: IVssRestClientOptions -> obj
     abstract RESOURCE_AREA_ID: string option with get, set
+
+[<ImportAll("azure-devops-extension-api")>]
+let exports: IExports = jsNative

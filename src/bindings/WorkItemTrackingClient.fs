@@ -323,7 +323,7 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClient =
     /// <param name="asOf">- AsOf UTC date time string</param>
     /// <param name="expand">- The expand parameters for work item attributes. Possible options are \{ None, Relations, Fields, Links, All \}.</param>
     /// <param name="errorPolicy">- The flag to control error policy in a bulk get work items request. Possible options are \{Fail, Omit\}.</param>
-    abstract getWorkItems: ids: ResizeArray<float> * ?project: string * ?fields: ResizeArray<string> * ?asOf: DateTime * ?expand: WorkItemTracking.WorkItemExpand * ?errorPolicy: WorkItemTracking.WorkItemErrorPolicy -> Promise<ResizeArray<WorkItemTracking.WorkItem>>
+    abstract getWorkItems: ids: ResizeArray<int> * ?project: string * ?fields: ResizeArray<string> * ?asOf: DateTime * ?expand: WorkItemTracking.WorkItemExpand * ?errorPolicy: WorkItemTracking.WorkItemErrorPolicy -> Promise<ResizeArray<WorkItemTracking.WorkItem>>
     /// <summary>Updates a single work item.</summary>
     /// <param name="document">- The JSON Patch document representing the update</param>
     /// <param name="id">- The id of the work item to update</param>
