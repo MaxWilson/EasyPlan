@@ -400,3 +400,6 @@ type [<AllowNullLiteral>] WorkItemTrackingRestClientGetWorkItemTypeColorsPromise
 type [<AllowNullLiteral>] WorkItemTrackingRestClientGetWorkItemTypeColorAndIconsPromise =
     abstract key: string with get, set
     abstract value: ResizeArray<WorkItemTracking.WorkItemTypeColorAndIcon> with get, set
+
+[<ImportAll("azure-devops-extension-api/WorkItemTracking/WorkItemTrackingClient")>]
+let exports: IExports = jsNative

@@ -10,23 +10,27 @@ importSideEffects "./styles/global.scss"
 open App
 open Elmish
 open Elmish.React
+open WorkItemTracking
+open WorkItemTrackingClient
 
-type Msg = | Delta of int | Message of string
-type Model = { count: int; userFacingMessage: string option } with static member fresh = { count = 10; userFacingMessage = None }
+let sdk = SDK.sdk;
+
+type Msg = | Message of string | InitializationComplete of string list
+type Model = { userFacingMessage: string option; ready: bool; workItems: string list } with static member fresh = { userFacingMessage = None; ready = true; workItems = []  }
 let init _ = Model.fresh
 let update msg model =
     match msg with
-    | Delta n -> { model with count = model.count + n }
     | Message msg -> { model with userFacingMessage = msg |> Some }
+    | InitializationComplete workItems -> { model with workItems = workItems }
+
 let view (model: Model) dispatch =
     Html.div [
         Html.div [prop.text (model.userFacingMessage |> Option.defaultValue "")]
-        Html.button [prop.text "-"; prop.ariaValueText "Increment counter"; prop.onClick(thunk1 dispatch (Delta -1))]
-        Html.span [prop.text $"Current count: {model.count}"]
-        Html.button [prop.text "+"; prop.ariaValueText "Increment counter"; prop.onClick(thunk1 dispatch (Delta +1))]
+        Html.unorderedList [
+            for item in model.workItems do
+                Html.div [prop.text item; prop.key item]
+            ]
         ]
-
-let sdk = SDK.sdk;
 
 Program.mkSimple init update view
 |> Program.withSubscription(fun m -> Cmd.ofSub(fun dispatch ->
@@ -43,6 +47,12 @@ Program.mkSimple init update view
             do! p2
 
             Message $"Hello, {sdk.getUser().name}" |> dispatch
+            let options = jsOptions<IVssRestClientOptions>(fun o ->
+                ()
+                )
+            let client = WorkItemTrackingClient.exports.WorkItemTrackingRestClient.Create options
+            client.getWorkItems()
+            ()
         with exn ->
             Message $"Oops, error! {exn}" |> dispatch
         }
