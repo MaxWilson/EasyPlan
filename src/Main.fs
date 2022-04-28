@@ -35,9 +35,11 @@ type Model = {
     wiql: string
     userFacingMessage: string option;
     ready: bool;
-    workItems: WorkItem list Deferred }
+    workItems: WorkItem list Deferred
+    assignments: WorkItem Assignment list
+    }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = "" }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = [] }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -56,6 +58,24 @@ let initializeSdk() = promise {
 module ResizeArray =
     let map f input =
         input |> Seq.map f |> ResizeArray
+
+let makeContext (items: WorkItem seq) : _ AssignmentContext =
+    let getBucket (item: WorkItem) = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> None
+    {
+        startTime = System.DateTime.UtcNow.Date
+        buckets = items |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
+        capacityCoefficient = Extensions.Test.measureCapacity // todo: make this real
+        prioritize = fun items -> items |> List.sortBy (fun (i:WorkItem) -> match i.fields["Microsoft.VSTS.Common.Priority"] with | Some pri -> unbox<int> pri | _ -> 5)
+        getId = fun (item: WorkItem) -> item.id
+        getDependencies = thunk []
+        getBucket = getBucket
+        getCost = fun (item: WorkItem) -> match item.fields["Microsoft.VSTS.Scheduling.RemainingWork"] with | Some w -> unbox<float<dayCost>> w | None -> 0.<dayCost>
+        }
+
+let classify items =
+    let ctx = makeContext items
+    Extensions.assignments ctx items
+
 let getWorkItems(wiql) = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
     let! project = projectService.getProject();
@@ -72,8 +92,15 @@ let init _ = Model.fresh
 let update msg model =
     match msg with
     | Message msg -> { model with userFacingMessage = msg |> Some }
-    | WorkItemMsg op -> { model with workItems = receive op }
-    | SdkInitializationMsg op -> { model with userName = receive op; wiql = "Select [System.Id], [System.Title], [System.State] From WorkItems Where System.CreatedBy=@me" }
+    | WorkItemMsg op ->
+        let workItems = receive op
+        let assignments =
+            match workItems with
+            | Ready(Ok items) ->
+                classify items
+            | _ -> []
+        { model with workItems = workItems; assignments = assignments }
+    | SdkInitializationMsg op -> { model with userName = receive op; wiql = "Select * From WorkItems Where System.CreatedBy=@me and System.WorkItemType = 'Task'" }
     | SetWiql wiql -> { model with wiql = wiql }
 
 let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
@@ -103,7 +130,8 @@ let view (model: Model) dispatch =
                 | Ready(Ok workItems) ->
                     for item in workItems do
                         let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
-                        Html.div [prop.text $"""{item.id}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
+                        let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
+                        Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
                 ]
             ]
 
