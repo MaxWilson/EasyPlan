@@ -3,6 +3,7 @@
     <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
+    <None Include="Scripts\Script1.fsx" />
     <Compile Include="bindings\Context.fs" />
     <Compile Include="bindings\RestClientBase.fs" />
     <Compile Include="bindings\Identities.fs" />
