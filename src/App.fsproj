@@ -106,6 +106,7 @@
     <PackageReference Include="Feliz" Version="1.62.0" />
     <PackageReference Include="Feliz.Router" Version="3.8.0" />
     <PackageReference Include="Fable.DateFunctions" Version="3.9.0" />
+    <PackageReference Include="Thoth.Json" Version="7.0.0" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Update="FSharp.Core" Version="6.0.3" />

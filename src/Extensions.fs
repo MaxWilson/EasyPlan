@@ -129,12 +129,44 @@ module Test =
         getCost = (fun item -> item.remainingDays * 1.<dayCost>)
         }
 
-open Test
-for work in assignments ctx items |> fst do
-    let date time = (ctx.startTime.AddDays (int time)).ToString("MM/dd")
-    let range =
-        let start = work.startTime |> date
-        let finish = work.duration + work.startTime |> date
-        if finish <> start then $"{start}-{finish}" else start
-    printfn $"{work.underlying.title} {range}"
+//open Test
+//for work in assignments ctx items |> fst do
+//    let date time = (ctx.startTime.AddDays (int time)).ToString("MM/dd")
+//    let range =
+//        let start = work.startTime |> date
+//        let finish = work.duration + work.startTime |> date
+//        if finish <> start then $"{start}-{finish}" else start
+//    printfn $"{work.underlying.title} {range}"
+
+module LocalStorage =
+    open Thoth.Json
+    open Browser.Dom
+
+    let inline jsonParse<'t> fallback str : 't =
+        match Decode.Auto.fromString str with
+        | Ok result -> result
+        | Result.Error err ->
+            fallback
+
+    let inline read (key: string) fallback =
+        try
+            Browser.Dom.window.localStorage[key] |> jsonParse<'t> fallback
+        with _ ->
+            fallback
+    let inline write (key: string) value =
+        Browser.Dom.window.localStorage[key] <- Encode.Auto.toString<'t>(0, value)
+
+    module PAT =
+        let key = "PATH"
+        let read (): string option = read key None
+        let write (v: string option) = write key v
+    module ServerUrlOverride =
+        let key = "ServerURLOverride"
+        let read (): string option = read key None
+        let write (v: string option) = write key v
+    module Wiql =
+        let key = "Wiql"
+        let read default' : string = read key default'
+        let write (v: string) = write key v
+
 

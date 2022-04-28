@@ -31,6 +31,8 @@ type Msg =
     | Message of string
     | SdkInitializationMsg of string OperationTransition
     | WorkItemMsg of WorkItem list OperationTransition
+    | SetPAT of string
+    | SetServerOverrideURL of string
 type Model = {
     userName: string Deferred
     wiql: string
@@ -40,9 +42,11 @@ type Model = {
     assignments: WorkItem Assignment list
     dropped: WorkItem list
     ctx: WorkItem AssignmentContext option
+    serverUrlOverride: string option
+    pat: string option
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -75,19 +79,33 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
         getCost = fun (item: WorkItem) -> match item.fields["Microsoft.VSTS.Scheduling.RemainingWork"] with | Some w -> unbox<float<dayCost>> w | None -> 1.<dayCost>
         }
 
-let getWorkItems(wiql) = promise {
+let options(address:string option, pat) =
+    jsOptions<Client.IVssRestClientOptions>(fun options ->
+        match address, pat with
+        | Some address, Some pat ->
+            options.rootPath <- Some (Fable.Core.Case1 address)
+            options.authTokenProvider <- Some { new Context.IAuthorizationTokenProvider with
+                                                    member this.getAuthorizationHeader(forceRefresh: bool option): Fable.Core.JS.Promise<string> =
+                                                        promise {
+                                                            return "basic " + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(":"+pat))
+                                                            }
+                                                        }
+        | _ -> ()
+        )
+
+let getWorkItems options (wiql) = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
     let! project = projectService.getProject();
 
     let query = jsOptions<Wiql>(fun o ->
         o.query <- wiql)
-    let client = Client.exports.getClient<WorkItemTrackingClient.WorkItemTrackingRestClient>(unbox WorkItemTrackingClient.exports.WorkItemTrackingRestClient)
+    let client = Client.exports.getClient<WorkItemTrackingClient.WorkItemTrackingRestClient>(unbox WorkItemTrackingClient.exports.WorkItemTrackingRestClient, options)
     let! wiqlResult = client.queryByWiql(query)
     let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id))
     return details |> List.ofSeq
     }
 
-let init _ = Model.fresh
+let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read() }
 let update msg model =
     match msg with
     | Message msg -> { model with userFacingMessage = msg |> Some }
@@ -99,8 +117,18 @@ let update msg model =
             let asn, dropped = Extensions.assignments ctx items
             { model with ctx = Some ctx; assignments = asn; dropped = dropped }
         | _ -> model
-    | SdkInitializationMsg op -> { model with userName = receive op; wiql = "Select * From WorkItems Where System.CreatedBy=@me and System.WorkItemType = 'Task'" }
-    | SetWiql wiql -> { model with wiql = wiql }
+    | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read "Select * From WorkItems Where System.CreatedBy=@me and System.WorkItemType = 'Task'" }
+    | SetWiql wiql ->
+        LocalStorage.Wiql.write wiql
+        { model with wiql = wiql }
+    | SetPAT pat ->
+        let pat = if pat.Trim().Length > 0 then Some (pat.Trim()) else None
+        LocalStorage.PAT.write pat
+        { model with pat = pat }
+    | SetServerOverrideURL url ->
+        let url = if url.Trim().Length > 0 then Some (url.Trim()) else None
+        LocalStorage.ServerUrlOverride.write url
+        { model with serverUrlOverride = url }
 
 let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment list) (dropped: WorkItem list) dispatch =
     let buckets = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
@@ -190,7 +218,7 @@ let view (model: Model) dispatch =
         asyncOperation dispatch opMsg impl |> Promise.start
 
     Html.div [
-        let executeQuery _ = operation WorkItemMsg (thunk1 getWorkItems model.wiql)()
+        let executeQuery _ = operation WorkItemMsg (thunk2 getWorkItems (options(model.serverUrlOverride, model.pat)) model.wiql)()
 
         match model.userName with
         | NotStarted | InProgress ->
@@ -198,7 +226,10 @@ let view (model: Model) dispatch =
         | Ready(Error errMsg) ->
             Html.div [prop.text $"Initialization error: {errMsg}"; prop.className "error"]
         | Ready(Ok userName) ->
-
+            Html.div [
+                Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
+                Html.input [prop.value (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
+                ]
             Html.div [prop.text $"Hello, {userName}"]
             Html.div [prop.text (model.userFacingMessage |> Option.defaultValue "")]
             Html.textarea [
