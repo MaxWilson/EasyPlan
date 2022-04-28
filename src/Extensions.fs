@@ -2,15 +2,15 @@
 module Extensions
 open System
 
-[<Measure>] type realDays // realtime days that pass. Think of this as the x-axis on the visualized chart.
-[<Measure>] type dayCost // amount of capacity consumed. Think of this as a ratio between realDays and work completion.
+[<Measure>] type realDay // realtime days that pass. Think of this as the x-axis on the visualized chart.
+[<Measure>] type dayCost // amount of capacity consumed. Think of this as a ratio between realDay and work completion.
 
 type Id = int
 type BucketId = string
 type AssignmentContext<'t> = {
     startTime: DateTime // NOT DateTimeOffset because we actually only care about calendar dates, not actual moments in time tied to time zones. My end-of-day doesn't have to match up with your end-of-day as long as we both finish that day.
     buckets: string list
-    capacityCoefficient: AssignmentContext<'t> -> BucketId -> float<realDays> -> float<dayCost/realDays>
+    capacityCoefficient: AssignmentContext<'t> -> BucketId -> float<realDay> -> float<dayCost/realDay>
     prioritize: 't list -> 't list
     getId: 't -> Id
     getDependencies: 't -> Id list
@@ -21,13 +21,13 @@ type AssignmentContext<'t> = {
 type Assignment<'t> = {
     underlying: 't
     bucketId: BucketId
-    startTime: float<realDays>
-    duration: float<realDays>
+    startTime: float<realDay>
+    duration: float<realDay>
     }
 
-let toDate (ctx: _ AssignmentContext) (timeElapsed: float<realDays>) =
-    let realDaysElapsed = floor (timeElapsed |> float) |> int
-    ctx.startTime.AddDays realDaysElapsed
+let toDate (ctx: _ AssignmentContext) (timeElapsed: float<realDay>) =
+    let realDayElapsed = floor (timeElapsed |> float) |> int
+    ctx.startTime.AddDays realDayElapsed
 
 let inline append (dest:byref<_ list>) item =
     dest <- dest @ [item]
@@ -38,13 +38,13 @@ let inline remove (dest:byref<_ list>) item =
 let inline delta (delta:_ byref) amount =
     delta <- delta + amount
 
-let remainingTimeToday (now: float<realDays>): float<realDays> =
+let remainingTimeToday (now: float<realDay>): float<realDay> =
     let now = float now
-    if now = floor now then 1.<realDays> // full day remaining
-    else (ceil now - now) * 1.<realDays>
+    if now = floor now then 1.<realDay> // full day remaining
+    else (ceil now - now) * 1.<realDay>
 
 let assignments (ctx: _ AssignmentContext) (items: 't list) =
-    let mutable buckets = ctx.buckets |> List.map (fun bucket -> bucket, 0.<realDays>) |> Map.ofList
+    let mutable buckets = ctx.buckets |> List.map (fun bucket -> bucket, 0.<realDay>) |> Map.ofList
     let items = items |> ctx.prioritize
     let mutable todo = []
     let mutable wontBeDone = []
@@ -75,7 +75,7 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
                             let remainingCapacityToday = remainingTimeToday * workRatio
                             if workRemaining > remainingCapacityToday then
                                 delta &workRemaining -remainingCapacityToday
-                                daysPassed <- ((float daysPassed |> floor) + 1.) * 1.<realDays>
+                                daysPassed <- ((float daysPassed |> floor) + 1.) * 1.<realDay>
                             else
                                 workRemaining <- 0.<dayCost>
                                 delta &daysPassed remainingTimeToday
@@ -88,7 +88,7 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
                             startTime = startTime
                             duration = daysPassed - startTime
                             }
-    assignments
+    assignments, wontBeDone
 
 module Test =
     type PseudoItem = {
@@ -109,10 +109,10 @@ module Test =
         { id = 4; title = "Change ADO work item types to reflect OSGS"; assignedPerson = Some "max"; remainingDays = 0.2; startTime = None; priority = 1; dependencies = [] }
         { id = 5; title = "Verify/manual test: Visualizing real work items works"; assignedPerson = Some "sasi"; remainingDays = 0.2; startTime = None; priority = 1; dependencies = [] }
         ]
-    let measureCapacity (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDays>): float<dayCost/realDays> =
-        let ratio = match bucket with "max" -> 0.75<dayCost/realDays> | _ -> 0.8<dayCost/realDays>
+    let measureCapacity (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDay>): float<dayCost/realDay> =
+        let ratio = match bucket with "max" -> 0.75<dayCost/realDay> | _ -> 0.8<dayCost/realDay>
         match (ctx.startTime.AddDays (int startTime)).DayOfWeek |> int with
-        | 0 | 6 -> 0.<dayCost/realDays> // not Saturday/Sunday. For some reason can't refer directly to Saturday/Sunday.
+        | 0 | 6 -> 0.<dayCost/realDay> // not Saturday/Sunday. For some reason can't refer directly to Saturday/Sunday.
         | _ ->
             ratio
     let prioritize (items: PseudoItem list) =

@@ -37,6 +37,8 @@
         "html-webpack-plugin": "^5.5.0",
         "mini-css-extract-plugin": "^2.6.0",
         "mocha": "^9.2.2",
+        "react-drag-drop-container": "^6.1.1",
+        "react-konva": "^17.0.2-5",
         "react-refresh": "^0.12.0",
         "sass": "^1.51.0",
         "sass-loader": "^12.6.0",

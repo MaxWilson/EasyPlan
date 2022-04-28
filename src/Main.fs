@@ -13,6 +13,7 @@ open Elmish.React
 open WorkItemTracking
 open WorkItemTrackingClient
 open CommonServices
+open UI.Konva
 
 let sdk = SDK.sdk;
 
@@ -37,6 +38,7 @@ type Model = {
     ready: bool;
     workItems: WorkItem list Deferred
     assignments: WorkItem Assignment list
+    dropped: WorkItem list
     }
     with
     static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = [] }
@@ -94,14 +96,50 @@ let update msg model =
     | Message msg -> { model with userFacingMessage = msg |> Some }
     | WorkItemMsg op ->
         let workItems = receive op
-        let assignments =
+        let assignments, dropped =
             match workItems with
             | Ready(Ok items) ->
                 classify items
-            | _ -> []
-        { model with workItems = workItems; assignments = assignments }
+            | _ -> [], []
+        { model with workItems = workItems; assignments = assignments; dropped = dropped }
     | SdkInitializationMsg op -> { model with userName = receive op; wiql = "Select * From WorkItems Where System.CreatedBy=@me and System.WorkItemType = 'Task'" }
     | SetWiql wiql -> { model with wiql = wiql }
+
+let viewAssignments (work: WorkItem Assignment list) (dropped: WorkItem list) dispatch =
+    let buckets = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
+    let height = 30
+    let timeRatio = (30./1.<realDay>)
+    let yCoord (asn: _ Assignment) =
+        let ix = buckets |> List.findIndex ((=) asn.bucketId)
+        ix * height
+    stage [
+        Stage.children [
+            layer [
+                Layer.children [
+                    for asn in work do
+                        let item = asn.underlying
+                        let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
+                        let msg = $"""{item.id}: { whom } {item.fields["System.State"]} {item.fields["System.Title"]} """
+                        rect [
+                            Rect.x (asn.startTime * timeRatio + 40.)
+                            Rect.y (yCoord asn)
+                            Rect.height height
+                            Rect.width (asn.duration * timeRatio)
+                            Rect.fill Blue
+                            Shape.key item.id
+                            ]
+                        text [
+                            Text.x (asn.startTime * timeRatio + 40.)
+                            Text.y (yCoord asn)
+                            Text.height height
+                            Text.width (asn.duration * timeRatio)
+                            Text.fontSize 12
+                            Shape.key (item.id.ToString() + "txt")
+                            ]
+                    ]
+                ]
+            ]
+        ]
 
 let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
 let view (model: Model) dispatch =
@@ -109,6 +147,8 @@ let view (model: Model) dispatch =
         asyncOperation dispatch opMsg impl |> Promise.start
 
     Html.div [
+        let executeQuery _ = operation WorkItemMsg (thunk1 getWorkItems model.wiql)()
+
         match model.userName with
         | NotStarted | InProgress ->
             Html.div [prop.text $"Initializing..."]
@@ -118,8 +158,16 @@ let view (model: Model) dispatch =
 
             Html.div [prop.text $"Hello, {userName}"]
             Html.div [prop.text (model.userFacingMessage |> Option.defaultValue "")]
-            Html.textarea [prop.value model.wiql; prop.className "wiql"; prop.placeholder "Enter a WIQL query"; prop.onChange(fun e -> e |> SetWiql |> dispatch)]
-            Html.button [prop.text "Get work items"; prop.onClick (operation WorkItemMsg (thunk1 getWorkItems model.wiql))]
+            Html.textarea [
+                prop.className "wiql"
+                prop.value model.wiql
+                prop.autoFocus true
+                prop.placeholder "Enter a WIQL query"
+                prop.onKeyDown (fun e -> if e.code = "Enter" then executeQuery())
+                prop.onChange(fun e -> e |> SetWiql |> dispatch)
+                ]
+            Html.button [prop.text "Get work items"; prop.onClick executeQuery]
+            viewAssignments model.assignments model.dropped dispatch
             Html.unorderedList [
                 match model.workItems with
                 | NotStarted -> ()
@@ -133,7 +181,7 @@ let view (model: Model) dispatch =
                         let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
                         Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
                 ]
-            ]
+        ]
 
 Program.mkSimple init update view
 |> Program.withSubscription(fun m -> Cmd.ofSub(fun dispatch ->
