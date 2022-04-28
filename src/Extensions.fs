@@ -130,7 +130,7 @@ module Test =
         }
 
 open Test
-for work in assignments ctx items do
+for work in assignments ctx items |> fst do
     let date time = (ctx.startTime.AddDays (int time)).ToString("MM/dd")
     let range =
         let start = work.startTime |> date

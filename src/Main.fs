@@ -39,9 +39,10 @@ type Model = {
     workItems: WorkItem list Deferred
     assignments: WorkItem Assignment list
     dropped: WorkItem list
+    ctx: WorkItem AssignmentContext option
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = [] }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -71,12 +72,8 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
         getId = fun (item: WorkItem) -> item.id
         getDependencies = thunk []
         getBucket = getBucket
-        getCost = fun (item: WorkItem) -> match item.fields["Microsoft.VSTS.Scheduling.RemainingWork"] with | Some w -> unbox<float<dayCost>> w | None -> 0.<dayCost>
+        getCost = fun (item: WorkItem) -> match item.fields["Microsoft.VSTS.Scheduling.RemainingWork"] with | Some w -> unbox<float<dayCost>> w | None -> 1.<dayCost>
         }
-
-let classify items =
-    let ctx = makeContext items
-    Extensions.assignments ctx items
 
 let getWorkItems(wiql) = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
@@ -95,45 +92,91 @@ let update msg model =
     match msg with
     | Message msg -> { model with userFacingMessage = msg |> Some }
     | WorkItemMsg op ->
-        let workItems = receive op
-        let assignments, dropped =
-            match workItems with
-            | Ready(Ok items) ->
-                classify items
-            | _ -> [], []
-        { model with workItems = workItems; assignments = assignments; dropped = dropped }
+        let model = { model with workItems = receive op }
+        match model.workItems with
+        | Ready(Ok items) ->
+            let ctx = makeContext items
+            let asn, dropped = Extensions.assignments ctx items
+            { model with ctx = Some ctx; assignments = asn; dropped = dropped }
+        | _ -> model
     | SdkInitializationMsg op -> { model with userName = receive op; wiql = "Select * From WorkItems Where System.CreatedBy=@me and System.WorkItemType = 'Task'" }
     | SetWiql wiql -> { model with wiql = wiql }
 
-let viewAssignments (work: WorkItem Assignment list) (dropped: WorkItem list) dispatch =
+let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment list) (dropped: WorkItem list) dispatch =
     let buckets = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
     let height = 30
-    let timeRatio = (30./1.<realDay>)
+    let width = 80
+    let margin = 5.
+    let itemHeight = height - int margin
+    let itemWidth = width - int margin
+    let timeRatio = (float width/1.<realDay>)
     let yCoord (asn: _ Assignment) =
         let ix = buckets |> List.findIndex ((=) asn.bucketId)
         ix * height
+    let msg (item: WorkItem) =
+        $"""{item.fields["System.Title"]} """
+    let date (asn: _ Assignment) msg =
+        $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
+
     stage [
+        Stage.height ((buckets.Length + dropped.Length) * height)
+        Stage.width (match work with [] -> 400. | _ -> (work |> List.maxBy (fun w -> w.duration)).duration * timeRatio + 40. + 400.)
         Stage.children [
             layer [
                 Layer.children [
+                    for ix, bucket in buckets |> List.mapi tup2 do
+                        rect [
+                            Rect.x margin
+                            Rect.y (ix * height)
+                            Rect.height itemHeight
+                            Rect.width (width - 2 * int margin)
+                            Rect.fill Blue
+                            Shape.key bucket
+                            ]
+                        text [
+                            Text.x margin
+                            Text.y (ix * height + int margin)
+                            Text.height itemHeight
+                            Text.width (width - 3 * int margin)
+                            Text.fontSize 14
+                            Text.text bucket
+                            Shape.key (bucket + "txt")
+                            ]
                     for asn in work do
                         let item = asn.underlying
-                        let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
-                        let msg = $"""{item.id}: { whom } {item.fields["System.State"]} {item.fields["System.Title"]} """
                         rect [
-                            Rect.x (asn.startTime * timeRatio + 40.)
+                            Rect.x (asn.startTime * timeRatio + float width)
                             Rect.y (yCoord asn)
-                            Rect.height height
-                            Rect.width (asn.duration * timeRatio)
+                            Rect.height itemHeight
+                            Rect.width (asn.duration * timeRatio - margin)
                             Rect.fill Blue
                             Shape.key item.id
                             ]
                         text [
-                            Text.x (asn.startTime * timeRatio + 40.)
-                            Text.y (yCoord asn)
-                            Text.height height
-                            Text.width (asn.duration * timeRatio)
-                            Text.fontSize 12
+                            Text.x (asn.startTime * timeRatio + float width)
+                            Text.y (yCoord asn + 4)
+                            Text.height itemHeight
+                            Text.width (asn.duration * timeRatio - margin)
+                            Text.fontSize 14
+                            Text.text (msg item |> date asn)
+                            Shape.key (item.id.ToString() + "txt")
+                            ]
+                    for ix, item in dropped |> List.mapi tup2 do
+                        rect [
+                            Rect.x 5
+                            Rect.y (height * (ix + buckets.Length))
+                            Rect.height itemHeight
+                            Rect.width (200 - int margin)
+                            Rect.fill Red
+                            Shape.key item.id
+                            ]
+                        text [
+                            Text.x 5
+                            Text.y (height * (ix + buckets.Length))
+                            Text.height itemHeight
+                            Text.width (200 - int margin)
+                            Text.fontSize 14
+                            Text.text (msg item)
                             Shape.key (item.id.ToString() + "txt")
                             ]
                     ]
@@ -167,7 +210,10 @@ let view (model: Model) dispatch =
                 prop.onChange(fun e -> e |> SetWiql |> dispatch)
                 ]
             Html.button [prop.text "Get work items"; prop.onClick executeQuery]
-            viewAssignments model.assignments model.dropped dispatch
+            match model.ctx with
+            | Some ctx ->
+                viewAssignments ctx model.assignments model.dropped dispatch
+            | None -> ()
             Html.unorderedList [
                 match model.workItems with
                 | NotStarted -> ()

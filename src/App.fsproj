@@ -90,7 +90,6 @@
         <Compile Include="bindings\WikiClient.fs" />
         <Compile Include="bindings\SDK.fs" />
         <Compile Include="bindings\XDM.fs" />
-        <Compile Include="UI\LocalStorage.fs" />
         <Compile Include="UI\DragDrop.fs" />
         <Compile Include="UI\Konva.fs" />
 		<None Include="styles/global.sass" />
