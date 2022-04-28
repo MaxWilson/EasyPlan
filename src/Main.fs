@@ -76,7 +76,13 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
         getId = fun (item: WorkItem) -> item.id
         getDependencies = thunk []
         getBucket = getBucket
-        getCost = fun (item: WorkItem) -> match item.fields["Microsoft.VSTS.Scheduling.RemainingWork"] with | Some w -> unbox<float<dayCost>> w | None -> 1.<dayCost>
+        getCost = fun (item: WorkItem) ->
+            match item.fields["Microsoft.VSTS.Scheduling.RemainingWork"] with
+            | Some w -> unbox<float<dayCost>> w
+            | None ->
+                match item.fields["OSG.RemainingDays"] with
+                | Some w -> unbox<float<dayCost>> w
+                | None -> 1.<dayCost>
         }
 
 let options(address:string option, pat) =
@@ -145,10 +151,11 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
         $"""{item.fields["System.Title"]} """
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
-
+    let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
+    printfn "%d" (int stageWidth)
     stage [
         Stage.height ((buckets.Length + dropped.Length) * height)
-        Stage.width (match work with [] -> 400. | _ -> (work |> List.maxBy (fun w -> w.duration)).duration * timeRatio + 40. + 400.)
+        Stage.width stageWidth
         Stage.children [
             layer [
                 Layer.children [
