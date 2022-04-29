@@ -1,0 +1,35 @@
+{
+    "manifestVersion": 1,
+    "id": "EasyPlanOSGS",
+    "publisher": "MaxWilson",
+    "version": "0.0.1",
+    "name": "EasyPlan OSGS",
+    "description": "Track events important to your team, view and manage days off, quickly see when sprints start and end, and more.",
+    "public": false,
+    "categories": ["Azure Boards"],
+    "scopes": ["vso.work_write"],
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "EasyPlan OSGS",
+            "type": "ms.vss-web.hub",
+            "targets": [
+                "ms.vss-work-web.work-hub-group"
+            ],
+            "properties": {
+                "name": "EasyPlan",
+                "uri": "easyPlan.html"
+            }
+        }
+    ],
+    "files": [
+        {
+            "path": "dist",
+            "addressable": true
+        }
+    ]
+}
