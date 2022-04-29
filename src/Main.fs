@@ -179,6 +179,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                             Text.width (width - 3 * int margin)
                             Text.fontSize 14
                             Text.text bucket
+                            Text.fill White
                             Shape.key (bucket + "txt")
                             ]
                     for asn in work do
@@ -198,6 +199,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                             Text.width (asn.duration * timeRatio - margin)
                             Text.fontSize 14
                             Text.text (msg item |> date asn)
+                            Text.fill White
                             Shape.key (item.id.ToString() + "txt")
                             ]
                     for ix, item in dropped |> List.mapi tup2 do
@@ -225,6 +227,8 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
 
 [<Emit("typeof $0")>]
 let jsTypeof (_ : obj) : string = jsNative
+[<Emit("$0[$1]")>]
+let jsLookup (_ : obj) (key:string): obj option = jsNative
 
 let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
 let view (model: Model) dispatch =
@@ -271,7 +275,7 @@ let view (model: Model) dispatch =
                         let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
                         let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
                         Html.div [
-                            prop.key item.id
+                            prop.key $"WorkItem{item.id}"
                             prop.children [
                                     let emit (indent: int) (msg: string) =
                                         Html.div [
@@ -282,9 +286,10 @@ let view (model: Model) dispatch =
                                     let rec unpack margin src =
                                         [
                                         for k in Fable.Core.JS.Constructors.Object.keys src do
-                                            let value = src?k
-                                            match jsTypeof value with
-                                            | "object" -> yield! unpack (margin+20) value
+                                            let value = jsLookup src k
+                                            match jsTypeof value, value with
+                                            | "object", Some value ->
+                                                yield! unpack (margin+20) value
                                             | _else ->
                                                 emit margin $"{k}: {value}"
                                             ]

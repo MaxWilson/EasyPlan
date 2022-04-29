@@ -46,7 +46,7 @@ let rect (props: IRectProperty list) = Interop.reactApi.createElement(import "Re
 let text (props: ITextProperty list) = Interop.reactApi.createElement(import "Text" "react-konva", createObj !!props)
 
 [<Erase>]
-type Color = Red | Green | Blue | Yellow | Grey | Orange | LightGrey | DarkGrey | Black
+type Color = Red | Green | Blue | Yellow | Grey | Orange | LightGrey | DarkGrey | Black | White
 
 type Shape =
     static member inline key (key:_) = mkShapeAttr "key" key
