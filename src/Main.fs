@@ -14,6 +14,7 @@ open WorkItemTracking
 open WorkItemTrackingClient
 open CommonServices
 open UI.Konva
+open Fable.Core
 
 let sdk = SDK.sdk;
 
@@ -99,13 +100,16 @@ let options(address:string option, pat) =
         | _ -> ()
         )
 
-let getWorkItems options (wiql) = promise {
+let getWorkClient options = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
     let! project = projectService.getProject();
+    return Client.exports.getClient<WorkItemTrackingClient.WorkItemTrackingRestClient>(unbox WorkItemTrackingClient.exports.WorkItemTrackingRestClient, options)
+    }
 
+let getWorkItems options (wiql) = promise {
     let query = jsOptions<Wiql>(fun o ->
         o.query <- wiql)
-    let client = Client.exports.getClient<WorkItemTrackingClient.WorkItemTrackingRestClient>(unbox WorkItemTrackingClient.exports.WorkItemTrackingRestClient, options)
+    let! client = getWorkClient options
     let! wiqlResult = client.queryByWiql(query)
     let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id))
     return details |> List.ofSeq
@@ -219,6 +223,9 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
             ]
         ]
 
+[<Emit("typeof $0")>]
+let jsTypeof (_ : obj) : string = jsNative
+
 let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
 let view (model: Model) dispatch =
     let operation opMsg impl _ =
@@ -263,6 +270,27 @@ let view (model: Model) dispatch =
                     for item in workItems do
                         let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
                         let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
+                        Html.div [
+                            prop.key item.id
+                            prop.children [
+                                    let emit (indent: int) (msg: string) =
+                                        Html.div [
+                                            prop.text msg
+                                            prop.style [style.marginLeft indent]
+                                            ]
+                                    emit 0 $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""
+                                    let rec unpack margin src =
+                                        [
+                                        for k in Fable.Core.JS.Constructors.Object.keys src do
+                                            let value = src?k
+                                            match jsTypeof value with
+                                            | "object" -> yield! unpack (margin+20) value
+                                            | _else ->
+                                                emit margin $"{k}: {value}"
+                                            ]
+                                    yield! unpack 20 item.fields
+                                ]
+                            ]
                         Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
                 ]
         ]
