@@ -127,7 +127,7 @@ let update msg model =
             let asn, dropped = Extensions.assignments ctx items
             { model with ctx = Some ctx; assignments = asn; dropped = dropped }
         | _ -> model
-    | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read "Select * From WorkItems Where System.CreatedBy=@me and System.WorkItemType = 'Task'" }
+    | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read() }
     | SetWiql wiql ->
         LocalStorage.Wiql.write wiql
         { model with wiql = wiql }
@@ -143,7 +143,7 @@ let update msg model =
 let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment list) (dropped: WorkItem list) dispatch =
     let buckets = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
     let height = 30
-    let width = 80
+    let width = 50
     let margin = 5.
     let itemHeight = height - int margin
     let itemWidth = width - int margin
@@ -157,71 +157,47 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     printfn "%d" (int stageWidth)
-    stage [
-        Stage.height ((buckets.Length + dropped.Length) * height)
-        Stage.width stageWidth
-        Stage.children [
-            layer [
-                Layer.children [
-                    for ix, bucket in buckets |> List.mapi tup2 do
-                        rect [
-                            Rect.x margin
-                            Rect.y (ix * height)
-                            Rect.height itemHeight
-                            Rect.width (width - 2 * int margin)
-                            Rect.fill Blue
-                            Shape.key bucket
-                            ]
-                        text [
-                            Text.x margin
-                            Text.y (ix * height + int margin)
-                            Text.height itemHeight
-                            Text.width (width - 3 * int margin)
-                            Text.fontSize 14
-                            Text.text bucket
-                            Text.fill White
-                            Shape.key (bucket + "txt")
-                            ]
-                    for asn in work do
-                        let item = asn.underlying
-                        rect [
-                            Rect.x (asn.startTime * timeRatio + float width)
-                            Rect.y (yCoord asn)
-                            Rect.height itemHeight
-                            Rect.width (asn.duration * timeRatio - margin)
-                            Rect.fill Blue
-                            Shape.key item.id
-                            ]
-                        text [
-                            Text.x (asn.startTime * timeRatio + float width)
-                            Text.y (yCoord asn + 4)
-                            Text.height itemHeight
-                            Text.width (asn.duration * timeRatio - margin)
-                            Text.fontSize 14
-                            Text.text (msg item |> date asn)
-                            Text.fill White
-                            Shape.key (item.id.ToString() + "txt")
-                            ]
-                    for ix, item in dropped |> List.mapi tup2 do
-                        rect [
-                            Rect.x 5
-                            Rect.y (height * (ix + buckets.Length))
-                            Rect.height itemHeight
-                            Rect.width (200 - int margin)
-                            Rect.fill Red
-                            Shape.key item.id
-                            ]
-                        text [
-                            Text.x 5
-                            Text.y (height * (ix + buckets.Length))
-                            Text.height itemHeight
-                            Text.width (200 - int margin)
-                            Text.fontSize 14
-                            Text.text (msg item)
-                            Shape.key (item.id.ToString() + "txt")
-                            ]
+    let class' ctor (className:string) elements =
+        ctor (prop.className className::elements)
+    let startX, startY = 0,0
+    class' Html.div "stage" [
+        prop.style [
+            style.width (int stageWidth)
+            style.height ((buckets.Length + dropped.Length) * height)
+            ]
+        prop.children [
+            for ix, bucket in buckets |> List.mapi tup2 do
+                Html.span [
+                    prop.className "bucket"
+                    prop.style [
+                        style.top (ix * height)
+                        style.left 0
+                        style.width width
+                        ]
+                    prop.text bucket
                     ]
-                ]
+            for asn in work do
+                let item = asn.underlying
+                Html.input [
+                    prop.className "item"
+                    prop.style [
+                        style.top (yCoord asn)
+                        style.left (asn.startTime * timeRatio + float width |> int)
+                        style.width (asn.duration * timeRatio - margin |> int)
+                        ]
+                    prop.value (msg item)
+                    prop.readOnly true
+                    prop.disabled true
+                    ]
+            for ix, item in dropped |> List.mapi tup2 do
+                Html.span [
+                    prop.className "dropped"
+                    prop.style [
+                        style.top (height * (ix + buckets.Length))
+                        style.left width
+                        ]
+                    prop.text (msg item)
+                    ]
             ]
         ]
 
