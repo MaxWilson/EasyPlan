@@ -157,16 +157,17 @@ module LocalStorage =
         Browser.Dom.window.localStorage[key] <- Encode.Auto.toString<'t>(0, value)
 
     module PAT =
-        let key = "PATH"
+        let key = "PAT"
         let read (): string option = read key None
         let write (v: string option) = write key v
     module ServerUrlOverride =
         let key = "ServerURLOverride"
-        let read (): string option = read key None
+        let read (): string option = read key (Some "https://dev.azure.com/microsoft/OSGS/")
         let write (v: string option) = write key v
     module Wiql =
         let key = "Wiql"
-        let read default' : string = read key default'
+        let read () : string = read key """SELECT [System.Id] FROM workitems
+        WHERE [System.TeamProject] = @project and System.AreaPath = 'OSGS\Storefronts\MSE\SD365CPI' and System.IterationPath = 'OSGS\2205' and System.WorkItemType = 'Task'"""
         let write (v: string) = write key v
 
 
