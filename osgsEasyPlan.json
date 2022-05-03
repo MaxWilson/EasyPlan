@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "EasyPlanOSGS",
     "publisher": "MaxWilson",
-    "version": "0.0.1",
+    "version": "0.0.8",
     "name": "EasyPlan OSGS",
     "description": "Track events important to your team, view and manage days off, quickly see when sprints start and end, and more.",
     "public": false,
@@ -21,8 +21,8 @@
                 "ms.vss-work-web.work-hub-group"
             ],
             "properties": {
-                "name": "EasyPlan",
-                "uri": "easyPlan.html"
+                "name": "EasyPlan OSGS",
+                "uri": "dist/easyPlan.html"
             }
         }
     ],
