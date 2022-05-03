@@ -71,8 +71,22 @@ module ResizeArray =
     let map f input =
         input |> Seq.map f |> ResizeArray
 
+module Properties =
+    let get<'t> fieldName (item:WorkItem) =
+        match item.fields[fieldName] with
+        | Some v -> unbox<'t> v |> Some
+        | None -> None
+
+    let getOwner item = item |> get "System.AssignedTo" |> Option.map (fun p -> p?displayName)
+    let getRemainingWork item =
+        item |> get<float> "Microsoft.VSTS.Scheduling.RemainingWork"
+        |> (function None -> item |> get "OSG.RemainingDays" | otherwise -> otherwise)
+        |> Option.defaultValue 1.
+        |> (fun w -> w * 1.<dayCost>)
+open Properties
+
 let makeContext (items: WorkItem seq) : _ AssignmentContext =
-    let getBucket (item: WorkItem) = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> None
+    let getBucket = getOwner
     {
         startTime = System.DateTime.UtcNow.Date
         buckets = items |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
@@ -81,13 +95,7 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
         getId = fun (item: WorkItem) -> item.id
         getDependencies = thunk []
         getBucket = getBucket
-        getCost = fun (item: WorkItem) ->
-            match item.fields["Microsoft.VSTS.Scheduling.RemainingWork"] with
-            | Some w -> unbox<float<dayCost>> w
-            | None ->
-                match item.fields["OSG.RemainingDays"] with
-                | Some w -> unbox<float<dayCost>> w
-                | None -> 1.<dayCost>
+        getCost = getRemainingWork
         }
 
 let options(address:string option, pat) =
@@ -115,7 +123,7 @@ let getWorkItems options (wiql) = promise {
         o.query <- wiql)
     let! client = getWorkClient options
     let! wiqlResult = client.queryByWiql(query)
-    let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id))
+    let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All)
     return details |> List.ofSeq
     }
 
