@@ -239,10 +239,17 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
             ]
         ]
 
-let viewSelected (item:WorkItem Assignment option) dispatch =
+let viewSelected (item:WorkItem Assignment option) (ctx: _ AssignmentContext) dispatch =
     match item with
     | Some item ->
-        Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]
+        Html.div [
+            let date days =
+                $"""{ctx.startTime.AddDays(days |> float).ToString("M/d")}"""
+            let dateRange = $"{item.startTime |> date} to {(item.startTime + item.duration) |> date}"
+            Html.div [Html.text dateRange]
+            Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]
+            ]
+
     | None -> Html.div []
 
 let viewHelp (model:Model) dispatch =
@@ -272,6 +279,44 @@ let jsTypeof (_ : obj) : string = jsNative
 let jsLookup (_ : obj) (key:string): obj option = jsNative
 
 let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
+let viewDetails (workItems: WorkItem list) = [
+    for item in workItems do
+        let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
+        let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
+        Html.div [
+            prop.key $"WorkItem{item.id}"
+            prop.children [
+                    let emit (indent: int) (msg: string) =
+                        Html.div [
+                            prop.text msg
+                            prop.style [style.marginLeft indent]
+                            ]
+                    emit 0 $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""
+                    let rec unpack margin src =
+                        [
+                        for k in Fable.Core.JS.Constructors.Object.keys src do
+                            let value = jsLookup src k
+                            match jsTypeof value, value with
+                            | "object", Some value ->
+                                yield! unpack (margin+20) value
+                            | _else ->
+                                emit margin $"{k}: {value}"
+                            ]
+                    yield! unpack 20 item.fields
+                    match item.relations |> unbox<WorkItemRelation array option> with
+                    | Some relations ->
+                        for rel in relations do
+                            emit 20 rel.url
+                            match rel.attributes |> unbox with
+                            | Some attr ->
+                                yield! unpack 40 attr
+                            | None -> ()
+                    | None -> emit 20 "No relations"
+                ]
+            ]
+        Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
+    ]
+
 let viewApp (model: Model) dispatch =
     let operation opMsg impl _ =
         asyncOperation dispatch opMsg impl |> Promise.start
@@ -310,7 +355,7 @@ let viewApp (model: Model) dispatch =
                 let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                 Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
                 viewAssignments ctx model.assignments model.dropped model.displayOrganization dispatch
-                viewSelected model.selectedItem dispatch
+                viewSelected model.selectedItem ctx dispatch
             | None -> ()
             Html.unorderedList [
                 match model.workItems with
@@ -320,41 +365,9 @@ let viewApp (model: Model) dispatch =
                 | Ready(Error err) ->
                     viewError err
                 | Ready(Ok workItems) ->
-                    for item in workItems do
-                        let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
-                        let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
-                        Html.div [
-                            prop.key $"WorkItem{item.id}"
-                            prop.children [
-                                    let emit (indent: int) (msg: string) =
-                                        Html.div [
-                                            prop.text msg
-                                            prop.style [style.marginLeft indent]
-                                            ]
-                                    emit 0 $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""
-                                    let rec unpack margin src =
-                                        [
-                                        for k in Fable.Core.JS.Constructors.Object.keys src do
-                                            let value = jsLookup src k
-                                            match jsTypeof value, value with
-                                            | "object", Some value ->
-                                                yield! unpack (margin+20) value
-                                            | _else ->
-                                                emit margin $"{k}: {value}"
-                                            ]
-                                    yield! unpack 20 item.fields
-                                    match item.relations |> unbox<WorkItemRelation array option> with
-                                    | Some relations ->
-                                        for rel in relations do
-                                            emit 20 rel.url
-                                            match rel.attributes |> unbox with
-                                            | Some attr ->
-                                                yield! unpack 40 attr
-                                            | None -> ()
-                                    | None -> emit 20 "No relations"
-                                ]
-                            ]
-                        Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
+                    let showDetails = false
+                    if showDetails then
+                        yield! viewDetails workItems
                 ]
         ]
 
