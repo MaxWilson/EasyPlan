@@ -37,6 +37,7 @@ type Msg =
     | ToggleHelp
     | ToggleSettings
     | SetDisplayOrganization of DisplayOrganization
+    | Select of WorkItem Assignment
 type Model = {
     userName: string Deferred
     wiql: string
@@ -51,9 +52,10 @@ type Model = {
     showHelpScreen: bool
     showSettings: bool
     displayOrganization: DisplayOrganization
+    selectedItem: WorkItem Assignment option
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable  }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -85,6 +87,8 @@ module Properties =
         |> (function None -> item |> get "OSG.RemainingDays" | otherwise -> otherwise)
         |> Option.defaultValue 1.
         |> (fun w -> w * 1.<dayCost>)
+    let getTitle = get<string> "System.Title" >> Option.defaultValue "Untitled"
+
 open Properties
 
 let makeContext (items: WorkItem seq) : _ AssignmentContext =
@@ -159,6 +163,8 @@ let update msg model =
         { model with showSettings = not model.showSettings }
     | SetDisplayOrganization displayOrganization ->
         { model with displayOrganization = displayOrganization }
+    | Select workItemAssignment ->
+        { model with selectedItem = workItemAssignment |> Some }
 
 let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
     let height = 30
@@ -182,7 +188,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                 ix * height
             yCoord, rows
     let msg (item: WorkItem) =
-        $"""{item.fields["System.Title"]} """
+        getTitle item
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
@@ -219,7 +225,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                         ]
                     prop.value (msg item)
                     prop.readOnly true
-                    prop.disabled true
+                    prop.onClick (thunk1 dispatch (Select asn))
                     ]
             for ix, item in dropped |> List.mapi tup2 do
                 Html.span [
@@ -232,6 +238,12 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                     ]
             ]
         ]
+
+let viewSelected (item:WorkItem Assignment option) dispatch =
+    match item with
+    | Some item ->
+        Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]
+    | None -> Html.div []
 
 let viewHelp (model:Model) dispatch =
     Html.div [
@@ -298,6 +310,7 @@ let viewApp (model: Model) dispatch =
                 let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                 Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
                 viewAssignments ctx model.assignments model.dropped model.displayOrganization dispatch
+                viewSelected model.selectedItem dispatch
             | None -> ()
             Html.unorderedList [
                 match model.workItems with
