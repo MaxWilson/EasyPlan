@@ -304,12 +304,15 @@ let viewApp (model: Model) dispatch =
                                                 emit margin $"{k}: {value}"
                                             ]
                                     yield! unpack 20 item.fields
-                                    for rel in item.relations do
-                                        emit 20 rel.url
-                                        match rel.attributes |> unbox with
-                                        | Some attr ->
-                                            yield! unpack 40 attr
-                                        | None -> ()
+                                    match item.relations |> unbox<WorkItemRelation array option> with
+                                    | Some relations ->
+                                        for rel in relations do
+                                            emit 20 rel.url
+                                            match rel.attributes |> unbox with
+                                            | Some attr ->
+                                                yield! unpack 40 attr
+                                            | None -> ()
+                                    | None -> emit 20 "No relations"
                                 ]
                             ]
                         Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
