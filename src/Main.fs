@@ -337,13 +337,13 @@ let viewApp (model: Model) dispatch =
                 ]
             if model.showSettings then
                 Html.div [
-                    Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
-                    Html.input [prop.value (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
+                    Html.input [prop.valueOrDefault (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
+                    Html.input [prop.valueOrDefault (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
                     ]
             Html.div [prop.text (model.userFacingMessage |> Option.defaultValue "")]
             Html.textarea [
                 prop.className "wiql"
-                prop.value model.wiql
+                prop.valueOrDefault model.wiql
                 prop.autoFocus true
                 prop.placeholder "Enter a WIQL query"
                 prop.onKeyDown (fun e -> if e.code = "Enter" then executeQuery())
