@@ -34,6 +34,8 @@ type Msg =
     | WorkItemMsg of WorkItem list OperationTransition
     | SetPAT of string
     | SetServerOverrideURL of string
+    | ToggleHelp
+    | ToggleSettings
 type Model = {
     userName: string Deferred
     wiql: string
@@ -45,9 +47,11 @@ type Model = {
     ctx: WorkItem AssignmentContext option
     serverUrlOverride: string option
     pat: string option
+    showHelpScreen: bool
+    showSettings: bool
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -139,14 +143,16 @@ let update msg model =
         let url = if url.Trim().Length > 0 then Some (url.Trim()) else None
         LocalStorage.ServerUrlOverride.write url
         { model with serverUrlOverride = url }
+    | ToggleHelp ->
+        { model with showHelpScreen = not model.showHelpScreen }
+    | ToggleSettings ->
+        { model with showSettings = not model.showSettings }
 
 let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment list) (dropped: WorkItem list) dispatch =
     let buckets = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
     let height = 30
     let width = 50
-    let margin = 5.
-    let itemHeight = height - int margin
-    let itemWidth = width - int margin
+    let margin = 10.
     let timeRatio = (float width/1.<realDay>)
     let yCoord (asn: _ Assignment) =
         let ix = buckets |> List.findIndex ((=) asn.bucketId)
@@ -167,14 +173,16 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
             ]
         prop.children [
             for ix, bucket in buckets |> List.mapi tup2 do
-                Html.span [
+                Html.input [
                     prop.className "bucket"
                     prop.style [
                         style.top (ix * height)
                         style.left 0
                         style.width width
                         ]
-                    prop.text bucket
+                    prop.value bucket
+                    prop.readOnly true
+                    prop.disabled true
                     ]
             for asn in work do
                 let item = asn.underlying
@@ -182,7 +190,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                     prop.className "item"
                     prop.style [
                         style.top (yCoord asn)
-                        style.left (asn.startTime * timeRatio + float width |> int)
+                        style.left (asn.startTime * timeRatio + 60. |> int)
                         style.width (asn.duration * timeRatio - margin |> int)
                         ]
                     prop.value (msg item)
@@ -201,13 +209,34 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
             ]
         ]
 
+let viewHelp (model:Model) dispatch =
+    Html.div [
+        prop.className "help"
+        prop.children [
+            Html.div [
+                Html.text "Helpful tip: "
+                Html.text "To set dependencies, select an item and press Ctrl-D or hit the dependencies button, and then select the item it is dependent on. Hit Ctrl-S or the Save button to save."
+                ]
+            Html.div [
+                Html.span [prop.text "For cross-tenant access to OSGS, get a PAT from "]
+                Html.a [prop.href "https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.text "https://dev.azure.com/microsoft/_usersSettings/tokens"]
+                Html.span [prop.text " with Work Item read permission, and with write permission if you want to save your changes back to OSGS"]
+                ]
+            Html.div [
+                Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
+                Html.input [prop.value (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
+                ]
+            Html.button [prop.text "OK"; prop.onClick(fun _ -> dispatch ToggleHelp)]
+            ]
+        ]
+
 [<Emit("typeof $0")>]
 let jsTypeof (_ : obj) : string = jsNative
 [<Emit("$0[$1]")>]
 let jsLookup (_ : obj) (key:string): obj option = jsNative
 
 let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
-let view (model: Model) dispatch =
+let viewApp (model: Model) dispatch =
     let operation opMsg impl _ =
         asyncOperation dispatch opMsg impl |> Promise.start
 
@@ -221,10 +250,15 @@ let view (model: Model) dispatch =
             Html.div [prop.text $"Initialization error: {errMsg}"; prop.className "error"]
         | Ready(Ok userName) ->
             Html.div [
-                Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
-                Html.input [prop.value (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
+                Html.text $"Hello, {userName}"
+                Html.a [prop.text "Help"; prop.className "menuItem"; prop.href "."; prop.onClick(fun ev -> ev.preventDefault(); dispatch ToggleHelp)]
+                Html.a [prop.text "Settings"; prop.className "menuItem"; prop.href "."; prop.onClick(fun ev -> ev.preventDefault(); dispatch ToggleSettings)]
                 ]
-            Html.div [prop.text $"Hello, {userName}"]
+            if model.showSettings then
+                Html.div [
+                    Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
+                    Html.input [prop.value (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
+                    ]
             Html.div [prop.text (model.userFacingMessage |> Option.defaultValue "")]
             Html.textarea [
                 prop.className "wiql"
@@ -275,6 +309,12 @@ let view (model: Model) dispatch =
                         Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
                 ]
         ]
+
+let view (model:Model) dispatch =
+    if model.showHelpScreen then
+        viewHelp model dispatch
+    else
+        viewApp model dispatch
 
 Program.mkSimple init update view
 |> Program.withSubscription(fun m -> Cmd.ofSub(fun dispatch ->
