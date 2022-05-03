@@ -304,6 +304,12 @@ let viewApp (model: Model) dispatch =
                                                 emit margin $"{k}: {value}"
                                             ]
                                     yield! unpack 20 item.fields
+                                    for rel in item.relations do
+                                        emit 20 rel.url
+                                        match rel.attributes |> unbox with
+                                        | Some attr ->
+                                            yield! unpack 40 attr
+                                        | None -> ()
                                 ]
                             ]
                         Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
@@ -316,18 +322,32 @@ let view (model:Model) dispatch =
     else
         viewApp model dispatch
 
+let mutable lastError = ""
+let mutable lastErrorTime = None
+
+let showError msg dispatch =
+    // crude debouncer.
+    // todo: use a better, more concise debouncer.
+    let longEnough =
+        match lastErrorTime with
+        | Some last -> (last - System.DateTimeOffset.UtcNow).Seconds > 10
+        | None -> true
+    if msg <> lastError && longEnough then
+        Browser.Dom.window.alert ("Unhandled Exception: " + msg)
+    lastError <- msg
+    lastErrorTime <- Some System.DateTimeOffset.Now
+    Message $"Error: {msg}" |> dispatch
+
+
 Program.mkSimple init update view
 |> Program.withSubscription(fun m -> Cmd.ofSub(fun dispatch ->
     Browser.Dom.window.onerror <-
         fun msg ->
             if msg.ToString().Contains "SocketProtocolError" = false then
-                Browser.Dom.window.alert ("Unhandled Exception: " + msg.ToString())
-                Message $"Error: {msg}" |> dispatch
+                showError (msg.ToString()) dispatch
     Browser.Dom.window.addEventListener("unhandledrejection", fun e ->
         let msg = e.ToString()
-        e.preventDefault()
-        Browser.Dom.window.alert ("Unhandled Exception: " + msg.ToString())
-        Message $"Error: {msg}" |> dispatch
+        showError msg dispatch
         )
 
     let initialize() = promise {
