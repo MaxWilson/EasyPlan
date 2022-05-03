@@ -26,7 +26,7 @@ type 't OperationTransition = Started | Finished of Result<'t, string>
 let receive = function
     | Started -> InProgress
     | Finished result -> Ready result
-
+type DisplayOrganization = ByBucket | ByDeliverable
 type Msg =
     | SetWiql of string
     | Message of string
@@ -36,6 +36,7 @@ type Msg =
     | SetServerOverrideURL of string
     | ToggleHelp
     | ToggleSettings
+    | SetDisplayOrganization of DisplayOrganization
 type Model = {
     userName: string Deferred
     wiql: string
@@ -49,9 +50,10 @@ type Model = {
     pat: string option
     showHelpScreen: bool
     showSettings: bool
+    displayOrganization: DisplayOrganization
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable  }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -155,16 +157,30 @@ let update msg model =
         { model with showHelpScreen = not model.showHelpScreen }
     | ToggleSettings ->
         { model with showSettings = not model.showSettings }
+    | SetDisplayOrganization displayOrganization ->
+        { model with displayOrganization = displayOrganization }
 
-let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment list) (dropped: WorkItem list) dispatch =
-    let buckets = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
+let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
     let height = 30
     let width = 50
     let margin = 10.
     let timeRatio = (float width/1.<realDay>)
-    let yCoord (asn: _ Assignment) =
-        let ix = buckets |> List.findIndex ((=) asn.bucketId)
-        ix * height
+    let yCoord, rows =
+        match org with
+        | ByBucket ->
+            let rows = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
+            let yCoord (asn: _ Assignment) =
+                let ix = rows |> List.findIndex ((=) asn.bucketId)
+                ix * height
+            yCoord, rows
+        | ByDeliverable ->
+            let getDeliverable = fun w -> w.underlying |> get<int option> "System.Parent" |> toString
+            let rows = work |> List.map getDeliverable |> List.distinct |> List.sort
+            let yCoord (asn: _ Assignment) =
+                let parent = asn |> getDeliverable
+                let ix = rows |> List.findIndex ((=) parent)
+                ix * height
+            yCoord, rows
     let msg (item: WorkItem) =
         $"""{item.fields["System.Title"]} """
     let date (asn: _ Assignment) msg =
@@ -177,10 +193,10 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
     class' Html.div "stage" [
         prop.style [
             style.width (int stageWidth)
-            style.height ((buckets.Length + dropped.Length) * height)
+            style.height ((rows.Length + dropped.Length) * height)
             ]
         prop.children [
-            for ix, bucket in buckets |> List.mapi tup2 do
+            for ix, row in rows |> List.mapi tup2 do
                 Html.input [
                     prop.className "bucket"
                     prop.style [
@@ -188,7 +204,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                         style.left 0
                         style.width width
                         ]
-                    prop.value bucket
+                    prop.value row
                     prop.readOnly true
                     prop.disabled true
                     ]
@@ -209,7 +225,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                 Html.span [
                     prop.className "dropped"
                     prop.style [
-                        style.top (height * (ix + buckets.Length))
+                        style.top (height * (ix + rows.Length))
                         style.left width
                         ]
                     prop.text (msg item)
@@ -279,7 +295,9 @@ let viewApp (model: Model) dispatch =
             Html.button [prop.text "Get work items"; prop.onClick executeQuery]
             match model.ctx with
             | Some ctx ->
-                viewAssignments ctx model.assignments model.dropped dispatch
+                let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
+                Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
+                viewAssignments ctx model.assignments model.dropped model.displayOrganization dispatch
             | None -> ()
             Html.unorderedList [
                 match model.workItems with
