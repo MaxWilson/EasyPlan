@@ -88,6 +88,7 @@ module Properties =
         |> Option.defaultValue 1.
         |> (fun w -> w * 1.<dayCost>)
     let getTitle = get<string> "System.Title" >> Option.defaultValue "Untitled"
+    let getDeliverable = get<int option> "System.Parent"
 
 open Properties
 
@@ -180,7 +181,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                 ix * height
             yCoord, rows
         | ByDeliverable ->
-            let getDeliverable = fun w -> w.underlying |> get<int option> "System.Parent" |> toString
+            let getDeliverable = fun w -> w.underlying |> getDeliverable |> toString
             let rows = work |> List.map getDeliverable |> List.distinct |> List.sort
             let yCoord (asn: _ Assignment) =
                 let parent = asn |> getDeliverable
@@ -239,46 +240,11 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
             ]
         ]
 
-let viewSelected (item:WorkItem Assignment option) (ctx: _ AssignmentContext) dispatch =
-    match item with
-    | Some item ->
-        Html.div [
-            let date days =
-                $"""{ctx.startTime.AddDays(days |> float).ToString("M/d")}"""
-            let dateRange = $"{item.startTime |> date} to {(item.startTime + item.duration) |> date}"
-            Html.div [Html.text dateRange]
-            Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]
-            ]
-
-    | None -> Html.div []
-
-let viewHelp (model:Model) dispatch =
-    Html.div [
-        prop.className "help"
-        prop.children [
-            Html.div [
-                Html.text "Helpful tip: "
-                Html.text "To set dependencies, select an item and press Ctrl-D or hit the dependencies button, and then select the item it is dependent on. Hit Ctrl-S or the Save button to save."
-                ]
-            Html.div [
-                Html.span [prop.text "For cross-tenant access to OSGS, get a PAT from "]
-                Html.a [prop.href "https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.text "https://dev.azure.com/microsoft/_usersSettings/tokens"]
-                Html.span [prop.text " with Work Item read permission, and with write permission if you want to save your changes back to OSGS"]
-                ]
-            Html.div [
-                Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
-                Html.input [prop.value (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
-                ]
-            Html.button [prop.text "OK"; prop.onClick(fun _ -> dispatch ToggleHelp)]
-            ]
-        ]
-
 [<Emit("typeof $0")>]
 let jsTypeof (_ : obj) : string = jsNative
 [<Emit("$0[$1]")>]
 let jsLookup (_ : obj) (key:string): obj option = jsNative
 
-let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
 let viewDetails (workItems: WorkItem list) = [
     for item in workItems do
         let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
@@ -316,6 +282,46 @@ let viewDetails (workItems: WorkItem list) = [
             ]
         Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
     ]
+
+let viewSelected (item:WorkItem Assignment option) (ctx: _ AssignmentContext) dispatch =
+    match item with
+    | Some item ->
+        Html.div [
+            let date days =
+                $"""{ctx.startTime.AddDays(days |> float).ToString("M/d")}"""
+            let dateRange = $"{item.startTime |> date} to {(item.startTime + item.duration) |> date}"
+            Html.div [Html.text dateRange]
+            Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]            
+            Html.div [
+                Html.br []
+                yield! viewDetails [item.underlying]
+                ]            
+            ]            
+
+    | None -> Html.div []
+
+let viewHelp (model:Model) dispatch =
+    Html.div [
+        prop.className "help"
+        prop.children [
+            Html.div [
+                Html.text "Helpful tip: "
+                Html.text "To set dependencies, select an item and press Ctrl-D or hit the dependencies button, and then select the item it is dependent on. Hit Ctrl-S or the Save button to save."
+                ]
+            Html.div [
+                Html.span [prop.text "For cross-tenant access to OSGS, get a PAT from "]
+                Html.a [prop.href "https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.text "https://dev.azure.com/microsoft/_usersSettings/tokens"]
+                Html.span [prop.text " with Work Item read permission, and with write permission if you want to save your changes back to OSGS"]
+                ]
+            Html.div [
+                Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
+                Html.input [prop.value (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
+                ]
+            Html.button [prop.text "OK"; prop.onClick(fun _ -> dispatch ToggleHelp)]
+            ]
+        ]
+
+let viewError errMsg = Html.div [prop.text $"Error: {errMsg}"; prop.className "error"]
 
 let viewApp (model: Model) dispatch =
     let operation opMsg impl _ =
