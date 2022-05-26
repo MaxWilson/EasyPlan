@@ -130,8 +130,11 @@ let getWorkItems options (wiql) = promise {
         o.query <- wiql)
     let! client = getWorkClient options
     let! wiqlResult = client.queryByWiql(query)
-    let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All)
-    return details |> List.ofSeq
+    if wiqlResult.workItems.Count = 0 then
+        return []
+    else
+        let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All)
+        return details |> List.ofSeq
     }
 
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read() }
