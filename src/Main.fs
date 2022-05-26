@@ -27,23 +27,30 @@ let receive = function
     | Started -> InProgress
     | Finished result -> Ready result
 type DisplayOrganization = ByBucket | ByDeliverable
+type QueryResult = {
+    workItems: WorkItem list
+    deliverables: Map<int, WorkItem>
+    }
+type Selection = 
+    | WorkItemSelection of WorkItem Assignment
+    | DeliverableSelection of WorkItem
 type Msg =
     | SetWiql of string
     | Message of string
     | SdkInitializationMsg of string OperationTransition
-    | WorkItemMsg of WorkItem list OperationTransition
+    | Query of QueryResult OperationTransition
     | SetPAT of string
     | SetServerOverrideURL of string
     | ToggleHelp
     | ToggleSettings
     | SetDisplayOrganization of DisplayOrganization
-    | Select of WorkItem Assignment
+    | Select of Selection
 type Model = {
     userName: string Deferred
     wiql: string
     userFacingMessage: string option;
     ready: bool;
-    workItems: WorkItem list Deferred
+    query: QueryResult Deferred
     assignments: WorkItem Assignment list
     dropped: WorkItem list
     ctx: WorkItem AssignmentContext option
@@ -52,10 +59,10 @@ type Model = {
     showHelpScreen: bool
     showSettings: bool
     displayOrganization: DisplayOrganization
-    selectedItem: WorkItem Assignment option
+    selectedItem: Selection option
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; workItems = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -78,9 +85,12 @@ module ResizeArray =
 module Properties =
     let get<'t> fieldName (item:WorkItem) =
         match item.fields[fieldName] with
-        | Some v -> unbox<'t> v |> Some
+        | Some v -> 
+            try 
+                unbox<'t> v |> Some
+            with _ -> None
         | None -> None
-
+    let getId (workItem: WorkItem) = workItem.id
     let getOwner item = item |> get "System.AssignedTo" |> Option.map (fun p -> p?displayName)
     let getRemainingWork item =
         item |> get<float> "Microsoft.VSTS.Scheduling.RemainingWork"
@@ -88,7 +98,7 @@ module Properties =
         |> Option.defaultValue 1.
         |> (fun w -> w * 1.<dayCost>)
     let getTitle = get<string> "System.Title" >> Option.defaultValue "Untitled"
-    let getDeliverable = get<int option> "System.Parent"
+    let getDeliverableId = get<int option> "System.Parent" >> Option.flatten >> Option.defaultValue 0
 
 open Properties
 
@@ -99,7 +109,7 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
         buckets = items |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
         capacityCoefficient = Extensions.Test.measureCapacity // todo: make this real
         prioritize = fun items -> items |> List.sortBy (fun (i:WorkItem) -> match i.fields["Microsoft.VSTS.Common.Priority"] with | Some pri -> unbox<int> pri | _ -> 5)
-        getId = fun (item: WorkItem) -> item.id
+        getId = getId
         getDependencies = thunk []
         getBucket = getBucket
         getCost = getRemainingWork
@@ -131,22 +141,25 @@ let getWorkItems options (wiql) = promise {
     let! client = getWorkClient options
     let! wiqlResult = client.queryByWiql(query)
     if wiqlResult.workItems.Count = 0 then
-        return []
+        return { QueryResult.workItems = []; deliverables = Map.empty }
     else
-        let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All)
-        return details |> List.ofSeq
+        let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All) |> Promise.map List.ofSeq
+        let deliverableIds = details |> List.map getDeliverableId |> List.distinct
+        let! deliverables = client.getWorkItems(deliverableIds |> ResizeArray) |> Promise.map List.ofSeq
+        let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
+        return { QueryResult.workItems = details; deliverables = deliverablesById }
     }
 
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read() }
 let update msg model =
     match msg with
     | Message msg -> { model with userFacingMessage = msg |> Some }
-    | WorkItemMsg op ->
-        let model = { model with workItems = receive op }
-        match model.workItems with
-        | Ready(Ok items) ->
-            let ctx = makeContext items
-            let asn, dropped = Extensions.assignments ctx items
+    | Query op ->
+        let model = { model with query = receive op }
+        match model.query with
+        | Ready(Ok queryResult) ->
+            let ctx = makeContext queryResult.workItems
+            let asn, dropped = Extensions.assignments ctx queryResult.workItems
             { model with ctx = Some ctx; assignments = asn; dropped = dropped }
         | _ -> model
     | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read() }
@@ -170,33 +183,46 @@ let update msg model =
     | Select workItemAssignment ->
         { model with selectedItem = workItemAssignment |> Some }
 
-let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
+let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, WorkItem>) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
     let height = 30
+    let bucketWidth = 200
     let width = 50
     let margin = 10.
     let timeRatio = (float width/1.<realDay>)
-    let yCoord, rows =
+    let yCoord, (rows : (BucketId * (_ -> unit)) list) =
         match org with
         | ByBucket ->
             let rows = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
             let yCoord (asn: _ Assignment) =
                 let ix = rows |> List.findIndex ((=) asn.bucketId)
                 ix * height
-            yCoord, rows
+            yCoord, rows |> List.map (fun row -> row, ignore)
         | ByDeliverable ->
-            let getDeliverable = fun w -> w.underlying |> getDeliverable |> toString
-            let rows = work |> List.map getDeliverable |> List.distinct |> List.sort
+            let getDeliverableId w = w.underlying |> getDeliverableId
+            let getDeliverable deliverableId =
+                deliverables |> Map.tryFind deliverableId
+            let rows = 
+                work 
+                |> List.map (fun wi ->      
+                                let parentId = getDeliverableId wi
+                                let onClick dispatch =
+                                    match deliverables |> Map.tryFind parentId with
+                                    | Some deliverable ->
+                                        DeliverableSelection deliverable |> Select |> dispatch
+                                    | None -> ()                                        
+                                {| workItem = wi; parentId = parentId; onClick = onClick |})
+                |> List.distinctBy (fun row -> row.parentId)
+                |> List.sortBy (fun row -> row.parentId)
             let yCoord (asn: _ Assignment) =
-                let parent = asn |> getDeliverable
-                let ix = rows |> List.findIndex ((=) parent)
+                let parent = asn |> getDeliverableId
+                let ix = rows |> List.findIndex (fun row -> row.parentId = parent)
                 ix * height
-            yCoord, rows
+            yCoord, rows |> List.map (fun row -> match deliverables |> Map.tryFind row.parentId with Some workItem -> (getTitle workItem, row.onClick) | None -> (row.parentId |> toString, row.onClick))
     let msg (item: WorkItem) =
         getTitle item
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
-    printfn "%d" (int stageWidth)
     let class' ctor (className:string) elements =
         ctor (prop.className className::elements)
     let startX, startY = 0,0
@@ -206,17 +232,17 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
             style.height ((rows.Length + dropped.Length) * height)
             ]
         prop.children [
-            for ix, row in rows |> List.mapi tup2 do
+            for ix, (row, onclick) in rows |> List.mapi tup2 do
                 Html.input [
                     prop.className "bucket"
                     prop.style [
                         style.top (ix * height)
                         style.left 0
-                        style.width width
+                        style.width bucketWidth
                         ]
                     prop.value row
                     prop.readOnly true
-                    prop.disabled true
+                    prop.onClick (fun _ -> onclick dispatch)
                     ]
             for asn in work do
                 let item = asn.underlying
@@ -224,12 +250,12 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (work: WorkItem Assignment
                     prop.className "item"
                     prop.style [
                         style.top (yCoord asn)
-                        style.left (asn.startTime * timeRatio + 60. |> int)
+                        style.left ((asn.startTime * timeRatio |> int) + bucketWidth + 20)
                         style.width (asn.duration * timeRatio - margin |> int)
                         ]
                     prop.value (msg item)
                     prop.readOnly true
-                    prop.onClick (thunk1 dispatch (Select asn))
+                    prop.onClick (thunk1 dispatch (Select (WorkItemSelection asn)))
                     ]
             for ix, item in dropped |> List.mapi tup2 do
                 Html.span [
@@ -286,9 +312,9 @@ let viewDetails (workItems: WorkItem list) = [
         Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
     ]
 
-let viewSelected (item:WorkItem Assignment option) (ctx: _ AssignmentContext) dispatch =
+let viewSelected (item:Selection option) (ctx: _ AssignmentContext) dispatch =
     match item with
-    | Some item ->
+    | Some (WorkItemSelection item) ->
         Html.div [
             let date days =
                 $"""{ctx.startTime.AddDays(days |> float).ToString("M/d")}"""
@@ -300,7 +326,13 @@ let viewSelected (item:WorkItem Assignment option) (ctx: _ AssignmentContext) di
                 yield! viewDetails [item.underlying]
                 ]            
             ]            
-
+    | Some (DeliverableSelection item) ->
+        Html.div [
+            Html.div [
+                Html.br []
+                yield! viewDetails [item]
+                ]            
+            ]            
     | None -> Html.div []
 
 let viewHelp (model:Model) dispatch =
@@ -331,7 +363,7 @@ let viewApp (model: Model) dispatch =
         asyncOperation dispatch opMsg impl |> Promise.start
 
     Html.div [
-        let executeQuery _ = operation WorkItemMsg (thunk2 getWorkItems (options(model.serverUrlOverride, model.pat)) model.wiql)()
+        let executeQuery _ = operation Query (thunk2 getWorkItems (options(model.serverUrlOverride, model.pat)) model.wiql)()
 
         match model.userName with
         | NotStarted | InProgress ->
@@ -359,25 +391,22 @@ let viewApp (model: Model) dispatch =
                 prop.onChange(fun e -> e |> SetWiql |> dispatch)
                 ]
             Html.button [prop.text "Get work items"; prop.onClick executeQuery]
-            match model.ctx with
-            | Some ctx ->
-                let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
-                Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
-                viewAssignments ctx model.assignments model.dropped model.displayOrganization dispatch
-                viewSelected model.selectedItem ctx dispatch
-            | None -> ()
-            Html.unorderedList [
-                match model.workItems with
-                | NotStarted -> ()
-                | InProgress ->
-                    Html.div [prop.text "Fetching..."]
-                | Ready(Error err) ->
-                    viewError err
-                | Ready(Ok workItems) ->
-                    let showDetails = false
-                    if showDetails then
-                        yield! viewDetails workItems
-                ]
+            
+            match model.query with
+            | NotStarted -> ()
+            | InProgress ->
+                Html.div [prop.text "Fetching..."]
+            | Ready(Error err) ->
+                viewError err
+            | Ready(Ok queryResult) ->
+                match model.ctx with
+                | Some ctx ->
+                    let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
+                    Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
+                    viewAssignments ctx queryResult.deliverables model.assignments model.dropped model.displayOrganization dispatch
+                    viewSelected model.selectedItem ctx dispatch
+                | None -> ()
+            
         ]
 
 let view (model:Model) dispatch =
