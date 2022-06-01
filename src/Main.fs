@@ -31,6 +31,7 @@ type QueryResult = {
     workItems: WorkItem list
     deliverables: Map<int, WorkItem>
     }
+type ProgressStatus = OK | Warning | AtRisk
 type Selection =
     | WorkItemSelection of WorkItem Assignment
     | DeliverableSelection of WorkItem
@@ -102,6 +103,7 @@ module Properties =
     let getWorkItemType = get<string> "System.WorkItemType"
     let getPriority = get<int> "Microsoft.VSTS.Common.Priority"
     let getPrioritization = (fun (i:WorkItem) -> match getPriority i with Some pri -> float pri | None -> match getWorkItemType i with | Some "Task" | Some "Deliverable" -> 1.5 | _ -> 2.0) // treat work items as less important than P1 bugs and more important than P2
+    let getDueDate = get<System.DateTime> "Microsoft.VSTS.Scheduling.DueDate"
 
 open Properties
 
@@ -153,6 +155,18 @@ let getWorkItems options (wiql) = promise {
         let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
         return { QueryResult.workItems = details; deliverables = deliverablesById }
     }
+
+let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
+    match asn.underlying |> getDueDate with
+    | Some dueDate ->
+        let finishTime = ctx.startTime.AddDays(asn.startTime + asn.duration |> float)
+        if dueDate < finishTime then
+            OK
+        elif dueDate.AddDays(1) < finishTime then
+            Warning
+        else
+            AtRisk
+    | None -> OK
 
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read() }
 let update msg model =
@@ -303,6 +317,10 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                         style.top (yCoord asn)
                         style.left ((asn.startTime * timeRatio |> int) + startLeft)
                         style.width (asn.duration * timeRatio - margin |> int)
+                        match asn |> getProgressStatus ctx with
+                        | AtRisk -> style.backgroundColor.red
+                        | Warning -> style.backgroundColor.yellow
+                        | _ -> ()
                         ]
                     prop.value (msg item)
                     prop.readOnly true
@@ -348,6 +366,7 @@ let viewDetails (workItems: WorkItem list) linkBase = [
                         | Some linkBase -> $"{linkBase}/_workitems/edit/{item.id}"
                         | None -> $"../../../_workitems/edit/{item.id}"
                     link 0 $"""{item.id} P{getPrioritization item |> int} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
+                    emit 0 $"Due: {item |> getDueDate}"
                     let rec unpack margin src =
                         [
                         for k in Fable.Core.JS.Constructors.Object.keys src do

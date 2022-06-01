@@ -83,6 +83,7 @@ module.exports = {
                 }
             }
         },
+        minimize: false,
     },
     // Besides the HtmlPlugin, we use the following plugins:
     // PRODUCTION
