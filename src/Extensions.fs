@@ -91,7 +91,7 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
                             duration = daysPassed - startTime
                             resourceRow = 0
                             }
-    let assignResourceRows assignments = 
+    let assignResourceRows assignments =
         let getUnderlying asn = asn.underlying
         let byDeliverable = assignments |> List.groupBy (getUnderlying >> ctx.getDeliverable)
         [
@@ -101,11 +101,11 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
                     let bucketId = (assignment.underlying |> ctx.getBucket)
                     match buckets |> List.tryFindIndex (fun bucketId' -> bucketId = bucketId') with
                     | Some rowId ->
-                        { assignment with resourceRow = rowId }
+                        { assignment with resourceRow = rowId + 1 }
                     | None ->
                         let rowId = buckets.Length
                         buckets <- buckets @ [bucketId]
-                        { assignment with resourceRow = rowId }
+                        { assignment with resourceRow = rowId + 1 }
             ]
     assignments |> assignResourceRows, wontBeDone
 

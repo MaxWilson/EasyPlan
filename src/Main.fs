@@ -31,7 +31,7 @@ type QueryResult = {
     workItems: WorkItem list
     deliverables: Map<int, WorkItem>
     }
-type Selection = 
+type Selection =
     | WorkItemSelection of WorkItem Assignment
     | DeliverableSelection of WorkItem
 type Msg =
@@ -85,13 +85,13 @@ module ResizeArray =
 module Properties =
     let get<'t> fieldName (item:WorkItem) =
         match item.fields[fieldName] with
-        | Some v -> 
-            try 
+        | Some v ->
+            try
                 unbox<'t> v |> Some
             with _ -> None
         | None -> None
     let getId (workItem: WorkItem) = workItem.id
-    let getOwner item = item |> get "System.AssignedTo" |> Option.map (fun p -> p?displayName)
+    let getOwner item : string option = item |> get "System.AssignedTo" |> Option.map (fun p -> p?displayName)
     let getRemainingWork item =
         item |> get<float> "Microsoft.VSTS.Scheduling.RemainingWork"
         |> (function None -> item |> get "OSG.RemainingDays" | otherwise -> otherwise)
@@ -203,15 +203,15 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
             let getDeliverableId w = w.underlying |> getDeliverableId
             let getDeliverable deliverableId =
                 deliverables |> Map.tryFind deliverableId
-            let rows = 
-                work 
-                |> List.map (fun wi ->      
+            let rows =
+                work
+                |> List.map (fun wi ->
                                 let parentId = getDeliverableId wi
                                 let onClick dispatch =
                                     match deliverables |> Map.tryFind parentId with
                                     | Some deliverable ->
                                         DeliverableSelection deliverable |> Select |> dispatch
-                                    | None -> ()                                      
+                                    | None -> ()
                                 let height = work |> List.filter (fun wi -> getDeliverableId wi = parentId) |> List.map (fun wi -> wi.resourceRow) |> List.max
                                 {| workItem = wi; parentId = parentId; height = height; onClick = onClick |})
                 |> List.distinctBy (fun row -> row.parentId)
@@ -220,13 +220,13 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                 let parent = asn |> getDeliverableId
                 let ix = rows |> List.findIndex (fun row -> row.parentId = parent)
                 let rowHeight = asn.resourceRow + (rows |> List.take ix |> List.sumBy (fun wi -> wi.height))
-                headerHeight + rowHeight * height
+                rowHeight * height
             yCoord, rows |> List.map (fun row -> match deliverables |> Map.tryFind row.parentId with Some workItem -> (getTitle workItem, row.height, row.onClick) | None -> (row.parentId |> toString, 1, row.onClick))
     let msg (item: WorkItem) =
         getTitle item
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
-    let stageHeight = headerHeight + (((rows |> List.sumBy (fun (_,height,_) -> height)) + dropped.Length) * height)    
+    let stageHeight = headerHeight + (((rows |> List.sumBy (fun (_,height,_) -> height)) + dropped.Length) * height)
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     let class' ctor (className:string) elements =
         ctor (prop.className className::elements)
@@ -276,7 +276,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                             style.backgroundColor.blue
                             ]
                         ]
-                | dayOfWeek -> 
+                | dayOfWeek ->
                     ()
             let mutable rowTop = 0
             for ix, (row, rowHeight, onclick) in rows |> List.mapi tup2 do
@@ -324,7 +324,7 @@ let jsLookup (_ : obj) (key:string): obj option = jsNative
 
 let viewDetails (workItems: WorkItem list) linkBase = [
     for item in workItems do
-        let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
+        let whom = getOwner item
         let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
         Html.div [
             prop.key $"WorkItem{item.id}"
@@ -340,7 +340,7 @@ let viewDetails (workItems: WorkItem list) linkBase = [
                             prop.text msg
                             prop.style [style.marginLeft indent]
                             ]
-                    let href = 
+                    let href =
                         match linkBase with
                         | Some linkBase -> $"{linkBase}/_workitems/edit/{item.id}"
                         | None -> $"../../../_workitems/edit/{item.id}"
@@ -378,19 +378,19 @@ let viewSelected (item:Selection option) (ctx: _ AssignmentContext) linkBase dis
                 $"""{ctx.startTime.AddDays(days |> float).ToString("M/d")}"""
             let dateRange = $"{item.startTime |> date} to {(item.startTime + item.duration) |> date}"
             Html.div [Html.text dateRange]
-            Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]            
+            Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]
             Html.div [
                 Html.br []
                 yield! viewDetails [item.underlying] linkBase
-                ]            
-            ]            
+                ]
+            ]
     | Some (DeliverableSelection item) ->
         Html.div [
             Html.div [
                 Html.br []
                 yield! viewDetails [item] linkBase
-                ]            
-            ]            
+                ]
+            ]
     | None -> Html.div []
 
 let viewHelp (model:Model) dispatch =
@@ -449,7 +449,7 @@ let viewApp (model: Model) dispatch =
                 prop.onChange(fun e -> e |> SetWiql |> dispatch)
                 ]
             Html.button [prop.text "Get work items"; prop.onClick executeQuery]
-            
+
             match model.query with
             | NotStarted -> ()
             | InProgress ->
@@ -464,7 +464,7 @@ let viewApp (model: Model) dispatch =
                     viewAssignments ctx queryResult.deliverables model.assignments model.dropped model.displayOrganization dispatch
                     viewSelected model.selectedItem ctx model.serverUrlOverride dispatch
                 | None -> ()
-            
+
         ]
 
 let view (model:Model) dispatch =
