@@ -188,7 +188,7 @@ let update msg model =
         { model with selectedItem = workItemAssignment |> Some }
 
 let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, WorkItem>) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
-    let height = 30
+    let height = 20
     let bucketWidth = 200
     let width = 50
     let margin = 10.
