@@ -99,6 +99,9 @@ module Properties =
         |> (fun w -> w * 1.<dayCost>)
     let getTitle = get<string> "System.Title" >> Option.defaultValue "Untitled"
     let getDeliverableId = get<int option> "System.Parent" >> Option.flatten >> Option.defaultValue 0
+    let getWorkItemType = get<string> "System.WorkItemType"
+    let getPriority = get<int> "Microsoft.VSTS.Common.Priority"
+    let getPrioritization = (fun (i:WorkItem) -> match getPriority i with Some pri -> float pri | None -> match getWorkItemType i with | Some "Task" | Some "Deliverable" -> 1.5 | _ -> 2.0) // treat work items as less important than P1 bugs and more important than P2
 
 open Properties
 
@@ -108,7 +111,7 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
         startTime = System.DateTime.UtcNow.Date
         buckets = items |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
         capacityCoefficient = Extensions.Test.measureCapacity // todo: make this real
-        prioritize = fun items -> items |> List.sortBy (fun (i:WorkItem) -> match i.fields["Microsoft.VSTS.Common.Priority"] with | Some pri -> unbox<int> pri | _ -> 5)
+        prioritize = fun items -> items |> List.sortBy getPrioritization
         getId = getId
         getDependencies = thunk []
         getBucket = getBucket
@@ -344,7 +347,7 @@ let viewDetails (workItems: WorkItem list) linkBase = [
                         match linkBase with
                         | Some linkBase -> $"{linkBase}/_workitems/edit/{item.id}"
                         | None -> $"../../../_workitems/edit/{item.id}"
-                    link 0 $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
+                    link 0 $"""{item.id} P{getPrioritization item |> int} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
                     let rec unpack margin src =
                         [
                         for k in Fable.Core.JS.Constructors.Object.keys src do
