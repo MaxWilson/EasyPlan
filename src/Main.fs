@@ -266,7 +266,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                         style.height stageHeight
                         style.borderLeft(2, borderStyle.solid, color.black)
                         ]
-                    prop.text $"""{day.ToString("m/d")}"""
+                    prop.text $"""{day.ToString("M/d")}"""
                     ]
                 let verticalLineAt (xPos: int) =
                     Html.div [
