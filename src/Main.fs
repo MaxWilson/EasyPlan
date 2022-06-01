@@ -322,19 +322,29 @@ let jsTypeof (_ : obj) : string = jsNative
 [<Emit("$0[$1]")>]
 let jsLookup (_ : obj) (key:string): obj option = jsNative
 
-let viewDetails (workItems: WorkItem list) = [
+let viewDetails (workItems: WorkItem list) linkBase = [
     for item in workItems do
         let whom = match item.fields["System.AssignedTo"] with | Some p -> p?displayName | None -> "Unassigned"
         let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
         Html.div [
             prop.key $"WorkItem{item.id}"
             prop.children [
+                    let link (indent: int) (msg: string) href =
+                        Html.a [
+                            prop.text msg
+                            prop.style [style.marginLeft indent]
+                            prop.href href
+                            ]
                     let emit (indent: int) (msg: string) =
                         Html.div [
                             prop.text msg
                             prop.style [style.marginLeft indent]
                             ]
-                    emit 0 $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""
+                    let href = 
+                        match linkBase with
+                        | Some linkBase -> $"{linkBase}/_workitems/edit/{item.id}"
+                        | None -> $"../../../_workitems/edit/{item.id}"
+                    link 0 $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
                     let rec unpack margin src =
                         [
                         for k in Fable.Core.JS.Constructors.Object.keys src do
@@ -360,7 +370,7 @@ let viewDetails (workItems: WorkItem list) = [
         Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
     ]
 
-let viewSelected (item:Selection option) (ctx: _ AssignmentContext) dispatch =
+let viewSelected (item:Selection option) (ctx: _ AssignmentContext) linkBase dispatch =
     match item with
     | Some (WorkItemSelection item) ->
         Html.div [
@@ -371,14 +381,14 @@ let viewSelected (item:Selection option) (ctx: _ AssignmentContext) dispatch =
             Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]            
             Html.div [
                 Html.br []
-                yield! viewDetails [item.underlying]
+                yield! viewDetails [item.underlying] linkBase
                 ]            
             ]            
     | Some (DeliverableSelection item) ->
         Html.div [
             Html.div [
                 Html.br []
-                yield! viewDetails [item]
+                yield! viewDetails [item] linkBase
                 ]            
             ]            
     | None -> Html.div []
@@ -452,7 +462,7 @@ let viewApp (model: Model) dispatch =
                     let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                     Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
                     viewAssignments ctx queryResult.deliverables model.assignments model.dropped model.displayOrganization dispatch
-                    viewSelected model.selectedItem ctx dispatch
+                    viewSelected model.selectedItem ctx model.serverUrlOverride dispatch
                 | None -> ()
             
         ]
