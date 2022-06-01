@@ -15,6 +15,7 @@ type AssignmentContext<'t> = {
     getId: 't -> Id
     getDependencies: 't -> Id list
     getBucket: 't -> BucketId option
+    getDeliverable: 't -> Id
     getCost: 't -> float<dayCost>
     }
 
@@ -23,6 +24,7 @@ type Assignment<'t> = {
     bucketId: BucketId
     startTime: float<realDay>
     duration: float<realDay>
+    resourceRow: int
     }
 
 let toDate (ctx: _ AssignmentContext) (timeElapsed: float<realDay>) =
@@ -87,8 +89,25 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
                             bucketId = bucketId
                             startTime = startTime
                             duration = daysPassed - startTime
+                            resourceRow = 0
                             }
-    assignments, wontBeDone
+    let assignResourceRows assignments = 
+        let getUnderlying asn = asn.underlying
+        let byDeliverable = assignments |> List.groupBy (getUnderlying >> ctx.getDeliverable)
+        [
+            for _, group in byDeliverable do
+                let mutable buckets = []
+                for assignment in group do
+                    let bucketId = (assignment.underlying |> ctx.getBucket)
+                    match buckets |> List.tryFindIndex (fun bucketId' -> bucketId = bucketId') with
+                    | Some rowId ->
+                        { assignment with resourceRow = rowId }
+                    | None ->
+                        let rowId = buckets.Length
+                        buckets <- buckets @ [bucketId]
+                        { assignment with resourceRow = rowId }
+            ]
+    assignments |> assignResourceRows, wontBeDone
 
 module Test =
     type PseudoItem = {
@@ -99,15 +118,16 @@ module Test =
         priority: int
         dependencies: Id list
         remainingDays: float
+        deliverableId: Id
         }
     type Assignment = PseudoItem Assignment
     type Context = PseudoItem AssignmentContext
     let items = [
-        { id = 1; title = "Create data structures for work item visualizing"; assignedPerson = Some "max"; remainingDays = 0.1; startTime = None; priority = 1; dependencies = [] }
-        { id = 2; title = "Write sorting algorithm for work item visualizer"; assignedPerson = Some "max"; remainingDays = 0.5; startTime = None; priority = 1; dependencies = [1] }
-        { id = 3; title = "Write React views for visualized items"; assignedPerson = Some "max"; remainingDays = 0.5;  startTime = None; priority = 1; dependencies = [1] }
-        { id = 4; title = "Change ADO work item types to reflect OSGS"; assignedPerson = Some "max"; remainingDays = 0.2; startTime = None; priority = 1; dependencies = [] }
-        { id = 5; title = "Verify/manual test: Visualizing real work items works"; assignedPerson = Some "sasi"; remainingDays = 0.2; startTime = None; priority = 1; dependencies = [] }
+        { id = 1; title = "Create data structures for work item visualizing"; assignedPerson = Some "max"; remainingDays = 0.1; startTime = None; priority = 1; dependencies = []; deliverableId = 1 }
+        { id = 2; title = "Write sorting algorithm for work item visualizer"; assignedPerson = Some "max"; remainingDays = 0.5; startTime = None; priority = 1; dependencies = [1]; deliverableId = 1 }
+        { id = 3; title = "Write React views for visualized items"; assignedPerson = Some "max"; remainingDays = 0.5;  startTime = None; priority = 1; dependencies = [1]; deliverableId = 1 }
+        { id = 4; title = "Change ADO work item types to reflect OSGS"; assignedPerson = Some "max"; remainingDays = 0.2; startTime = None; priority = 1; dependencies = []; deliverableId = 1 }
+        { id = 5; title = "Verify/manual test: Visualizing real work items works"; assignedPerson = Some "sasi"; remainingDays = 0.2; startTime = None; priority = 1; dependencies = []; deliverableId = 1 }
         ]
     let measureCapacity (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDay>): float<dayCost/realDay> =
         let ratio = match bucket with "max" -> 0.75<dayCost/realDay> | _ -> 0.8<dayCost/realDay>
@@ -127,6 +147,7 @@ module Test =
         getDependencies = (fun item -> item.dependencies)
         getBucket = (fun item -> item.assignedPerson)
         getCost = (fun item -> item.remainingDays * 1.<dayCost>)
+        getDeliverable = (fun item -> item.deliverableId)
         }
 
 //open Test

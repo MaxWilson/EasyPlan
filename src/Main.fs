@@ -113,6 +113,7 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
         getDependencies = thunk []
         getBucket = getBucket
         getCost = getRemainingWork
+        getDeliverable = getDeliverableId
         }
 
 let options(address:string option, pat) =
@@ -189,14 +190,14 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
     let width = 50
     let margin = 10.
     let timeRatio = (float width/1.<realDay>)
-    let yCoord, (rows : (BucketId * (_ -> unit)) list) =
+    let yCoord, (rows : (BucketId * int * (_ -> unit)) list) =
         match org with
         | ByBucket ->
             let rows = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
             let yCoord (asn: _ Assignment) =
                 let ix = rows |> List.findIndex ((=) asn.bucketId)
                 ix * height
-            yCoord, rows |> List.map (fun row -> row, ignore)
+            yCoord, rows |> List.map (fun row -> row, 1, ignore)
         | ByDeliverable ->
             let getDeliverableId w = w.underlying |> getDeliverableId
             let getDeliverable deliverableId =
@@ -209,15 +210,17 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                                     match deliverables |> Map.tryFind parentId with
                                     | Some deliverable ->
                                         DeliverableSelection deliverable |> Select |> dispatch
-                                    | None -> ()                                        
-                                {| workItem = wi; parentId = parentId; onClick = onClick |})
+                                    | None -> ()                                      
+                                let height = work |> List.filter (fun wi -> getDeliverableId wi = parentId) |> List.map (fun wi -> wi.resourceRow) |> List.max
+                                {| workItem = wi; parentId = parentId; height = height; onClick = onClick |})
                 |> List.distinctBy (fun row -> row.parentId)
                 |> List.sortBy (fun row -> row.parentId)
             let yCoord (asn: _ Assignment) =
                 let parent = asn |> getDeliverableId
                 let ix = rows |> List.findIndex (fun row -> row.parentId = parent)
-                ix * height
-            yCoord, rows |> List.map (fun row -> match deliverables |> Map.tryFind row.parentId with Some workItem -> (getTitle workItem, row.onClick) | None -> (row.parentId |> toString, row.onClick))
+                let rowHeight = asn.resourceRow + (rows |> List.take ix |> List.sumBy (fun wi -> wi.height))
+                rowHeight * height
+            yCoord, rows |> List.map (fun row -> match deliverables |> Map.tryFind row.parentId with Some workItem -> (getTitle workItem, row.height, row.onClick) | None -> (row.parentId |> toString, 1, row.onClick))
     let msg (item: WorkItem) =
         getTitle item
     let date (asn: _ Assignment) msg =
@@ -229,14 +232,15 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
     class' Html.div "stage" [
         prop.style [
             style.width (int stageWidth)
-            style.height ((rows.Length + dropped.Length) * height)
+            style.height (((rows |> List.sumBy (fun (_,height,_) -> height)) + dropped.Length) * height)
             ]
         prop.children [
-            for ix, (row, onclick) in rows |> List.mapi tup2 do
+            let mutable rowTop = 0
+            for ix, (row, rowHeight, onclick) in rows |> List.mapi tup2 do
                 Html.input [
                     prop.className "bucket"
                     prop.style [
-                        style.top (ix * height)
+                        style.top (rowTop * height)
                         style.left 0
                         style.width bucketWidth
                         ]
@@ -244,6 +248,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                     prop.readOnly true
                     prop.onClick (fun _ -> onclick dispatch)
                     ]
+                rowTop <- rowHeight + rowTop
             for asn in work do
                 let item = asn.underlying
                 Html.input [
