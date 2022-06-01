@@ -189,6 +189,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
     let bucketWidth = 200
     let width = 50
     let margin = 10.
+    let headerHeight = height
     let timeRatio = (float width/1.<realDay>)
     let yCoord, (rows : (BucketId * int * (_ -> unit)) list) =
         match org with
@@ -196,7 +197,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
             let rows = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
             let yCoord (asn: _ Assignment) =
                 let ix = rows |> List.findIndex ((=) asn.bucketId)
-                ix * height
+                headerHeight + ix * height
             yCoord, rows |> List.map (fun row -> row, 1, ignore)
         | ByDeliverable ->
             let getDeliverableId w = w.underlying |> getDeliverableId
@@ -219,28 +220,70 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                 let parent = asn |> getDeliverableId
                 let ix = rows |> List.findIndex (fun row -> row.parentId = parent)
                 let rowHeight = asn.resourceRow + (rows |> List.take ix |> List.sumBy (fun wi -> wi.height))
-                rowHeight * height
+                headerHeight + rowHeight * height
             yCoord, rows |> List.map (fun row -> match deliverables |> Map.tryFind row.parentId with Some workItem -> (getTitle workItem, row.height, row.onClick) | None -> (row.parentId |> toString, 1, row.onClick))
     let msg (item: WorkItem) =
         getTitle item
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
+    let stageHeight = headerHeight + (((rows |> List.sumBy (fun (_,height,_) -> height)) + dropped.Length) * height)    
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     let class' ctor (className:string) elements =
         ctor (prop.className className::elements)
-    let startX, startY = 0,0
+    let startLeft = bucketWidth + 20
     class' Html.div "stage" [
         prop.style [
             style.width (int stageWidth)
-            style.height (((rows |> List.sumBy (fun (_,height,_) -> height)) + dropped.Length) * height)
+            style.height stageHeight
             ]
         prop.children [
+            let maxDaySpan = if work.IsEmpty then 0.<realDay> else (work |> List.map (fun wi -> (wi.startTime + wi.duration)) |> List.max)
+            for x in (0.<realDay>)..1.<realDay>..(maxDaySpan) do
+                let day = ctx.startTime.AddDays(x |> float)
+                let startX = (startLeft + (x * timeRatio |> int))
+                Html.div [
+                    prop.className "header"
+                    prop.style [
+                        style.top 0
+                        style.left startX
+                        style.height stageHeight
+                        style.borderLeft(2, borderStyle.solid, color.black)
+                        ]
+                    prop.text $"""{day.ToString("m/d")}"""
+                    ]
+                let verticalLineAt (xPos: int) =
+                    Html.div [
+                        prop.className "divider"
+                        prop.style [
+                            style.top 0
+                            style.left xPos
+                            style.height stageHeight
+                            style.borderLeft(2, borderStyle.solid, color.black)
+                            ]
+                        ]
+                verticalLineAt startX
+                match day.DayOfWeek |> int with
+                | 6 | 0 -> // Saturday, Sunday
+                    // draw some blue shade for weekends to visually distinguish them
+                    Html.div [
+                        prop.className "divider"
+                        prop.style [
+                            style.top 0
+                            style.left startX
+                            style.height stageHeight
+                            style.width width
+                            style.opacity 0.22
+                            style.backgroundColor.blue
+                            ]
+                        ]
+                | dayOfWeek -> 
+                    ()
             let mutable rowTop = 0
             for ix, (row, rowHeight, onclick) in rows |> List.mapi tup2 do
                 Html.input [
                     prop.className "bucket"
                     prop.style [
-                        style.top (rowTop * height)
+                        style.top (headerHeight + rowTop * height)
                         style.left 0
                         style.width bucketWidth
                         ]
@@ -255,7 +298,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                     prop.className "item"
                     prop.style [
                         style.top (yCoord asn)
-                        style.left ((asn.startTime * timeRatio |> int) + bucketWidth + 20)
+                        style.left ((asn.startTime * timeRatio |> int) + startLeft)
                         style.width (asn.duration * timeRatio - margin |> int)
                         ]
                     prop.value (msg item)
