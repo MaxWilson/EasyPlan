@@ -160,9 +160,9 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
     match asn.underlying |> getDueDate with
     | Some dueDate ->
         let finishTime = ctx.startTime.AddDays(asn.startTime + asn.duration |> float)
-        if dueDate < finishTime then
+        if finishTime < dueDate then
             OK
-        elif dueDate.AddDays(1) < finishTime then
+        elif finishTime < dueDate.AddDays(1) then
             Warning
         else
             AtRisk
