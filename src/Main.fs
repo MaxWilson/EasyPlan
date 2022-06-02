@@ -129,10 +129,10 @@ module Properties =
     let getDependencies (workItem: WorkItem) =
         [for rel in workItem.relations do
             match rel.attributes["name"] |> string with
-            | "Dependent On" ->
+            | "Dependent On" | "Predecessor" ->
                 rel.url |> getFinalNumber
             | _ -> ()
-            ]
+            ] |> List.distinct
 
 open Properties
 
