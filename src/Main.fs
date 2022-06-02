@@ -388,7 +388,9 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                         style.width (asn.duration * timeRatio - margin |> int)
                         match asn |> getProgressStatus ctx with
                         | AtRisk -> style.backgroundColor.red
-                        | Warning -> style.backgroundColor.yellow
+                        | Warning ->
+                            style.backgroundColor.yellow
+                            style.color.black
                         | _ -> ()
                         ]
                     prop.value (msg item)
