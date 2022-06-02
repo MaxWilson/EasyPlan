@@ -376,6 +376,10 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                 rowTop <- rowHeight + rowTop
             for asn in work do
                 let item = asn.underlying
+                match (getOwner item) with
+                | Some owner when owner.Contains("Max") ->
+                    printfn $"{getTitle item}: {asn.startTime}({ ((asn.startTime * timeRatio |> int) + startLeft)}), width {asn.duration}({(asn.duration * timeRatio - margin |> int)})"
+                | _ -> ()
                 Html.input [
                     prop.className "item"
                     prop.style [

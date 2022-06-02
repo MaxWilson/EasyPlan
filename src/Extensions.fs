@@ -68,6 +68,7 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
                     | None ->
                         append &wontBeDone item // maybe we should add a bucket instead in this case
                     | Some (daysPassed) ->
+                        printfn $"DaysPassed: {daysPassed}"
                         let startTime = daysPassed
                         let mutable workRemaining = ctx.getCost item
                         let mutable daysPassed = daysPassed
@@ -79,8 +80,8 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
                                 delta &workRemaining -remainingCapacityToday
                                 daysPassed <- ((float daysPassed |> floor) + 1.) * 1.<realDay>
                             else
+                                delta &daysPassed (workRemaining / workRatio)
                                 workRemaining <- 0.<dayCost>
-                                delta &daysPassed remainingTimeToday
                         // write the computed end date back into the bucket
                         buckets <- buckets |> Map.add bucketId daysPassed
                         finished <- finished |> Set.add (ctx.getId item)
@@ -150,14 +151,16 @@ module Test =
         getDeliverable = (fun item -> item.deliverableId)
         }
 
-//open Test
-//for work in assignments ctx items |> fst do
-//    let date time = (ctx.startTime.AddDays (int time)).ToString("MM/dd")
-//    let range =
-//        let start = work.startTime |> date
-//        let finish = work.duration + work.startTime |> date
-//        if finish <> start then $"{start}-{finish}" else start
-//    printfn $"{work.underlying.title} {range}"
+module TestExecute =
+    open Test
+    let execute() =
+        for work in assignments ctx items |> fst do
+            let date time = (ctx.startTime.AddDays (int time)).ToString("MM/dd")
+            let range =
+                let start = work.startTime |> date
+                let finish = work.duration + work.startTime |> date
+                if finish <> start then $"{start}-{finish}" else start
+            printfn $"{work.underlying.title} {range} {work.startTime} {work.duration}"
 
 module LocalStorage =
     open Thoth.Json
