@@ -188,7 +188,7 @@ let getWorkItems options (wiql) = promise {
     else
         let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All) |> Promise.map List.ofSeq
         let deliverableIds = details |> List.map getDeliverableId |> List.distinct
-        let! deliverables = client.getWorkItems(deliverableIds |> ResizeArray) |> Promise.map List.ofSeq
+        let! deliverables = client.getWorkItems(deliverableIds |> List.filter (fun id -> id > 0) |> ResizeArray) |> Promise.map List.ofSeq
         let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
         return { QueryResult.workItems = details; deliverables = deliverablesById }
     }
