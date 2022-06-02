@@ -49,7 +49,6 @@ type Msg =
     | Select of Selection
     | SelectDependency
     | CancelDependencySelect
-    | FinishDependencySelect
     | SetHasUnsavedChanges of bool
 type Model = {
     userName: string Deferred
@@ -138,11 +137,19 @@ module Properties =
 open Properties
 
 let makeContext (items: WorkItem seq) : _ AssignmentContext =
+    // todo: make this real
+    let capacityStub (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDay>): float<dayCost/realDay> =
+        let ratio = match bucket with "sasiy" -> 0.4<dayCost/realDay> | _ -> 0.7<dayCost/realDay>
+        match (ctx.startTime.AddDays (int startTime)).DayOfWeek |> int with
+        | 0 | 6 -> 0.<dayCost/realDay> // not Saturday/Sunday. For some reason can't refer directly to Saturday/Sunday.
+        | _ ->
+            ratio
+
     let getBucket = getOwner
     {
         startTime = System.DateTime.UtcNow.Date
         buckets = items |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
-        capacityCoefficient = Extensions.Test.measureCapacity // todo: make this real
+        capacityCoefficient = capacityStub // todo: make this real
         prioritize = fun items -> items |> List.sortBy getPrioritization
         getId = getId
         getDependencies = getDependencies
