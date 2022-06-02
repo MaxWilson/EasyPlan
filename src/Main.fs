@@ -110,10 +110,10 @@ module Properties =
     let getPriority item =
         match get<int> "Microsoft.VSTS.Common.Priority" item with
         | Some pri -> float pri
-        | None -> match getWorkItemType item with | Some "Task" | Some "Deliverable" -> 1.5 | _ -> 2.0
+        | None -> match getWorkItemType item with | Some "Task" | Some "Deliverable" -> 2.0 | _ -> 2.0
     let getDueDate = get<System.DateTime> "Microsoft.VSTS.Scheduling.DueDate"
     let getPrioritization = (fun (i:WorkItem) ->
-        // treat work items as less important than P1 bugs and more important than P2
+        // treat work items as less important than P1 bugs and equal to P2
         let pri = getPriority i
 
         // also respect DueDate as a secondary ordering factor
