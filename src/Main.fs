@@ -32,6 +32,7 @@ type QueryResult = {
     deliverables: Map<int, WorkItem>
     }
 type ProgressStatus = OK | Warning | AtRisk
+type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
 type Selection =
     | WorkItemSelection of WorkItem Assignment
     | DeliverableSelection of WorkItem
@@ -46,6 +47,10 @@ type Msg =
     | ToggleSettings
     | SetDisplayOrganization of DisplayOrganization
     | Select of Selection
+    | SelectDependency
+    | CancelDependencySelect
+    | FinishDependencySelect
+    | SetHasUnsavedChanges of bool
 type Model = {
     userName: string Deferred
     wiql: string
@@ -61,9 +66,11 @@ type Model = {
     showSettings: bool
     displayOrganization: DisplayOrganization
     selectedItem: Selection option
+    editMode: EditMode
+    hasUnsavedChanges: bool
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -101,9 +108,19 @@ module Properties =
     let getTitle = get<string> "System.Title" >> Option.defaultValue "Untitled"
     let getDeliverableId = get<int option> "System.Parent" >> Option.flatten >> Option.defaultValue 0
     let getWorkItemType = get<string> "System.WorkItemType"
-    let getPriority = get<int> "Microsoft.VSTS.Common.Priority"
-    let getPrioritization = (fun (i:WorkItem) -> match getPriority i with Some pri -> float pri | None -> match getWorkItemType i with | Some "Task" | Some "Deliverable" -> 1.5 | _ -> 2.0) // treat work items as less important than P1 bugs and more important than P2
+    let getPriority item =
+        match get<int> "Microsoft.VSTS.Common.Priority" item with
+        | Some pri -> float pri
+        | None -> match getWorkItemType item with | Some "Task" | Some "Deliverable" -> 1.5 | _ -> 2.0
     let getDueDate = get<System.DateTime> "Microsoft.VSTS.Scheduling.DueDate"
+    let getPrioritization = (fun (i:WorkItem) ->
+        // treat work items as less important than P1 bugs and more important than P2
+        let pri = getPriority i
+
+        // also respect DueDate as a secondary ordering factor
+        let due = getDueDate i
+        pri, due
+        )
 
 open Properties
 
@@ -168,6 +185,15 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
             AtRisk
     | None -> OK
 
+let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryResult) =
+
+    queryResult
+
+let saveChanges (model:Model) dispatch =
+    promise {
+        dispatch (SetHasUnsavedChanges false)
+    } |> Promise.start
+
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read() }
 let update msg model =
     match msg with
@@ -199,7 +225,26 @@ let update msg model =
     | SetDisplayOrganization displayOrganization ->
         { model with displayOrganization = displayOrganization }
     | Select workItemAssignment ->
-        { model with selectedItem = workItemAssignment |> Some }
+        // SELECT is a user action which has different effects in different modes (not sure if I love that idea, but for now...)
+        // When we're selecting dependencies, it adds a new dependency, clears edit mode, and recomputes assignments, while preserving the currently-selected item.
+        // Otherwise, it changes what the currently-selected item is (which affects detail display at the bottom of the screen).
+        match model.editMode, workItemAssignment, model.query with
+        | EditMode.SelectingDependency target, (WorkItemSelection asn), Ready (Ok queryResult) ->
+            // update the source of truth
+            let queryResult = queryResult |> addDependency target asn
+            let ctx = makeContext queryResult.workItems
+            let asn', dropped = Extensions.assignments ctx queryResult.workItems
+            // for UX reasons, preserve selection (up to underlying id)
+            let selection' = asn' |> List.tryFind (fun a -> a.underlying.id = asn.underlying.id) |> Option.map (WorkItemSelection)
+            { model with ctx = Some ctx; assignments = asn'; dropped = dropped; editMode = EditMode.NotEditing; selectedItem = selection'; hasUnsavedChanges = true; query = Ready (Ok queryResult) }
+        | _ ->
+            { model with selectedItem = workItemAssignment |> Some }
+    | SetHasUnsavedChanges v ->
+        { model with hasUnsavedChanges = v }
+    | CancelDependencySelect ->
+        { model with editMode = EditMode.NotEditing }
+    | SelectDependency ->
+        { model with editMode = match model.selectedItem with | Some (WorkItemSelection asn) -> EditMode.SelectingDependency asn | _ -> model.editMode }
 
 let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, WorkItem>) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
     let height = 20
@@ -365,7 +410,7 @@ let viewDetails (workItems: WorkItem list) linkBase = [
                         match linkBase with
                         | Some linkBase -> $"{linkBase}/_workitems/edit/{item.id}"
                         | None -> $"../../../_workitems/edit/{item.id}"
-                    link 0 $"""{item.id} P{getPrioritization item |> int} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
+                    link 0 $"""{item.id} P{getPriority item |> int} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
                     emit 0 $"Due: {item |> getDueDate}"
                     let rec unpack margin src =
                         [
@@ -421,7 +466,7 @@ let viewHelp (model:Model) dispatch =
         prop.children [
             Html.div [
                 Html.text "Helpful tip: "
-                Html.text "To set dependencies, select an item and press Ctrl-D or hit the dependencies button, and then select the item it is dependent on. Hit Ctrl-S or the Save button to save."
+                Html.text "To set dependencies, select an item and press Ctrl-D or hit the Add Dependencies button, and then select the item it depends on. Hit Ctrl-S or the Save button to save."
                 ]
             Html.div [
                 Html.span [prop.text "For cross-tenant access to OSGS, get a PAT from "]
@@ -483,6 +528,12 @@ let viewApp (model: Model) dispatch =
                 | Some ctx ->
                     let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                     Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
+                    match model.selectedItem with
+                    | Some (WorkItemSelection _) ->
+                        Html.button [prop.text "Add dependency"; prop.disabled (model.editMode <> NotEditing); prop.onClick (thunk1 dispatch SelectDependency)]
+                    | _ -> ()
+                    if model.hasUnsavedChanges then
+                        Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
                     viewAssignments ctx queryResult.deliverables model.assignments model.dropped model.displayOrganization dispatch
                     viewSelected model.selectedItem ctx model.serverUrlOverride dispatch
                 | None -> ()
@@ -521,6 +572,14 @@ Program.mkSimple init update view
     Browser.Dom.window.addEventListener("unhandledrejection", fun e ->
         let msg = e.ToString()
         showError msg dispatch
+        )
+    Browser.Dom.window.addEventListener("keydown", fun e ->
+        if e?key = "d" && e?ctrlKey then
+            dispatch (SelectDependency)
+            e.preventDefault()
+        elif e?key = "Escape" then
+            dispatch (CancelDependencySelect)
+            e.preventDefault()
         )
 
     let initialize() = promise {

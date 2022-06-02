@@ -55,7 +55,7 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
         finished |> Set.contains itemId
     let mutable assignments = []
 
-    for item' in items do
+    for item' in items |> List.filter (fun i -> ctx.getCost i > 0.<dayCost>) do
         append &todo item'
         // todo: allow breaking up of work items
         for item in todo do
