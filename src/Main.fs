@@ -121,6 +121,19 @@ module Properties =
         let due = getDueDate i
         pri, due
         )
+    let getFinalNumber (url: string) =
+        let result = System.Text.RegularExpressions.Regex.Match(url, "([0-9]+)$")
+        if result.Success then
+            result.Groups.[1].Value |> System.Int32.Parse
+        else
+            failwith $"{url} does not end in a number"
+    let getDependencies (workItem: WorkItem) =
+        [for rel in workItem.relations do
+            match rel.attributes["name"] |> string with
+            | "Dependent On" ->
+                rel.url |> getFinalNumber
+            | _ -> ()
+            ]
 
 open Properties
 
@@ -132,7 +145,7 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
         capacityCoefficient = Extensions.Test.measureCapacity // todo: make this real
         prioritize = fun items -> items |> List.sortBy getPrioritization
         getId = getId
-        getDependencies = thunk []
+        getDependencies = getDependencies
         getBucket = getBucket
         getCost = getRemainingWork
         getDeliverable = getDeliverableId
@@ -386,7 +399,9 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
 [<Emit("typeof $0")>]
 let jsTypeof (_ : obj) : string = jsNative
 [<Emit("$0[$1]")>]
-let jsLookup (_ : obj) (key:string): obj option = jsNative
+let jsLookup (_ : obj) (key:string) : obj option = jsNative
+[<Emit("$0 instanceof Date")>]
+let isJSDate (_ : obj) : bool = jsNative
 
 let viewDetails (workItems: WorkItem list) linkBase = [
     for item in workItems do
@@ -412,21 +427,27 @@ let viewDetails (workItems: WorkItem list) linkBase = [
                         | None -> $"../../../_workitems/edit/{item.id}"
                     link 0 $"""{item.id} P{getPriority item |> int} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
                     emit 0 $"Due: {item |> getDueDate}"
+                    emit 0 "Fields:"
                     let rec unpack margin src =
                         [
                         for k in Fable.Core.JS.Constructors.Object.keys src do
                             let value = jsLookup src k
                             match jsTypeof value, value with
                             | "object", Some value ->
-                                yield! unpack (margin+20) value
+                                if isJSDate value then
+                                    emit margin $"{k}: {value}"
+                                else
+                                    emit margin $"{k}:"
+                                    yield! unpack (margin+20) value
                             | _else ->
                                 emit margin $"{k}: {value}"
                             ]
                     yield! unpack 20 item.fields
+                    emit 0 "Relations:"
                     match item.relations |> unbox<WorkItemRelation array option> with
                     | Some relations ->
                         for rel in relations do
-                            emit 20 rel.url
+                            emit 20 $"{rel.rel}: {rel.url}"
                             match rel.attributes |> unbox with
                             | Some attr ->
                                 yield! unpack 40 attr
