@@ -50,48 +50,53 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
     let items = items |> ctx.prioritize
     let mutable todo = []
     let mutable wontBeDone = []
-    let mutable finished = Set.empty
+    let mutable finished = items |> List.filter (fun i -> ctx.getCost i <= 0.<dayCost>) |> List.map ctx.getId |> Set.ofList
     let isFinished itemId =
         finished |> Set.contains itemId
     let mutable assignments = []
 
+    let processItem item =
+        if item |> ctx.getDependencies |> List.every isFinished then
+            remove &todo item
+            match ctx.getBucket item with
+            | None -> append &wontBeDone item
+            | Some bucketId ->
+                match buckets |> Map.tryFind bucketId with
+                | None ->
+                    append &wontBeDone item // maybe we should add a bucket instead in this case
+                | Some (daysPassed) ->
+                    let startTime = daysPassed
+                    let mutable workRemaining = ctx.getCost item
+                    let mutable daysPassed = daysPassed
+                    while workRemaining > 0.<dayCost> do
+                        let workRatio = ctx.capacityCoefficient ctx bucketId daysPassed
+                        let remainingTimeToday = remainingTimeToday daysPassed
+                        let remainingCapacityToday = remainingTimeToday * workRatio
+                        if workRemaining > remainingCapacityToday then
+                            delta &workRemaining -remainingCapacityToday
+                            daysPassed <- ((float daysPassed |> floor) + 1.) * 1.<realDay>
+                        else
+                            delta &daysPassed (workRemaining / workRatio)
+                            workRemaining <- 0.<dayCost>
+                    // write the computed end date back into the bucket
+                    buckets <- buckets |> Map.add bucketId daysPassed
+                    finished <- finished |> Set.add (ctx.getId item)
+                    append &assignments {
+                        underlying = item
+                        bucketId = bucketId
+                        startTime = startTime
+                        duration = daysPassed - startTime
+                        resourceRow = 0
+                        }
     for item' in items |> List.filter (fun i -> ctx.getCost i > 0.<dayCost>) do
         append &todo item'
         // todo: allow breaking up of work items
         for item in todo do
-            if item |> ctx.getDependencies |> List.every isFinished then
-                remove &todo item
-                match ctx.getBucket item with
-                | None -> append &wontBeDone item
-                | Some bucketId ->
-                    match buckets |> Map.tryFind bucketId with
-                    | None ->
-                        append &wontBeDone item // maybe we should add a bucket instead in this case
-                    | Some (daysPassed) ->
-                        printfn $"DaysPassed: {daysPassed}"
-                        let startTime = daysPassed
-                        let mutable workRemaining = ctx.getCost item
-                        let mutable daysPassed = daysPassed
-                        while workRemaining > 0.<dayCost> do
-                            let workRatio = ctx.capacityCoefficient ctx bucketId daysPassed
-                            let remainingTimeToday = remainingTimeToday daysPassed
-                            let remainingCapacityToday = remainingTimeToday * workRatio
-                            if workRemaining > remainingCapacityToday then
-                                delta &workRemaining -remainingCapacityToday
-                                daysPassed <- ((float daysPassed |> floor) + 1.) * 1.<realDay>
-                            else
-                                delta &daysPassed (workRemaining / workRatio)
-                                workRemaining <- 0.<dayCost>
-                        // write the computed end date back into the bucket
-                        buckets <- buckets |> Map.add bucketId daysPassed
-                        finished <- finished |> Set.add (ctx.getId item)
-                        append &assignments {
-                            underlying = item
-                            bucketId = bucketId
-                            startTime = startTime
-                            duration = daysPassed - startTime
-                            resourceRow = 0
-                            }
+            processItem item
+    // ensure nothing goes unprocessed even if todo is in a weird order
+    while todo.Length > 0 do
+        for item in todo do
+            processItem item
     let assignResourceRows assignments =
         let getUnderlying asn = asn.underlying
         let byDeliverable = assignments |> List.groupBy (getUnderlying >> ctx.getDeliverable)
