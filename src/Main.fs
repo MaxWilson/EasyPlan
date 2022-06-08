@@ -127,12 +127,14 @@ module Properties =
         else
             failwith $"{url} does not end in a number"
     let getDependencies (workItem: WorkItem) =
-        [for rel in workItem.relations do
-            match rel.attributes["name"] |> string with
-            | "Dependent On" | "Predecessor" ->
-                rel.url |> getFinalNumber
-            | _ -> ()
-            ] |> List.distinct
+        if workItem.relations = null then []
+        else
+            [for rel in workItem.relations do
+                match rel.attributes["name"] |> string with
+                | "Dependent On" | "Predecessor" ->
+                    rel.url |> getFinalNumber
+                | _ -> ()
+                ] |> List.distinct
 
 open Properties
 
