@@ -31,7 +31,7 @@ type QueryResult = {
     workItems: WorkItem list
     deliverables: Map<int, WorkItem>
     }
-type ProgressStatus = OK | Warning | AtRisk
+type ProgressStatus = OK | Warning of float | AtRisk of float
 type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
 type Selection =
     | WorkItemSelection of WorkItem Assignment
@@ -149,7 +149,7 @@ let makeContext (items: WorkItem seq) : _ AssignmentContext =
 
     let getBucket = getOwner
     {
-        startTime = System.DateTime.UtcNow.Date
+        startTime = System.DateTime.Now.Date
         buckets = items |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
         capacityCoefficient = capacityStub // todo: make this real
         prioritize = fun items -> items |> List.sortBy getPrioritization
@@ -199,12 +199,15 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
     match asn.underlying |> getDueDate with
     | Some dueDate ->
         let finishTime = ctx.startTime.AddDays(asn.startTime + asn.duration |> float)
+        let percentOverdue =
+            let dueDateInRealDays = (dueDate - ctx.startTime).TotalDays * 1.<realDay>
+            ((asn.startTime + asn.duration) - dueDateInRealDays)/asn.duration |> min 1.
         if finishTime < dueDate then
             OK
         elif finishTime < dueDate.AddDays(1) then
-            Warning
+            Warning percentOverdue
         else
-            AtRisk
+            AtRisk percentOverdue
     | None -> OK
 
 let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryResult) =
@@ -385,10 +388,13 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
                         style.left ((asn.startTime * timeRatio |> int) + startLeft)
                         style.width (asn.duration * timeRatio - margin |> int)
                         match asn |> getProgressStatus ctx with
-                        | AtRisk -> style.backgroundColor.red
-                        | Warning ->
-                            style.backgroundColor.yellow
-                            style.color.black
+                        | AtRisk percentOverdue ->
+                            let percent = (100. - percentOverdue * 100.) |> int
+                            style.backgroundImage $"linear-gradient(to right, blue, blue {percent}%%, red {percent}%%, red 100%%)"
+                        | Warning percentOverdue ->
+                            let percent = (100. - percentOverdue * 100.) |> int
+                            style.backgroundImage $"linear-gradient(to right, blue, blue {percent}%%, yellow {percent}%%, yellow 100%%)"
+                            if percent < 30 then style.color.black
                         | _ -> ()
                         ]
                     prop.value (msg item)
