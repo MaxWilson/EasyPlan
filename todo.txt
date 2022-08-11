@@ -1,0 +1,9 @@
+1. Add actual capacities by querying for current team, current project, current iteration
+2. Add ability to visualize deltas since last scrum
+
+Estimate actual capacity
+Show what changed since last scrum
+Colorize which part of which items are overdue instead of making the whole item red
+At the end of the sprint, comparing our expectations to actual to know how good our estimates are and how much time was spent on e.g. ICM
+Moving items around directly in the EasyPlan
+Creating work items with only a few clicks

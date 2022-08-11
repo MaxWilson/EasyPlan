@@ -523,6 +523,7 @@ type [<AllowNullLiteral>] TeamMemberCapacity =
     abstract teamMember: Member with get, set
 
 /// Represents capacity for a specific team member
+// {"teamMember":{"displayName":"Max Wilson","url":"https://spsprodcus4.vssps.visualstudio.com/A0de40b69-b5c9-42a0-9423-c824363bf994/_apis/Identities/5f7c0406-92ec-44f5-9655-2596033a1bbd","_links":{"avatar":{"href":"https://dev.azure.com/maxw0485/_apis/GraphProfile/MemberAvatars/aad.YzU3YzJhNmEtOWE1Yy03YjdjLWI2N2MtMWQ1NGE1ZGZmZjcz"}},"id":"5f7c0406-92ec-44f5-9655-2596033a1bbd","uniqueName":"maxw@microsoft.com","imageUrl":"https://dev.azure.com/maxw0485/_apis/GraphProfile/MemberAvatars/aad.YzU3YzJhNmEtOWE1Yy03YjdjLWI2N2MtMWQ1NGE1ZGZmZjcz","descriptor":"aad.YzU3YzJhNmEtOWE1Yy03YjdjLWI2N2MtMWQ1NGE1ZGZmZjcz"},"activities":[{"capacityPerDay":0.0,"name":""}],"daysOff":[{"start":"\/Date(1649808000000)\/","end":"\/Date(1649808000000)\/"}],"url":"https://dev.azure.com/maxw0485/a1f909e2-dfbb-4d92-9c7a-7f25044c3ec5/3bbd385f-f9a9-4c4e-b66f-b6a0cc9ba340/_apis/work/teamsettings/iterations/6c3627c0-d6d3-4fba-84e4-e2edfa44a41e/capacities/5f7c0406-92ec-44f5-9655-2596033a1bbd"}
 type [<AllowNullLiteral>] TeamMemberCapacityIdentityRef =
     inherit CapacityContractBase
     /// Identity ref of the associated team member

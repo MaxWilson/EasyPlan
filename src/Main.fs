@@ -175,9 +175,31 @@ let options(address:string option, pat) =
         )
 
 let getWorkClient options = promise {
-    let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
-    let! project = projectService.getProject();
     return Client.exports.getClient<WorkItemTrackingClient.WorkItemTrackingRestClient>(unbox WorkItemTrackingClient.exports.WorkItemTrackingRestClient, options)
+    }
+
+let getTeam options = promise {
+    let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, options)
+    let! allTeams = coreClient.getAllTeams(true) // in theory you should be able to query teams you're not on but for perf sake right now we don't allow it
+    if allTeams.Count > 0 then
+        return allTeams[0] // TODO: make this more robust for people who belong to multiple teams. Pull the data from the query to figure out which team is relevant.
+    else
+        return failwith "Could not determine a unique team for current user. Ask Max to add this as a feature."
+    }
+
+let getIterations options = promise {
+    let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
+    let! project = projectService.getProject()
+    let! team = getTeam options
+    let teamCtx : Core.TeamContext = !! {|
+        project = project.Value.name // TODO: again, make more robust by pulling data from query.
+        projectId = project.Value.id
+        team = team.name
+        teamId = team.id
+        |}
+    let client = Client.exports.getClient<WorkClient.WorkRestClient>(unbox WorkClient.exports.WorkRestClient, options)
+    let! iterations = client.getTeamIterations(teamCtx)
+    return iterations
     }
 
 let getWorkItems options (wiql) = promise {
