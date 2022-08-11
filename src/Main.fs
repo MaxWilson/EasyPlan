@@ -180,7 +180,7 @@ let getWorkClient options = promise {
 
 let getTeam options = promise {
     let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, options)
-    let! allTeams = coreClient.getAllTeams(true) // in theory you should be able to query teams you're not on but for perf sake right now we don't allow it
+    let! allTeams = coreClient.getAllTeams(false) // in theory you should be able to query teams you're not on but for perf sake right now we don't allow it
     if allTeams.Count > 0 then
         return allTeams[0] // TODO: make this more robust for people who belong to multiple teams. Pull the data from the query to figure out which team is relevant.
     else
@@ -199,10 +199,15 @@ let getIterations options = promise {
         |}
     let client = Client.exports.getClient<WorkClient.WorkRestClient>(unbox WorkClient.exports.WorkRestClient, options)
     let! iterations = client.getTeamIterations(teamCtx)
-    return iterations
+    return team, iterations
     }
 
 let getWorkItems options (wiql) = promise {
+    try
+        let! i = getIterations options
+        printfn "getIterations result: %A" i
+    with err ->
+        printfn "getIterations error: %A" err
     let query = jsOptions<Wiql>(fun o ->
         o.query <- wiql)
     let! client = getWorkClient options
@@ -531,7 +536,7 @@ let viewHelp (model:Model) dispatch =
             Html.div [
                 Html.span [prop.text "For cross-tenant access to OSGS, get a PAT from "]
                 Html.a [prop.href "https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.text "https://dev.azure.com/microsoft/_usersSettings/tokens"]
-                Html.span [prop.text " with Work Item read permission, and with write permission if you want to save your changes back to OSGS"]
+                Html.span [prop.text " with read permission to Work Items, Project and Team, and User Profile, and with write permission if you want to save your changes back to OSGS"]
                 ]
             Html.div [
                 Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
