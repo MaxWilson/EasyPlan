@@ -180,7 +180,7 @@ let getWorkClient options = promise {
 
 let getTeam (project:IProjectInfo) options = promise {
     let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, options)
-    let! teams = coreClient.getTeams(project.id,true,1) // in theory you should be able to query teams you're not on but for perf sake right now we don't allow it
+    let! teams = coreClient.getTeams("OSGS",true,1) // in theory you should be able to query teams you're not on but for perf sake right now we don't allow it
     if teams.Count > 0 then
         return teams[0] // TODO: make this more robust for people who belong to multiple teams. Pull the data from the query to figure out which team is relevant.
     else
