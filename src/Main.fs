@@ -98,11 +98,16 @@ module Properties =
             with _ -> None
         | None -> None
     let getId (workItem: WorkItem) = workItem.id
+    let getState = get<string> "System.State"
     let getOwner item : string option = item |> get "System.AssignedTo" |> Option.map (fun p -> p?displayName)
     let getRemainingWork item =
-        item |> get<float> "Microsoft.VSTS.Scheduling.RemainingWork"
-        |> (function None -> item |> get "OSG.RemainingDays" | otherwise -> otherwise)
-        |> Option.defaultValue 1.
+        // if an item is cut/completed/closed, ignore it even if it still has Remaining Days listed.
+        let explicitRemainingDays = item |> get<float> "Microsoft.VSTS.Scheduling.RemainingWork" |> Option.orElse (item |> get<float> "OSG.RemainingDays")
+        match item |> getState, explicitRemainingDays with
+        | Some ("Closed" | "Completed" | "Cut"), _ -> 0.
+        | Some ("Resolved"), None -> 0.3 // assume resolution is pretty fast usually
+        | _, Some v -> v
+        | _ -> 1. // if no Remaining Days estimate but there is still work to do, it might be a new item. Default to 1 just so the timeline doesn't collapse.
         |> (fun w -> w * 1.<dayCost>)
     let getTitle = get<string> "System.Title" >> Option.defaultValue "Untitled"
     let getDeliverableId = get<int option> "System.Parent" >> Option.flatten >> Option.defaultValue 0
