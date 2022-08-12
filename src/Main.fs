@@ -243,7 +243,6 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
     | None -> OK
 
 let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryResult) =
-
     queryResult
 
 let saveChanges (model:Model) dispatch =
@@ -452,59 +451,70 @@ let jsLookup (_ : obj) (key:string) : obj option = jsNative
 [<Emit("$0 instanceof Date")>]
 let isJSDate (_ : obj) : bool = jsNative
 
-let viewDetails (workItems: WorkItem list) linkBase = [
-    for item in workItems do
-        let whom = getOwner item
-        let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
-        Html.div [
-            prop.key $"WorkItem{item.id}"
-            prop.children [
-                    let link (indent: int) (msg: string) href =
-                        Html.a [
-                            prop.text msg
-                            prop.style [style.marginLeft indent]
-                            prop.href href
-                            ]
-                    let emit (indent: int) (msg: string) =
-                        Html.div [
-                            prop.text msg
-                            prop.style [style.marginLeft indent]
-                            ]
-                    let href =
-                        match linkBase with
-                        | Some linkBase -> $"{linkBase}/_workitems/edit/{item.id}"
-                        | None -> $"../../../_workitems/edit/{item.id}"
-                    link 0 $"""{item.id} P{getPriority item |> int} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
-                    emit 0 $"Due: {item |> getDueDate}"
-                    emit 0 "Fields:"
-                    let rec unpack margin src =
-                        [
-                        for k in Fable.Core.JS.Constructors.Object.keys src do
-                            let value = jsLookup src k
-                            match jsTypeof value, value with
-                            | "object", Some value ->
-                                if isJSDate value then
-                                    emit margin $"{k}: {value}"
-                                else
-                                    emit margin $"{k}:"
-                                    yield! unpack (margin+20) value
-                            | _else ->
+let viewDetails (ctx: _ AssignmentContext) (item: WorkItem) (asn: _ Assignment option) linkBase = [
+    let whom = getOwner item
+    let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
+    Html.div [
+        prop.key $"WorkItem{item.id}"
+        prop.children [
+                let link (indent: int) (msg: string) href =
+                    Html.a [
+                        prop.text msg
+                        prop.style [style.marginLeft indent]
+                        prop.href href
+                        ]
+                let emit (indent: int) (msg: string) =
+                    Html.div [
+                        prop.text msg
+                        prop.style [style.marginLeft indent]
+                        ]
+                let href =
+                    match linkBase with
+                    | Some linkBase -> $"{linkBase}/_workitems/edit/{item.id}"
+                    | None -> $"../../../_workitems/edit/{item.id}"
+                link 0 $"""{item.id} P{getPriority item |> int} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
+                let due = item |> getDueDate
+                let ETA, overdueBy =
+                    match due, asn with
+                    | Some due, Some asn ->
+                        let eta = ctx.startTime.AddDays((asn.startTime + asn.duration)/1.<realDay>)
+                        if eta > due then
+                            eta |> Some, Some (eta - due).TotalDays
+                        else
+                            eta |> Some, None
+                    | _ -> None, None
+                let dateToString label = function Some (v: System.DateTime) -> $"""{label}: {v.ToString("M/d/yyyy")}""" | None -> $"{label}: N/A"
+                emit 0 $"""{dateToString "Due" due} {dateToString "ETA" ETA} {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
+                emit 0 "-----"
+                emit 0 "Fields:"
+                let rec unpack margin src =
+                    [
+                    for k in Fable.Core.JS.Constructors.Object.keys src do
+                        let value = jsLookup src k
+                        match jsTypeof value, value with
+                        | "object", Some value ->
+                            if isJSDate value then
                                 emit margin $"{k}: {value}"
-                            ]
-                    yield! unpack 20 item.fields
-                    emit 0 "Relations:"
-                    match item.relations |> unbox<WorkItemRelation array option> with
-                    | Some relations ->
-                        for rel in relations do
-                            emit 20 $"{rel.rel}: {rel.url}"
-                            match rel.attributes |> unbox with
-                            | Some attr ->
-                                yield! unpack 40 attr
-                            | None -> ()
-                    | None -> emit 20 "No relations"
-                ]
+                            else
+                                emit margin $"{k}:"
+                                yield! unpack (margin+20) value
+                        | _else ->
+                            emit margin $"{k}: {value}"
+                        ]
+                yield! unpack 20 item.fields
+                emit 0 "Relations:"
+                match item.relations |> unbox<WorkItemRelation array option> with
+                | Some relations ->
+                    for rel in relations do
+                        emit 20 $"{rel.rel}: {rel.url}"
+                        match rel.attributes |> unbox with
+                        | Some attr ->
+                            yield! unpack 40 attr
+                        | None -> ()
+                | None -> emit 20 "No relations"
             ]
-        Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
+        ]
+    Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
     ]
 
 let viewSelected (item:Selection option) (ctx: _ AssignmentContext) linkBase dispatch =
@@ -518,14 +528,14 @@ let viewSelected (item:Selection option) (ctx: _ AssignmentContext) linkBase dis
             Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]
             Html.div [
                 Html.br []
-                yield! viewDetails [item.underlying] linkBase
+                yield! viewDetails ctx item.underlying (Some item) linkBase
                 ]
             ]
     | Some (DeliverableSelection item) ->
         Html.div [
             Html.div [
                 Html.br []
-                yield! viewDetails [item] linkBase
+                yield! viewDetails ctx item None linkBase
                 ]
             ]
     | None -> Html.div []
