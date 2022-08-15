@@ -36,6 +36,7 @@ type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
 type Selection =
     | WorkItemSelection of WorkItem Assignment
     | DeliverableSelection of WorkItem
+    | BucketSelection of txt:string
 type Msg =
     | SetWiql of string
     | Message of string
@@ -320,7 +321,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
             let yCoord (asn: _ Assignment) =
                 let ix = rows |> List.findIndex ((=) asn.bucketId)
                 headerHeight + ix * height
-            yCoord, rows |> List.map (fun row -> row, 1, ignore)
+            yCoord, rows |> List.map (fun row -> row, 1, (fun _ -> row |> BucketSelection |> Select |> dispatch))
         | ByDeliverable ->
             let getDeliverableId w = w.underlying |> getDeliverableId
             let getDeliverable deliverableId =
@@ -524,6 +525,7 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
 let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
     let item = model.selectedItem
     match item with
+    | Some (BucketSelection txt) -> Html.div txt
     | Some (WorkItemSelection item) ->
         Html.div [
             let date days =
