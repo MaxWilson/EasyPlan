@@ -92,7 +92,7 @@
         <Compile Include="bindings\XDM.fs" />
         <Compile Include="UI\DragDrop.fs" />
         <Compile Include="UI\Konva.fs" />
-		<None Include="styles/global.sass" />
+        <None Include="styles/global.sass" />
         <None Include="index.html" />
         <Compile Include="Common.fs" />
         <Compile Include="Extensions.fs" />

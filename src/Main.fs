@@ -26,10 +26,15 @@ let receive = function
     | Started -> InProgress
     | Finished result -> Ready result
 type DisplayOrganization = ByBucket | ByDeliverable
+type Capacity = {
+    description: string
+    daysOff: Work.DateRange list
+    capacity: float
+    }
 type QueryResult = {
     workItems: WorkItem list
     deliverables: Map<int, WorkItem>
-    capacityMap: string -> obj
+    capacityMap: string -> Capacity
     }
 type QueryContext = {
     // TODO: there's got to be a better way to do this than root/project-scoped options separately
@@ -153,20 +158,25 @@ module Properties =
 
 open Properties
 
-let makeContext (items: WorkItem seq) : _ AssignmentContext =
-    // todo: make this real
-    let capacityStub (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDay>): float<dayCost/realDay> =
-        let ratio = match bucket with "sasiy" -> 0.4<dayCost/realDay> | _ -> 0.7<dayCost/realDay>
+let makeContext (queryResult: QueryResult): _ AssignmentContext =
+    let capacity (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDay>): float<dayCost/realDay> =
         match (ctx.startTime.AddDays (int startTime)).DayOfWeek |> int with
-        | 0 | 6 -> 0.<dayCost/realDay> // not Saturday/Sunday. For some reason can't refer directly to Saturday/Sunday.
+        | 0 | 6 -> 0.<dayCost/realDay> // not Saturday/Sunday. For some reason can't refer directly to Saturday/Sunday. TODO: get this and holidays from ADO instead of hardwiring.
         | _ ->
-            ratio
+            let capacity = queryResult.capacityMap bucket
+            let dt = ctx.startTime.AddDays (float startTime)
+            if capacity.daysOff |> List.exists (fun range -> range.start.LocalDateTime <= dt && dt <= range.``end``.LocalDateTime ) then 0.0<dayCost/realDay> // no capacity on days off
+            else capacity.capacity*1.<dayCost/realDay>
 
-    let getBucket = getOwner
+    let getBucket item =
+        match getOwner item with
+        // ignore buckets that have no actual person assigned--they will just cause infinite loops. Instead, return None so those work items get listed as dropped/won't be done.
+        | Some bucket when (queryResult.capacityMap bucket).capacity > 0. -> Some bucket
+        | _ -> None
     {
         startTime = System.DateTime.Now.Date
-        buckets = items |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
-        capacityCoefficient = capacityStub // todo: make this real
+        buckets = queryResult.workItems |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
+        capacityCoefficient = capacity // todo: make this real
         prioritize = fun items -> items |> List.sortBy getPrioritization
         getId = getId
         getDependencies = getDependencies
@@ -251,19 +261,21 @@ let tryGetCapacity (ctx: QueryContext) = promise {
                         (capacity.activities |> Seq.sumBy(fun activity -> activity.capacityPerDay)), capacity.daysOff
                 ]
             let capacity = capacitiesAndDaysOff |> Seq.sumBy fst
-            let daysOff =
-                [
-                for daysOff in capacitiesAndDaysOff |> Seq.map snd |> Seq.flatten do
-                    $"{daysOff.start.Date |> convertJSDateToString} to {daysOff.``end``.Date |> convertJSDateToString}"
-                ]
-                |> function
+            let daysOff = capacitiesAndDaysOff |> Seq.map snd |> Seq.flatten |> List.ofSeq
+            let daysOffDescr =
+                match daysOff
+                    |> List.map (fun daysOff -> $"{daysOff.start.Date |> convertJSDateToString} to {daysOff.``end``.Date |> convertJSDateToString}") with
                 | [] -> ""
                 | daysOff -> $""", off {String.join ", " daysOff}"""
-            $"{teamMemberName}: {capacity} capacity{daysOff}"
-        return capacityForTeamMember >> box
+            {
+                description = $"{teamMemberName}: {capacity} capacity{daysOffDescr}"
+                capacity = capacity
+                daysOff = daysOff
+                }
+        return capacityForTeamMember
     with _err ->
         printfn "tryGetCapacity failed: %A" _err
-        return fun (teamMemberName:string) -> box (sprintf "Error: %A" _err)
+        return fun (teamMemberName:string) -> { description = (sprintf "Error: %A" _err); capacity = 0; daysOff = [] }
     }
 
 let getWorkItems (ctx: QueryContext) (wiql) = promise {
@@ -313,7 +325,7 @@ let update msg model =
         let model = { model with query = receive op }
         match model.query with
         | Ready(Ok queryResult) ->
-            let ctx = makeContext queryResult.workItems
+            let ctx = makeContext queryResult
             let asn, dropped = Extensions.assignments ctx queryResult.workItems
             { model with ctx = Some ctx; assignments = asn; dropped = dropped }
         | _ -> model
@@ -345,7 +357,7 @@ let update msg model =
         | EditMode.SelectingDependency target, (WorkItemSelection asn), Ready (Ok queryResult) ->
             // update the source of truth
             let queryResult = queryResult |> addDependency target asn
-            let ctx = makeContext queryResult.workItems
+            let ctx = makeContext queryResult
             let asn', dropped = Extensions.assignments ctx queryResult.workItems
             // for UX reasons, preserve selection (up to underlying id)
             let selection' = asn' |> List.tryFind (fun a -> a.underlying.id = asn.underlying.id) |> Option.map (WorkItemSelection)
@@ -374,7 +386,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult)
             let yCoord (asn: _ Assignment) =
                 let ix = rows |> List.findIndex ((=) asn.bucketId)
                 headerHeight + ix * height
-            yCoord, rows |> List.map (fun row -> row, 1, (fun _ -> row |> queryResult.capacityMap |> toString |> BucketSelection |> Select |> dispatch))
+            yCoord, rows |> List.map (fun row -> row, 1, (fun _ -> (queryResult.capacityMap row).description |> BucketSelection |> Select |> dispatch))
         | ByDeliverable ->
             let getDeliverableId w = w.underlying |> getDeliverableId
             let getDeliverable deliverableId =
@@ -402,7 +414,8 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult)
         getTitle item
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
-    let stageHeight = headerHeight + ((height + (work |> List.map (fun item -> yCoord item) |> List.append [0] |> List.max) + (dropped.Length * height)))
+    let preDroppedHeight = headerHeight + ((height + (work |> List.map (fun item -> yCoord item) |> List.append [0] |> List.max)))
+    let stageHeight = preDroppedHeight + (dropped.Length * height)
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     let class' ctor (className:string) elements =
         ctor (prop.className className::elements)
@@ -494,10 +507,10 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult)
                 Html.span [
                     prop.className "dropped"
                     prop.style [
-                        style.top (height * (ix + rows.Length))
-                        style.left width
+                        style.top (preDroppedHeight + (height * ix))
+                        style.left startLeft
                         ]
-                    prop.text (msg item)
+                    prop.text ("Won't be done: " + msg item)
                     ]
             ]
         ]
