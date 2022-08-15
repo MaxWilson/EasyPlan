@@ -477,7 +477,7 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
                     match linkBase with
                     | Some linkBase -> $"{linkBase}/_workitems/edit/{item.id}"
                     | None -> $"../../../_workitems/edit/{item.id}"
-                link 0 $"""{item.id} P{getPriority item |> int} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}""" href
+                link 0 $"""{item.id} P{getPriority item |> int} {typ}: { whom } {item.fields["System.Title"]}""" href
                 let due = item |> getDueDate
                 let ETA, overdueBy =
                     match due, asn with
