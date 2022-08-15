@@ -30,6 +30,7 @@ type Capacity = {
     description: string
     daysOff: Work.DateRange list
     capacity: float
+    capacityByDate: System.DateTime -> float
     }
 type QueryResult = {
     workItems: WorkItem list
@@ -160,13 +161,10 @@ open Properties
 
 let makeContext (queryResult: QueryResult): _ AssignmentContext =
     let capacity (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDay>): float<dayCost/realDay> =
-        match (ctx.startTime.AddDays (int startTime)).DayOfWeek |> int with
-        | 0 | 6 -> 0.<dayCost/realDay> // not Saturday/Sunday. For some reason can't refer directly to Saturday/Sunday. TODO: get this and holidays from ADO instead of hardwiring.
-        | _ ->
-            let capacity = queryResult.capacityMap bucket
-            let dt = ctx.startTime.AddDays (float startTime)
-            if capacity.daysOff |> List.exists (fun range -> range.start.LocalDateTime <= dt && dt <= range.``end``.LocalDateTime ) then 0.0<dayCost/realDay> // no capacity on days off
-            else capacity.capacity*1.<dayCost/realDay>
+        let capacity = queryResult.capacityMap bucket
+        let dt = ctx.startTime.AddDays (float startTime)
+        if capacity.daysOff |> List.exists (fun range -> range.start.LocalDateTime <= dt && dt <= range.``end``.LocalDateTime ) then 0.0<dayCost/realDay> // no capacity on days off
+        else capacity.capacityByDate dt * 1.<dayCost/realDay>
 
     let getBucket item =
         match getOwner item with
@@ -239,7 +237,14 @@ let tryGetTeamCapacity (ctx: QueryContext) (team:Core.WebApiTeam) = promise {
     let capacityForIteration (iteration: Work.TeamSettingsIteration) =
         client.getCapacitiesWithIdentityRef(teamCtx, iteration.id)
     let! capacities = iterations |> Seq.filter (inScope System.DateTime.Now) |> Seq.map capacityForIteration |> Promise.all
-    return capacities
+    let capacities = capacities |> Seq.flatten |> Array.ofSeq
+    let! teamSettings = client.getTeamSettings(teamCtx)
+    let capacityForDay (name:string) (dt: System.DateTime) =
+        // capacity applies only to working team days, which doesn't include weekends and holidays. Individual days off are tracked separately.
+        if teamSettings.workingDays.Contains dt.DayOfWeek then
+            capacities |> Array.sumBy(fun c -> if c.teamMember.displayName = name then c.activities |> Seq.sumBy(fun act -> act.capacityPerDay) else 0.)
+        else 0.
+    return capacities, capacityForDay
     }
 
 let tryGetCapacity (ctx: QueryContext) = promise {
@@ -247,12 +252,12 @@ let tryGetCapacity (ctx: QueryContext) = promise {
         let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
         let! project = projectService.getProject()
         let! teams = getTeams project.Value ctx
-        let! capacities = promise {
-            let! items = teams |> Seq.map (tryGetTeamCapacity ctx) |> Promise.Parallel
-            return items |> Seq.flatten |> Seq.flatten |> Array.ofSeq
+        let! capacityByNameAndDate, capacities = promise {
+            let! itemsAndWorkingDays = teams |> Seq.map (tryGetTeamCapacity ctx) |> Promise.Parallel
+            let items, capacityByNameAndDate = itemsAndWorkingDays |> List.ofSeq |> List.unzip
+            return capacityByNameAndDate, items |> Seq.flatten |> Array.ofSeq
             }
 
-        printfn "Capacity:  %A" (capacities.Length)
         let capacityForTeamMember (teamMemberName: string) =
             let capacitiesAndDaysOff =
                 [
@@ -271,11 +276,12 @@ let tryGetCapacity (ctx: QueryContext) = promise {
                 description = $"{teamMemberName}: {capacity} capacity{daysOffDescr}"
                 capacity = capacity
                 daysOff = daysOff
+                capacityByDate = (fun dt -> capacityByNameAndDate |> List.sumBy (fun capacityFunc -> capacityFunc teamMemberName dt))
                 }
         return capacityForTeamMember
     with _err ->
         printfn "tryGetCapacity failed: %A" _err
-        return fun (teamMemberName:string) -> { description = (sprintf "Error: %A" _err); capacity = 0; daysOff = [] }
+        return fun (teamMemberName:string) -> { description = (sprintf "Error: %A" _err); capacity = 0; daysOff = []; capacityByDate = thunk 0. }
     }
 
 let getWorkItems (ctx: QueryContext) (wiql) = promise {
