@@ -349,7 +349,8 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
         getTitle item
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
-    let stageHeight = headerHeight + (((rows |> List.sumBy (fun (_,height,_) -> height)) + dropped.Length) * height)
+    let stageHeight = headerHeight + ((height + (work |> List.map (fun item -> yCoord item) |> List.append [0] |> List.max) + (dropped.Length * height)))
+    printfn $"stageHeight: {stageHeight}, headerHeight: {headerHeight}, rowHeights: ({rows.Length}) {((rows |> List.sumBy (fun (_,height,_) -> height)) + dropped.Length)} * {height}"
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     let class' ctor (className:string) elements =
         ctor (prop.className className::elements)
