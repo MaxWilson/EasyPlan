@@ -45,6 +45,7 @@ type Msg =
     | SetServerOverrideURL of string
     | ToggleHelp
     | ToggleSettings
+    | ToggleDrilldown
     | SetDisplayOrganization of DisplayOrganization
     | Select of Selection
     | SelectDependency
@@ -63,13 +64,14 @@ type Model = {
     pat: string option
     showHelpScreen: bool
     showSettings: bool
+    showDetail: bool
     displayOrganization: DisplayOrganization
     selectedItem: Selection option
     editMode: EditMode
     hasUnsavedChanges: bool
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false; showDetail = false }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -278,6 +280,8 @@ let update msg model =
         { model with showHelpScreen = not model.showHelpScreen }
     | ToggleSettings ->
         { model with showSettings = not model.showSettings }
+    | ToggleDrilldown ->
+        { model with showDetail = not model.showDetail }
     | SetDisplayOrganization displayOrganization ->
         { model with displayOrganization = displayOrganization }
     | Select workItemAssignment ->
@@ -451,7 +455,7 @@ let jsLookup (_ : obj) (key:string) : obj option = jsNative
 [<Emit("$0 instanceof Date")>]
 let isJSDate (_ : obj) : bool = jsNative
 
-let viewDetails (ctx: _ AssignmentContext) (item: WorkItem) (asn: _ Assignment option) linkBase = [
+let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn: _ Assignment option) linkBase = [
     let whom = getOwner item
     let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
     Html.div [
@@ -484,40 +488,41 @@ let viewDetails (ctx: _ AssignmentContext) (item: WorkItem) (asn: _ Assignment o
                             eta |> Some, None
                     | _ -> None, None
                 let dateToString label = function Some (v: System.DateTime) -> $"""{label}: {v.ToString("M/d/yyyy")}""" | None -> $"{label}: N/A"
-                emit 0 $"""{dateToString "Due" due} {dateToString "ETA" ETA} {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
-                emit 0 "-----"
-                emit 0 "Fields:"
-                let rec unpack margin src =
-                    [
-                    for k in Fable.Core.JS.Constructors.Object.keys src do
-                        let value = jsLookup src k
-                        match jsTypeof value, value with
-                        | "object", Some value ->
-                            if isJSDate value then
+                emit 0 $"""{dateToString "Due" due} {dateToString "ETA" ETA} [{getState item}] {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
+                if model.showDetail then
+                    emit 0 "-----"
+                    emit 0 "Fields:"
+                    let rec unpack margin src =
+                        [
+                        for k in Fable.Core.JS.Constructors.Object.keys src do
+                            let value = jsLookup src k
+                            match jsTypeof value, value with
+                            | "object", Some value ->
+                                if isJSDate value then
+                                    emit margin $"{k}: {value}"
+                                else
+                                    emit margin $"{k}:"
+                                    yield! unpack (margin+20) value
+                            | _else ->
                                 emit margin $"{k}: {value}"
-                            else
-                                emit margin $"{k}:"
-                                yield! unpack (margin+20) value
-                        | _else ->
-                            emit margin $"{k}: {value}"
-                        ]
-                yield! unpack 20 item.fields
-                emit 0 "Relations:"
-                match item.relations |> unbox<WorkItemRelation array option> with
-                | Some relations ->
-                    for rel in relations do
-                        emit 20 $"{rel.rel}: {rel.url}"
-                        match rel.attributes |> unbox with
-                        | Some attr ->
-                            yield! unpack 40 attr
-                        | None -> ()
-                | None -> emit 20 "No relations"
+                            ]
+                    yield! unpack 20 item.fields
+                    emit 0 "Relations:"
+                    match item.relations |> unbox<WorkItemRelation array option> with
+                    | Some relations ->
+                        for rel in relations do
+                            emit 20 $"{rel.rel}: {rel.url}"
+                            match rel.attributes |> unbox with
+                            | Some attr ->
+                                yield! unpack 40 attr
+                            | None -> ()
+                    | None -> emit 20 "No relations"
             ]
         ]
-    Html.div [prop.text $"""{item.id} {typ}: { whom } {item.fields["System.Title"]} {item.fields["System.State"]}"""; prop.key item.id]
     ]
 
-let viewSelected (item:Selection option) (ctx: _ AssignmentContext) linkBase dispatch =
+let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
+    let item = model.selectedItem
     match item with
     | Some (WorkItemSelection item) ->
         Html.div [
@@ -528,14 +533,14 @@ let viewSelected (item:Selection option) (ctx: _ AssignmentContext) linkBase dis
             Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]
             Html.div [
                 Html.br []
-                yield! viewDetails ctx item.underlying (Some item) linkBase
+                yield! viewDetails model ctx item.underlying (Some item) linkBase
                 ]
             ]
     | Some (DeliverableSelection item) ->
         Html.div [
             Html.div [
                 Html.br []
-                yield! viewDetails ctx item None linkBase
+                yield! viewDetails model ctx item None linkBase
                 ]
             ]
     | None -> Html.div []
@@ -578,13 +583,18 @@ let viewApp (model: Model) dispatch =
         | Ready(Ok userName) ->
             Html.div [
                 Html.text $"Hello, {userName}"
-                Html.a [prop.text "Help"; prop.className "menuItem"; prop.href "."; prop.onClick(fun ev -> ev.preventDefault(); dispatch ToggleHelp)]
                 Html.a [prop.text "Settings"; prop.className "menuItem"; prop.href "."; prop.onClick(fun ev -> ev.preventDefault(); dispatch ToggleSettings)]
+                Html.a [prop.text "Help"; prop.className "menuItem"; prop.href "."; prop.onClick(fun ev -> ev.preventDefault(); dispatch ToggleHelp)]
                 ]
             if model.showSettings then
                 Html.div [
                     Html.input [prop.valueOrDefault (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
                     Html.input [prop.valueOrDefault (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
+                    Html.div [
+                        let showDetailId = "chkShowDetail"
+                        Html.input [prop.type'.checkbox; prop.id showDetailId; prop.valueOrDefault model.showDetail; prop.onClick (thunk1 dispatch ToggleDrilldown)]
+                        Html.label [prop.for' showDetailId; prop.text "Show detailed fields for selected item"]
+                        ]
                     ]
             Html.div [prop.text (model.userFacingMessage |> Option.defaultValue "")]
             Html.textarea [
@@ -615,7 +625,7 @@ let viewApp (model: Model) dispatch =
                     if model.hasUnsavedChanges then
                         Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
                     viewAssignments ctx queryResult.deliverables model.assignments model.dropped model.displayOrganization dispatch
-                    viewSelected model.selectedItem ctx model.serverUrlOverride dispatch
+                    viewSelected model ctx model.serverUrlOverride dispatch
                 | None -> ()
 
         ]
