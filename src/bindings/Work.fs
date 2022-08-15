@@ -5,7 +5,7 @@ open Fable.Core
 open Fable.Core.JS
 
 type [<AllowNullLiteral>] Activity =
-    abstract capacityPerDay: int with get, set
+    abstract capacityPerDay: float with get, set
     abstract name: string with get, set
 
 type [<AllowNullLiteral>] attribute =
@@ -226,9 +226,9 @@ type [<AllowNullLiteral>] CreatePlan =
 
 type [<AllowNullLiteral>] DateRange =
     /// End of the date range.
-    abstract ``end``: DateTime with get, set
+    abstract ``end``: DateTimeOffset with get, set
     /// Start of the date range.
-    abstract start: DateTime with get, set
+    abstract start: DateTimeOffset with get, set
 
 /// Data contract for Data of Delivery View
 type [<AllowNullLiteral>] DeliveryViewData =

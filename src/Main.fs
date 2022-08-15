@@ -1,13 +1,12 @@
 module Main
 
 open Feliz
-open App
 open Browser.Dom
 open Fable.Core.JsInterop
 
 importSideEffects "./styles/global.sass"
 
-open App
+open Components
 open Elmish
 open Elmish.React
 open WorkItemTracking
@@ -30,6 +29,14 @@ type DisplayOrganization = ByBucket | ByDeliverable
 type QueryResult = {
     workItems: WorkItem list
     deliverables: Map<int, WorkItem>
+    capacityMap: string -> obj
+    }
+type QueryContext = {
+    // TODO: there's got to be a better way to do this than root/project-scoped options separately
+    options: Client.IVssRestClientOptions
+    projectScopedOptions: Client.IVssRestClientOptions
+    serverRoot: string option
+    projectName: string option
     }
 type ProgressStatus = OK | Warning of float | AtRisk of float
 type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
@@ -182,52 +189,97 @@ let options(address:string option, pat) =
         | _ -> ()
         )
 
+
+let queryContext (model: Model) : QueryContext =
+    let serverRoot, projectName =
+        match model.serverUrlOverride with
+        | Some(Regex "(https://[^/]+/[^/]+/)([^/]+).*" [serverRoot; teamName]) ->
+            Some serverRoot, Some teamName
+        | _ -> None, None
+    {
+        options = options(model.serverUrlOverride, model.pat)
+        projectScopedOptions = options(serverRoot |> Option.orElse model.serverUrlOverride, model.pat)
+        serverRoot = serverRoot
+        projectName = projectName
+    }
+
 let getWorkClient options = promise {
     return Client.exports.getClient<WorkItemTrackingClient.WorkItemTrackingRestClient>(unbox WorkItemTrackingClient.exports.WorkItemTrackingRestClient, options)
     }
 
-let getTeam (project:IProjectInfo) options = promise {
-    let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, options)
-    let! teams = coreClient.getTeams("OSGS",true,1) // in theory you should be able to query teams you're not on but for perf sake right now we don't allow it
-    if teams.Count > 0 then
-        return teams[0] // TODO: make this more robust for people who belong to multiple teams. Pull the data from the query to figure out which team is relevant.
-    else
-        return failwith "Could not determine a unique team for current user. Ask Max to add this as a feature."
+let getTeams (project:IProjectInfo) (ctx: QueryContext) = promise {
+    let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, ctx.projectScopedOptions)
+    let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=true) // in theory you should be able to query teams you're not on but for perf sake right now we don't allow it
+    return teams
     }
 
-let getIterations options = promise {
+let tryGetTeamCapacity (ctx: QueryContext) (team:Core.WebApiTeam) = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
     let! project = projectService.getProject()
-    let! team = getTeam project.Value options
     let teamCtx : Core.TeamContext = !! {|
-        project = project.Value.name // TODO: again, make more robust by pulling data from query.
-        projectId = project.Value.id
+        project = ctx.projectName |> Option.defaultValue project.Value.name
+        //projectId = project.Value.id
         team = team.name
-        teamId = team.id
+        //teamId = team.id
         |}
-    let client = Client.exports.getClient<WorkClient.WorkRestClient>(unbox WorkClient.exports.WorkRestClient, options)
+    let client = Client.exports.getClient<WorkClient.WorkRestClient>(unbox WorkClient.exports.WorkRestClient, ctx.projectScopedOptions)
     let! iterations = client.getTeamIterations(teamCtx)
-    return team, iterations
+    let inScope (targetDate: System.DateTime) (iteration: Work.TeamSettingsIteration) =
+        iteration.attributes.startDate <= targetDate && targetDate <= iteration.attributes.finishDate
+    let capacityForIteration (iteration: Work.TeamSettingsIteration) =
+        client.getCapacitiesWithIdentityRef(teamCtx, iteration.id)
+    let! capacities = iterations |> Seq.filter (inScope System.DateTime.Now) |> Seq.map capacityForIteration |> Promise.all
+    return capacities
     }
 
-let getWorkItems options (wiql) = promise {
+let tryGetCapacity (ctx: QueryContext) = promise {
     try
-        let! i = getIterations options
-        printfn "getIterations result: %A" i
-    with err ->
-        printfn "getIterations error: %A" err
+        let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
+        let! project = projectService.getProject()
+        let! teams = getTeams project.Value ctx
+        let! capacities = promise {
+            let! items = teams |> Seq.map (tryGetTeamCapacity ctx) |> Promise.Parallel
+            return items |> Seq.flatten |> Seq.flatten |> Array.ofSeq
+            }
+
+        printfn "Capacity:  %A" (capacities.Length)
+        let capacityForTeamMember (teamMemberName: string) =
+            let capacitiesAndDaysOff =
+                [
+                for capacity in capacities do
+                    if capacity.teamMember.displayName = teamMemberName then
+                        (capacity.activities |> Seq.sumBy(fun activity -> activity.capacityPerDay)), capacity.daysOff
+                ]
+            let capacity = capacitiesAndDaysOff |> Seq.sumBy fst
+            let daysOff =
+                [
+                for daysOff in capacitiesAndDaysOff |> Seq.map snd |> Seq.flatten do
+                    $"{daysOff.start.Date |> convertJSDateToString} to {daysOff.``end``.Date |> convertJSDateToString}"
+                ]
+                |> function
+                | [] -> ""
+                | daysOff -> $""", off {String.join ", " daysOff}"""
+            $"{teamMemberName}: {capacity} capacity{daysOff}"
+        return capacityForTeamMember >> box
+    with _err ->
+        printfn "tryGetCapacity failed: %A" _err
+        return fun (teamMemberName:string) -> box (sprintf "Error: %A" _err)
+    }
+
+let getWorkItems (ctx: QueryContext) (wiql) = promise {
+    let! capacityMap = tryGetCapacity ctx
     let query = jsOptions<Wiql>(fun o ->
         o.query <- wiql)
-    let! client = getWorkClient options
+    let! client = getWorkClient ctx.options
     let! wiqlResult = client.queryByWiql(query)
     if wiqlResult.workItems.Count = 0 then
-        return { QueryResult.workItems = []; deliverables = Map.empty }
+        return { QueryResult.workItems = []; deliverables = Map.empty; capacityMap = capacityMap }
     else
         let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All) |> Promise.map List.ofSeq
         let deliverableIds = details |> List.map getDeliverableId |> List.distinct
         let! deliverables = client.getWorkItems(deliverableIds |> List.filter (fun id -> id > 0) |> ResizeArray) |> Promise.map List.ofSeq
         let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
-        return { QueryResult.workItems = details; deliverables = deliverablesById }
+        return { QueryResult.workItems = details; deliverables = deliverablesById; capacityMap = capacityMap }
     }
 
 let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
@@ -307,7 +359,8 @@ let update msg model =
     | SelectDependency ->
         { model with editMode = match model.selectedItem with | Some (WorkItemSelection asn) -> EditMode.SelectingDependency asn | _ -> model.editMode }
 
-let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, WorkItem>) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
+let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
+    let deliverables = queryResult.deliverables
     let height = 20
     let bucketWidth = 200
     let width = 50
@@ -321,7 +374,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
             let yCoord (asn: _ Assignment) =
                 let ix = rows |> List.findIndex ((=) asn.bucketId)
                 headerHeight + ix * height
-            yCoord, rows |> List.map (fun row -> row, 1, (fun _ -> row |> BucketSelection |> Select |> dispatch))
+            yCoord, rows |> List.map (fun row -> row, 1, (fun _ -> row |> queryResult.capacityMap |> toString |> BucketSelection |> Select |> dispatch))
         | ByDeliverable ->
             let getDeliverableId w = w.underlying |> getDeliverableId
             let getDeliverable deliverableId =
@@ -350,7 +403,6 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
     let stageHeight = headerHeight + ((height + (work |> List.map (fun item -> yCoord item) |> List.append [0] |> List.max) + (dropped.Length * height)))
-    printfn $"stageHeight: {stageHeight}, headerHeight: {headerHeight}, rowHeights: ({rows.Length}) {((rows |> List.sumBy (fun (_,height,_) -> height)) + dropped.Length)} * {height}"
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     let class' ctor (className:string) elements =
         ctor (prop.className className::elements)
@@ -450,21 +502,6 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (deliverables: Map<int, Wo
             ]
         ]
 
-[<Emit("typeof $0")>]
-let jsTypeof (_ : obj) : string = jsNative
-[<Emit("$0[$1]")>]
-let jsLookup (_ : obj) (key:string) : obj option = jsNative
-[<Emit("$0 instanceof Date")>]
-let isJSDate (_ : obj) : bool = jsNative
-[<Emit("Intl.DateTimeFormat().resolvedOptions().Locale")>]
-let inline jsCurrentLocale() : string = jsNative
-let currentLocale =
-    try
-        jsCurrentLocale()
-    with _ -> "en-US"
-[<Emit("$1.toLocaleDateString($0, { weekday: 'short', month: 'short', day: 'numeric' })")>]
-let convertJSDateToLocaleString (locale:string) (_ : System.DateTime) : string = jsNative
-let convertJSDateToString (date : System.DateTime) : string = convertJSDateToLocaleString currentLocale date
 
 let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn: _ Assignment option) linkBase = [
     let whom = getOwner item
@@ -585,7 +622,7 @@ let viewApp (model: Model) dispatch =
         asyncOperation dispatch opMsg impl |> Promise.start
 
     Html.div [
-        let executeQuery _ = operation Query (thunk2 getWorkItems (options(model.serverUrlOverride, model.pat)) model.wiql)()
+        let executeQuery _ = operation Query (thunk2 getWorkItems (queryContext model) model.wiql)()
 
         match model.userName with
         | NotStarted | InProgress ->
@@ -636,7 +673,7 @@ let viewApp (model: Model) dispatch =
                     | _ -> ()
                     if model.hasUnsavedChanges then
                         Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
-                    viewAssignments ctx queryResult.deliverables model.assignments model.dropped model.displayOrganization dispatch
+                    viewAssignments ctx queryResult model.assignments model.dropped model.displayOrganization dispatch
                     viewSelected model ctx model.serverUrlOverride dispatch
                 | None -> ()
 

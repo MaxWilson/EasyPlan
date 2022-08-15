@@ -1,10 +1,9 @@
-namespace App
+module Components
 
 open Feliz
 open Feliz.Router
-
-//type ControlledInput(props) =
-
+open Fable.Core
+open Fable.Core.JsInterop
 
 type Components =
     /// <summary>
@@ -45,3 +44,19 @@ type Components =
                 | otherwise -> Html.h1 "Not found"
             ]
         ]
+
+[<Emit("typeof $0")>]
+let jsTypeof (_ : obj) : string = jsNative
+[<Emit("$0[$1]")>]
+let jsLookup (_ : obj) (key:string) : obj option = jsNative
+[<Emit("$0 instanceof Date")>]
+let isJSDate (_ : obj) : bool = jsNative
+[<Emit("Intl.DateTimeFormat().resolvedOptions().Locale")>]
+let inline jsCurrentLocale() : string = jsNative
+let currentLocale =
+    try
+        jsCurrentLocale()
+    with _ -> "en-US"
+[<Emit("$1.toLocaleDateString($0, { weekday: 'short', month: 'short', day: 'numeric' })")>]
+let convertJSDateToLocaleString (locale:string) (_ : System.DateTime) : string = jsNative
+let convertJSDateToString (date : System.DateTime) : string = convertJSDateToLocaleString currentLocale date
