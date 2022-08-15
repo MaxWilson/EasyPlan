@@ -46,8 +46,8 @@ type QueryContext = {
 type ProgressStatus = OK | Warning of float | AtRisk of float
 type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
 type Selection =
-    | WorkItemSelection of WorkItem Assignment
-    | DeliverableSelection of WorkItem
+    | AssignmentSelection of WorkItem Assignment
+    | WorkItemSelection of WorkItem
     | BucketSelection of txt:string
 type Msg =
     | SetWiql of string
@@ -354,13 +354,13 @@ let update msg model =
         // When we're selecting dependencies, it adds a new dependency, clears edit mode, and recomputes assignments, while preserving the currently-selected item.
         // Otherwise, it changes what the currently-selected item is (which affects detail display at the bottom of the screen).
         match model.editMode, workItemAssignment, model.query with
-        | EditMode.SelectingDependency target, (WorkItemSelection asn), Ready (Ok queryResult) ->
+        | EditMode.SelectingDependency target, (AssignmentSelection asn), Ready (Ok queryResult) ->
             // update the source of truth
             let queryResult = queryResult |> addDependency target asn
             let ctx = makeContext queryResult
             let asn', dropped = Extensions.assignments ctx queryResult.workItems
             // for UX reasons, preserve selection (up to underlying id)
-            let selection' = asn' |> List.tryFind (fun a -> a.underlying.id = asn.underlying.id) |> Option.map (WorkItemSelection)
+            let selection' = asn' |> List.tryFind (fun a -> a.underlying.id = asn.underlying.id) |> Option.map (AssignmentSelection)
             { model with ctx = Some ctx; assignments = asn'; dropped = dropped; editMode = EditMode.NotEditing; selectedItem = selection'; hasUnsavedChanges = true; query = Ready (Ok queryResult) }
         | _ ->
             { model with selectedItem = workItemAssignment |> Some }
@@ -369,7 +369,7 @@ let update msg model =
     | CancelDependencySelect ->
         { model with editMode = EditMode.NotEditing }
     | SelectDependency ->
-        { model with editMode = match model.selectedItem with | Some (WorkItemSelection asn) -> EditMode.SelectingDependency asn | _ -> model.editMode }
+        { model with editMode = match model.selectedItem with | Some (AssignmentSelection asn) -> EditMode.SelectingDependency asn | _ -> model.editMode }
 
 let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
     let deliverables = queryResult.deliverables
@@ -398,7 +398,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult)
                                 let onClick dispatch =
                                     match deliverables |> Map.tryFind parentId with
                                     | Some deliverable ->
-                                        DeliverableSelection deliverable |> Select |> dispatch
+                                        WorkItemSelection deliverable |> Select |> dispatch
                                     | None -> ()
                                 let height = work |> List.filter (fun wi -> getDeliverableId wi = parentId) |> List.map (fun wi -> wi.resourceRow) |> List.max
                                 {| workItem = wi; parentId = parentId; height = height; onClick = onClick |})
@@ -501,7 +501,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult)
                         ]
                     prop.value (msg item)
                     prop.readOnly true
-                    prop.onClick (thunk1 dispatch (Select (WorkItemSelection asn)))
+                    prop.onClick (thunk1 dispatch (Select (AssignmentSelection asn)))
                     ]
             for ix, item in dropped |> List.mapi tup2 do
                 Html.span [
@@ -510,6 +510,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult)
                         style.top (preDroppedHeight + (height * ix))
                         style.left startLeft
                         ]
+                    prop.onClick (thunk1 dispatch (Select (WorkItemSelection item)))
                     prop.text ("Won't be done: " + msg item)
                     ]
             ]
@@ -586,7 +587,7 @@ let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
     let item = model.selectedItem
     match item with
     | Some (BucketSelection txt) -> Html.div txt
-    | Some (WorkItemSelection item) ->
+    | Some (AssignmentSelection item) ->
         Html.div [
             let date days =
                 $"""{ctx.startTime.AddDays(days |> float).ToString("M/d")}"""
@@ -598,7 +599,7 @@ let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
                 yield! viewDetails model ctx item.underlying (Some item) linkBase
                 ]
             ]
-    | Some (DeliverableSelection item) ->
+    | Some (WorkItemSelection item) ->
         Html.div [
             Html.div [
                 Html.br []
@@ -681,7 +682,7 @@ let viewApp (model: Model) dispatch =
                     let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                     Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
                     match model.selectedItem with
-                    | Some (WorkItemSelection _) ->
+                    | Some (AssignmentSelection _) ->
                         Html.button [prop.text "Add dependency"; prop.disabled (model.editMode <> NotEditing); prop.onClick (thunk1 dispatch SelectDependency)]
                     | _ -> ()
                     if model.hasUnsavedChanges then
