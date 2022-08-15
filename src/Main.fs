@@ -455,6 +455,15 @@ let jsTypeof (_ : obj) : string = jsNative
 let jsLookup (_ : obj) (key:string) : obj option = jsNative
 [<Emit("$0 instanceof Date")>]
 let isJSDate (_ : obj) : bool = jsNative
+[<Emit("Intl.DateTimeFormat().resolvedOptions().Locale")>]
+let inline jsCurrentLocale() : string = jsNative
+let currentLocale =
+    try
+        jsCurrentLocale()
+    with _ -> "en-US"
+[<Emit("$1.toLocaleDateString($0, { weekday: 'short', month: 'short', day: 'numeric' })")>]
+let convertJSDateToLocaleString (locale:string) (_ : System.DateTime) : string = jsNative
+let convertJSDateToString (date : System.DateTime) : string = convertJSDateToLocaleString currentLocale date
 
 let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn: _ Assignment option) linkBase = [
     let whom = getOwner item
@@ -488,7 +497,7 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
                         else
                             eta |> Some, None
                     | _ -> None, None
-                let dateToString label = function Some (v: System.DateTime) -> $"""{label}: {v.ToString("M/d/yyyy")}""" | None -> $"{label}: N/A"
+                let dateToString label = function Some (v: System.DateTime) -> $"""{label}: {convertJSDateToString v}""" | None -> $"{label}: N/A"
                 emit 0 $"""{dateToString "Due" due} {dateToString "ETA" ETA} [{getState item}] {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
                 if model.showDetail then
                     emit 0 "-----"
