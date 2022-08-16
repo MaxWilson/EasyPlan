@@ -43,6 +43,7 @@ type QueryContext = {
     projectScopedOptions: Client.IVssRestClientOptions
     serverRoot: string option
     projectName: string option
+    explicitTeam: string option
     }
 type ProgressStatus = OK | Warning of float | AtRisk of float
 type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
@@ -50,6 +51,7 @@ type Selection =
     | AssignmentSelection of WorkItem Assignment
     | WorkItemSelection of WorkItem
     | BucketSelection of txt:string
+type ModalDialog = Help | TeamPicker of input: string
 type Msg =
     | SetWiql of string
     | Message of string
@@ -57,6 +59,10 @@ type Msg =
     | Query of QueryResult OperationTransition
     | SetPAT of string
     | SetServerOverrideURL of string
+    | TeamsQuery of string list OperationTransition
+    | SetTeamPickerFilter of string
+    | SetTeamPicker of string option
+    | ToggleTeamPicker
     | ToggleHelp
     | ToggleSettings
     | ToggleDrilldown
@@ -71,21 +77,23 @@ type Model = {
     userFacingMessage: string option;
     ready: bool;
     query: QueryResult Deferred
+    teamsToChooseFrom: (string list) Deferred
     assignments: WorkItem Assignment list
     dropped: WorkItem list
     ctx: WorkItem AssignmentContext option
     serverUrlOverride: string option
     pat: string option
-    showHelpScreen: bool
+    modalDialog: ModalDialog list
     showSettings: bool
     showDetail: bool
     displayOrganization: DisplayOrganization
     selectedItem: Selection option
+    selectedTeam: string option
     editMode: EditMode
     hasUnsavedChanges: bool
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; showHelpScreen = false; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false; showDetail = false }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; assignments = []; dropped = []; ctx = None; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false; showDetail = false; selectedTeam = None }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -209,25 +217,37 @@ let queryContext (model: Model) : QueryContext =
         projectScopedOptions = options(serverRoot |> Option.orElse model.serverUrlOverride, model.pat)
         serverRoot = serverRoot
         projectName = projectName
+        explicitTeam = model.selectedTeam
     }
 
 let getWorkClient options = promise {
     return Client.exports.getClient<WorkItemTrackingClient.WorkItemTrackingRestClient>(unbox WorkItemTrackingClient.exports.WorkItemTrackingRestClient, options)
     }
 
-let getTeams (project:IProjectInfo) (ctx: QueryContext) = promise {
+// used for picking a selected team on the Settings screen
+let getAllTeams (ctx: QueryContext) = promise {
     let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, ctx.projectScopedOptions)
-    let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=true) // in theory you should be able to query teams you're not on but for perf sake right now we don't allow it
-    return teams
+    let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=false)
+    return teams |> Seq.map (fun team -> team.name) |> List.ofSeq
     }
 
-let tryGetTeamCapacity (ctx: QueryContext) (team:Core.WebApiTeam) = promise {
+let getTeams (project:IProjectInfo) (ctx: QueryContext) = promise {
+    match ctx.explicitTeam with
+    | Some team ->
+        return [team]
+    | None ->
+        let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, ctx.projectScopedOptions)
+        let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=true)
+        return teams |> Seq.map (fun team -> team.name) |> List.ofSeq
+    }
+
+let tryGetTeamCapacity (ctx: QueryContext) (teamName: string) = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
     let! project = projectService.getProject()
     let teamCtx : Core.TeamContext = !! {|
         project = ctx.projectName |> Option.defaultValue project.Value.name
         //projectId = project.Value.id
-        team = team.name
+        team = teamName
         //teamId = team.id
         |}
     let client = Client.exports.getClient<WorkClient.WorkRestClient>(unbox WorkClient.exports.WorkRestClient, ctx.projectScopedOptions)
@@ -323,7 +343,7 @@ let saveChanges (model:Model) dispatch =
         dispatch (SetHasUnsavedChanges false)
     } |> Promise.start
 
-let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read() }
+let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read(); selectedTeam = LocalStorage.Team.read() }
 let update msg model =
     match msg with
     | Message msg -> { model with userFacingMessage = msg |> Some }
@@ -335,6 +355,8 @@ let update msg model =
             let asn, dropped = Extensions.assignments ctx queryResult.workItems
             { model with ctx = Some ctx; assignments = asn; dropped = dropped }
         | _ -> model
+    | TeamsQuery op ->
+        { model with teamsToChooseFrom = receive op }
     | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read() }
     | SetWiql wiql ->
         LocalStorage.Wiql.write wiql
@@ -348,7 +370,9 @@ let update msg model =
         LocalStorage.ServerUrlOverride.write url
         { model with serverUrlOverride = url }
     | ToggleHelp ->
-        { model with showHelpScreen = not model.showHelpScreen }
+        match model.modalDialog with
+        | Help::rest -> { model with modalDialog = rest }
+        | rest -> { model with modalDialog = Help::rest }
     | ToggleSettings ->
         { model with showSettings = not model.showSettings }
     | ToggleDrilldown ->
@@ -376,6 +400,18 @@ let update msg model =
         { model with editMode = EditMode.NotEditing }
     | SelectDependency ->
         { model with editMode = match model.selectedItem with | Some (AssignmentSelection asn) -> EditMode.SelectingDependency asn | _ -> model.editMode }
+    | SetTeamPickerFilter value' ->
+        match model.modalDialog with
+        | TeamPicker(msg)::rest ->
+            { model with modalDialog = TeamPicker(value')::rest }
+        | _ -> model
+    | SetTeamPicker value' ->
+        { model with selectedTeam = value' }
+    | ToggleTeamPicker ->
+        match model.modalDialog with
+        | TeamPicker _::rest -> { model with modalDialog = rest }
+        | rest -> { model with modalDialog = TeamPicker ""::rest }
+
 
 let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
     let deliverables = queryResult.deliverables
@@ -614,6 +650,47 @@ let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
             ]
     | None -> Html.div []
 
+let viewTeamPicker (msg: string) (model:Model) dispatch =
+    Html.div [
+        prop.className "teamPicker"
+        prop.children [
+            match model.teamsToChooseFrom with
+            | NotStarted | InProgress ->
+                Html.div "Please wait while we retrieve the list of teams..."
+            | Ready (Error err) ->
+                Html.div $"Something went wrong while retrieving the list of teams, sorry. Please check that your serverOverrideUrl and PAT are both valid. Error: {err}"
+            | Ready (Ok teams) ->
+                Html.div [
+                    Html.text "Optional: Choose which team to use for capacity picking, etc. This can help avoid \"Won't be done\" errors if you have work items on a team that you don't own in ADO."
+                    ]
+                Html.div [
+                    Html.input [prop.value msg; prop.placeholder "Enter search text, e.g. OSGS"; prop.onChange (SetTeamPickerFilter >> dispatch)]
+                    Html.div [prop.text $"""Selected: {match model.selectedTeam with Some v -> v.ToString() | None -> "None"}"""]
+                    for option in teams |> List.filter (fun option -> option.StartsWith(msg, System.StringComparison.InvariantCultureIgnoreCase)) do
+                        Html.div [
+                            prop.text option
+                            if model.selectedTeam = Some option then
+                                prop.className "selected"
+                            prop.onClick (fun _ -> dispatch (SetTeamPicker (if model.selectedTeam = Some option then None else Some option)))]
+                    ]
+                Html.button [prop.text "OK"; prop.onClick(fun _ -> dispatch ToggleTeamPicker)]
+            ]
+        ]
+
+let teamPickerDiv (model: Model) dispatch =
+    let pickTeams _ =
+        dispatch ToggleTeamPicker
+        match model.teamsToChooseFrom with
+        | Ready (Ok _) -> ()
+        | _ ->
+            asyncOperation dispatch TeamsQuery (fun _ -> promise {
+                return! getAllTeams (queryContext model)
+            }) |> Promise.start
+    Html.div [
+        Html.span $"""Team override: {match model.selectedTeam with Some v -> v.ToString() | _ -> "None"}"""
+        Html.button [prop.text "Change team"; prop.onClick pickTeams]
+        ]
+
 let viewHelp (model:Model) dispatch =
     Html.div [
         prop.className "help"
@@ -631,6 +708,7 @@ let viewHelp (model:Model) dispatch =
                 Html.input [prop.value (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
                 Html.input [prop.value (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
                 ]
+            teamPickerDiv model dispatch
             Html.button [prop.text "OK"; prop.onClick(fun _ -> dispatch ToggleHelp)]
             ]
         ]
@@ -659,12 +737,14 @@ let viewApp (model: Model) dispatch =
                 Html.div [
                     Html.input [prop.valueOrDefault (defaultArg model.serverUrlOverride ""); prop.className "serverUrlOverride"; prop.placeholder "Server URL e.g. https://dev.azure.com/microsoft/OSGS/"; prop.onChange (SetServerOverrideURL >> dispatch)]
                     Html.input [prop.valueOrDefault (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
+                    teamPickerDiv model dispatch
                     Html.div [
                         let showDetailId = "chkShowDetail"
                         Html.input [prop.type'.checkbox; prop.id showDetailId; prop.valueOrDefault model.showDetail; prop.onClick (thunk1 dispatch ToggleDrilldown)]
                         Html.label [prop.for' showDetailId; prop.text "Show detailed fields for selected item"]
                         ]
                     ]
+
             Html.div [prop.text (model.userFacingMessage |> Option.defaultValue "")]
             Html.textarea [
                 prop.className "wiql"
@@ -700,9 +780,12 @@ let viewApp (model: Model) dispatch =
         ]
 
 let view (model:Model) dispatch =
-    if model.showHelpScreen then
+    match model.modalDialog with
+    | TeamPicker msg::_ ->
+        viewTeamPicker msg model dispatch
+    | Help::_ ->
         viewHelp model dispatch
-    else
+    | _ ->
         viewApp model dispatch
 
 let mutable lastError = ""

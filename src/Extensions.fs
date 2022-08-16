@@ -196,7 +196,11 @@ module LocalStorage =
     module Wiql =
         let key = "Wiql"
         let read () : string = read key """SELECT [System.Id] FROM workitems
-        WHERE [System.TeamProject] = @project and System.AreaPath = 'OSGS\Storefronts\MSE\SD365CPI' and System.IterationPath = 'OSGS\2206' and System.WorkItemType in ('Task', 'Bug')"""
+        WHERE [System.TeamProject] = @project and System.AreaPath = 'OSGS\Storefronts\MSE\SD365CPI' and System.IterationPath = 'OSGS\2208' and System.WorkItemType in ('Task', 'Bug')"""
         let write (v: string) = write key v
+    module Team =
+        let key = "selectedTeam"
+        let read (): string option = read key None
+        let write (v: string option) = write key v
 
 
