@@ -664,7 +664,7 @@ let viewTeamPicker (msg: string) (model:Model) dispatch =
                     Html.text "Optional: Choose which team to use for capacity picking, etc. This can help avoid \"Won't be done\" errors if you have work items on a team that you don't own in ADO."
                     ]
                 Html.div [
-                    Html.input [prop.value msg; prop.placeholder "Enter search text, e.g. OSGS"; prop.onChange (SetTeamPickerFilter >> dispatch)]
+                    Html.input [prop.value msg; prop.placeholder "Enter search text, e.g. SD365CPI"; prop.onChange (SetTeamPickerFilter >> dispatch)]
                     Html.div [prop.text $"""Selected: {match model.selectedTeam with Some v -> v.ToString() | None -> "None"}"""]
                     for option in teams |> List.filter (fun option -> option.StartsWith(msg, System.StringComparison.InvariantCultureIgnoreCase)) do
                         Html.div [
