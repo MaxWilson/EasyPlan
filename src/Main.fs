@@ -33,6 +33,7 @@ type Capacity = {
     capacityByDate: System.DateTime -> float
     }
 type QueryResult = {
+    effectiveDate: System.DateTime
     workItems: WorkItem list
     deliverables: Map<int, WorkItem>
     capacityMap: string -> Capacity
@@ -44,6 +45,7 @@ type QueryContext = {
     serverRoot: string option
     projectName: string option
     explicitTeam: string option
+    effectiveDate: System.DateTime
     }
 type ProgressStatus = OK | Warning of float | AtRisk of float
 type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
@@ -167,7 +169,7 @@ module Properties =
 
 open Properties
 
-let makeContext (queryResult: QueryResult): _ AssignmentContext =
+let makeAssignmentContext (queryResult: QueryResult): _ AssignmentContext =
     let capacity (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDay>): float<dayCost/realDay> =
         let capacity = queryResult.capacityMap bucket
         let dt = ctx.startTime.AddDays (float startTime)
@@ -180,7 +182,7 @@ let makeContext (queryResult: QueryResult): _ AssignmentContext =
         | Some bucket when (queryResult.capacityMap bucket).capacity > 0. -> Some bucket
         | _ -> None
     {
-        startTime = System.DateTime.Now.Date
+        startTime = queryResult.effectiveDate
         buckets = queryResult.workItems |> Seq.map getBucket |> Seq.filter Option.isSome |> Seq.map Option.get |> List.ofSeq // todo: find a better way than filter
         capacityCoefficient = capacity // todo: make this real
         prioritize = fun items -> items |> List.sortBy getPrioritization
@@ -218,6 +220,7 @@ let queryContext (model: Model) : QueryContext =
         serverRoot = serverRoot
         projectName = projectName
         explicitTeam = model.selectedTeam
+        effectiveDate = System.DateTime.Now
     }
 
 let getWorkClient options = promise {
@@ -256,7 +259,7 @@ let tryGetTeamCapacity (ctx: QueryContext) (teamName: string) = promise {
         iteration.attributes.startDate <= targetDate && targetDate <= iteration.attributes.finishDate
     let capacityForIteration (iteration: Work.TeamSettingsIteration) =
         client.getCapacitiesWithIdentityRef(teamCtx, iteration.id)
-    let! capacities = iterations |> Seq.filter (inScope System.DateTime.Now) |> Seq.map capacityForIteration |> Promise.all
+    let! capacities = iterations |> Seq.filter (inScope ctx.effectiveDate) |> Seq.map capacityForIteration |> Promise.all
     let capacities = capacities |> Seq.flatten |> Array.ofSeq
     let! teamSettings = client.getTeamSettings(teamCtx)
     let capacityForDay (name:string) (dt: System.DateTime) =
@@ -311,13 +314,13 @@ let getWorkItems (ctx: QueryContext) (wiql) = promise {
     let! client = getWorkClient ctx.options
     let! wiqlResult = client.queryByWiql(query)
     if wiqlResult.workItems.Count = 0 then
-        return { QueryResult.workItems = []; deliverables = Map.empty; capacityMap = capacityMap }
+        return { QueryResult.workItems = []; deliverables = Map.empty; capacityMap = capacityMap; effectiveDate = ctx.effectiveDate }
     else
         let! details = client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All) |> Promise.map List.ofSeq
         let deliverableIds = details |> List.map getDeliverableId |> List.distinct
         let! deliverables = client.getWorkItems(deliverableIds |> List.filter (fun id -> id > 0) |> ResizeArray) |> Promise.map List.ofSeq
         let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
-        return { QueryResult.workItems = details; deliverables = deliverablesById; capacityMap = capacityMap }
+        return { QueryResult.workItems = details; deliverables = deliverablesById; capacityMap = capacityMap; effectiveDate = ctx.effectiveDate  }
     }
 
 let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
@@ -351,7 +354,7 @@ let update msg model =
         let model = { model with query = receive op }
         match model.query with
         | Ready(Ok queryResult) ->
-            let ctx = makeContext queryResult
+            let ctx = makeAssignmentContext queryResult
             let asn, dropped = Extensions.assignments ctx queryResult.workItems
             { model with ctx = Some ctx; assignments = asn; dropped = dropped }
         | _ -> model
@@ -387,7 +390,7 @@ let update msg model =
         | EditMode.SelectingDependency target, (AssignmentSelection asn), Ready (Ok queryResult) ->
             // update the source of truth
             let queryResult = queryResult |> addDependency target asn
-            let ctx = makeContext queryResult
+            let ctx = makeAssignmentContext queryResult
             let asn', dropped = Extensions.assignments ctx queryResult.workItems
             // for UX reasons, preserve selection (up to underlying id)
             let selection' = asn' |> List.tryFind (fun a -> a.underlying.id = asn.underlying.id) |> Option.map (AssignmentSelection)
