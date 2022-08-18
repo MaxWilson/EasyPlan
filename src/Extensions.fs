@@ -46,15 +46,16 @@ let remainingTimeToday (now: float<realDay>): float<realDay> =
     else (ceil now - now) * 1.<realDay>
 
 let assignments (ctx: _ AssignmentContext) (items: 't list) =
+    let allItemsInThisIteration = items |> List.map ctx.getId |> Set.ofList
     let mutable buckets = ctx.buckets |> List.map (fun bucket -> bucket, 0.<realDay>) |> Map.ofList
     let items = items |> ctx.prioritize
     let mutable todo = []
     let mutable wontBeDone = []
     let mutable finished = items |> List.filter (fun i -> ctx.getCost i <= 0.<dayCost>) |> List.map ctx.getId |> Set.ofList
     let isFinished itemId =
-        finished |> Set.contains itemId
+        // to avoid infinite loops, consider work items not in this query to be already finished for purposes of topological sort
+        finished |> Set.contains itemId || (allItemsInThisIteration.Contains itemId |> not)
     let mutable assignments = []
-
     let processItem item =
         if item |> ctx.getDependencies |> List.every isFinished then
             remove &todo item
