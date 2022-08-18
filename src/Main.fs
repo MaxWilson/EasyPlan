@@ -348,72 +348,76 @@ let saveChanges (model:Model) dispatch =
 
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read(); selectedTeam = LocalStorage.Team.read() }
 let update msg model =
-    match msg with
-    | Message msg -> { model with userFacingMessage = msg |> Some }
-    | Query op ->
-        let model = { model with query = receive op }
-        match model.query with
-        | Ready(Ok queryResult) ->
-            let ctx = makeAssignmentContext queryResult
-            let asn, dropped = Extensions.assignments ctx queryResult.workItems
-            { model with ctx = Some ctx; assignments = asn; dropped = dropped }
-        | _ -> model
-    | TeamsQuery op ->
-        { model with teamsToChooseFrom = receive op }
-    | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read() }
-    | SetWiql wiql ->
-        LocalStorage.Wiql.write wiql
-        { model with wiql = wiql }
-    | SetPAT pat ->
-        let pat = if pat.Trim().Length > 0 then Some (pat.Trim()) else None
-        LocalStorage.PAT.write pat
-        { model with pat = pat }
-    | SetServerOverrideURL url ->
-        let url = if url.Trim().Length > 0 then Some (url.Trim()) else None
-        LocalStorage.ServerUrlOverride.write url
-        { model with serverUrlOverride = url }
-    | ToggleHelp ->
-        match model.modalDialog with
-        | Help::rest -> { model with modalDialog = rest }
-        | rest -> { model with modalDialog = Help::rest }
-    | ToggleSettings ->
-        { model with showSettings = not model.showSettings }
-    | ToggleDrilldown ->
-        { model with showDetail = not model.showDetail }
-    | SetDisplayOrganization displayOrganization ->
-        { model with displayOrganization = displayOrganization }
-    | Select workItemAssignment ->
-        // SELECT is a user action which has different effects in different modes (not sure if I love that idea, but for now...)
-        // When we're selecting dependencies, it adds a new dependency, clears edit mode, and recomputes assignments, while preserving the currently-selected item.
-        // Otherwise, it changes what the currently-selected item is (which affects detail display at the bottom of the screen).
-        match model.editMode, workItemAssignment, model.query with
-        | EditMode.SelectingDependency target, (AssignmentSelection asn), Ready (Ok queryResult) ->
-            // update the source of truth
-            let queryResult = queryResult |> addDependency target asn
-            let ctx = makeAssignmentContext queryResult
-            let asn', dropped = Extensions.assignments ctx queryResult.workItems
-            // for UX reasons, preserve selection (up to underlying id)
-            let selection' = asn' |> List.tryFind (fun a -> a.underlying.id = asn.underlying.id) |> Option.map (AssignmentSelection)
-            { model with ctx = Some ctx; assignments = asn'; dropped = dropped; editMode = EditMode.NotEditing; selectedItem = selection'; hasUnsavedChanges = true; query = Ready (Ok queryResult) }
-        | _ ->
-            { model with selectedItem = workItemAssignment |> Some }
-    | SetHasUnsavedChanges v ->
-        { model with hasUnsavedChanges = v }
-    | CancelDependencySelect ->
-        { model with editMode = EditMode.NotEditing }
-    | SelectDependency ->
-        { model with editMode = match model.selectedItem with | Some (AssignmentSelection asn) -> EditMode.SelectingDependency asn | _ -> model.editMode }
-    | SetTeamPickerFilter value' ->
-        match model.modalDialog with
-        | TeamPicker(msg)::rest ->
-            { model with modalDialog = TeamPicker(value')::rest }
-        | _ -> model
-    | SetTeamPicker value' ->
-        { model with selectedTeam = value' }
-    | ToggleTeamPicker ->
-        match model.modalDialog with
-        | TeamPicker _::rest -> { model with modalDialog = rest }
-        | rest -> { model with modalDialog = TeamPicker ""::rest }
+    try 
+        match msg with
+        | Message msg -> { model with userFacingMessage = msg |> Some }
+        | Query op ->
+            let model = { model with query = receive op }
+            match model.query with
+            | Ready(Ok queryResult) ->
+                let ctx = makeAssignmentContext queryResult
+                let asn, dropped = Extensions.assignments ctx queryResult.workItems
+                { model with ctx = Some ctx; assignments = asn; dropped = dropped }
+            | _ -> model
+        | TeamsQuery op ->
+            { model with teamsToChooseFrom = receive op }
+        | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read() }
+        | SetWiql wiql ->
+            LocalStorage.Wiql.write wiql
+            { model with wiql = wiql }
+        | SetPAT pat ->
+            let pat = if pat.Trim().Length > 0 then Some (pat.Trim()) else None
+            LocalStorage.PAT.write pat
+            { model with pat = pat }
+        | SetServerOverrideURL url ->
+            let url = if url.Trim().Length > 0 then Some (url.Trim()) else None
+            LocalStorage.ServerUrlOverride.write url
+            { model with serverUrlOverride = url }
+        | ToggleHelp ->
+            match model.modalDialog with
+            | Help::rest -> { model with modalDialog = rest }
+            | rest -> { model with modalDialog = Help::rest }
+        | ToggleSettings ->
+            { model with showSettings = not model.showSettings }
+        | ToggleDrilldown ->
+            { model with showDetail = not model.showDetail }
+        | SetDisplayOrganization displayOrganization ->
+            { model with displayOrganization = displayOrganization }
+        | Select workItemAssignment ->
+            // SELECT is a user action which has different effects in different modes (not sure if I love that idea, but for now...)
+            // When we're selecting dependencies, it adds a new dependency, clears edit mode, and recomputes assignments, while preserving the currently-selected item.
+            // Otherwise, it changes what the currently-selected item is (which affects detail display at the bottom of the screen).
+            match model.editMode, workItemAssignment, model.query with
+            | EditMode.SelectingDependency target, (AssignmentSelection asn), Ready (Ok queryResult) ->
+                // update the source of truth
+                let queryResult = queryResult |> addDependency target asn
+                let ctx = makeAssignmentContext queryResult
+                let asn', dropped = Extensions.assignments ctx queryResult.workItems
+                // for UX reasons, preserve selection (up to underlying id)
+                let selection' = asn' |> List.tryFind (fun a -> a.underlying.id = asn.underlying.id) |> Option.map (AssignmentSelection)
+                { model with ctx = Some ctx; assignments = asn'; dropped = dropped; editMode = EditMode.NotEditing; selectedItem = selection'; hasUnsavedChanges = true; query = Ready (Ok queryResult) }
+            | _ ->
+                { model with selectedItem = workItemAssignment |> Some }
+        | SetHasUnsavedChanges v ->
+            { model with hasUnsavedChanges = v }
+        | CancelDependencySelect ->
+            { model with editMode = EditMode.NotEditing }
+        | SelectDependency ->
+            { model with editMode = match model.selectedItem with | Some (AssignmentSelection asn) -> EditMode.SelectingDependency asn | _ -> model.editMode }
+        | SetTeamPickerFilter value' ->
+            match model.modalDialog with
+            | TeamPicker(msg)::rest ->
+                { model with modalDialog = TeamPicker(value')::rest }
+            | _ -> model
+        | SetTeamPicker value' ->
+            { model with selectedTeam = value' }
+        | ToggleTeamPicker ->
+            match model.modalDialog with
+            | TeamPicker _::rest -> { model with modalDialog = rest }
+            | rest -> { model with modalDialog = TeamPicker ""::rest }
+    with err -> 
+        Browser.Dom.window.alert("Error: " + err.ToString())
+        model
 
 
 let viewAssignments (ctx: WorkItem AssignmentContext) (queryResult: QueryResult) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =

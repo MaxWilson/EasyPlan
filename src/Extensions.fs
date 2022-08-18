@@ -95,9 +95,17 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
         for item in todo do
             processItem item
     // ensure nothing goes unprocessed even if todo is in a weird order
-    while todo.Length > 0 do
+    let mutable counter = 0
+    let count label =
+        counter <- counter + 1
+        printfn $"Counter: {label} {counter}"
+    while todo.Length > 0 && counter < 1000 do
+        count "cleanup1"
         for item in todo do
-            processItem item
+            let deps = item |> ctx.getDependencies
+            printfn $"Cleanup: {item |> ctx.getId} requires {deps}"
+        for item in todo do
+            processItem item        
     let assignResourceRows assignments =
         let getUnderlying asn = asn.underlying
         let byDeliverable = assignments |> List.groupBy (getUnderlying >> ctx.getDeliverable)
