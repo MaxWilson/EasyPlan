@@ -348,7 +348,7 @@ let saveChanges (model:Model) dispatch =
 
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read(); selectedTeam = LocalStorage.Team.read() }
 let update msg model =
-    try 
+    try
         match msg with
         | Message msg -> { model with userFacingMessage = msg |> Some }
         | Query op ->
@@ -415,7 +415,7 @@ let update msg model =
             match model.modalDialog with
             | TeamPicker _::rest -> { model with modalDialog = rest }
             | rest -> { model with modalDialog = TeamPicker ""::rest }
-    with err -> 
+    with err ->
         Browser.Dom.window.alert("Error: " + err.ToString())
         model
 

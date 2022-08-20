@@ -32,8 +32,6 @@
 		width: 10em
 		position: absolute
 		cursor: default
-	.item:hover
-		background-color: lightblue
 	.dropped
 		color: white
 		background-color: darkred
@@ -41,6 +39,9 @@
 		height: 1em
 		position: absolute
 		text-overflow: clip
+		border: 1px solid black
+	.item:hover, .dropped:hover, .bucket:hover
+		border-color: lightgrey
 .menuItem
 	margin-left: 1em
 .selected
