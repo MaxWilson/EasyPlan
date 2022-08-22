@@ -10,7 +10,7 @@
         "pretest": "dotnet tool restore",
         "test": "dotnet fable tests --outDir dist/tests && mocha dist/tests -r esm",
         "publish": "npx tfx-cli extension create --rev-version",
-        "publishOsgs": "xcopy /y osgsEasyPlan.json vss-extension.json && npx tfx-cli extension create --rev-version && xcopy /y vss-extension.json osgsEasyPlan.json && git checkout head vss-extension.json"
+        "publishOsgs": "npx tfx-cli extension create --manifests osgsEasyPlan.json --rev-version"
     },
     "dependencies": {
         "bulma": "^0.9.3",
