@@ -77,8 +77,8 @@ type Msg =
     | ToggleTeamPicker
     | ToggleHelp
     | ToggleSettings
-    | ToggleDrilldown
-    | ToggleShowPast
+    | ToggleDrilldown of bool
+    | ToggleShowPast of bool
     | SetDisplayOrganization of DisplayOrganization
     | Select of Selection
     | SelectDependency
@@ -406,8 +406,8 @@ let update msg model =
             | rest -> { model with modalDialog = Help::rest }
         | ToggleSettings ->
             { model with showSettings = not model.showSettings }
-        | ToggleDrilldown ->
-            { model with showDetail = not model.showDetail }
+        | ToggleDrilldown v ->
+            { model with showDetail = v }
         | SetDisplayOrganization displayOrganization ->
             { model with displayOrganization = displayOrganization }
         | Select workItemAssignment ->
@@ -442,8 +442,8 @@ let update msg model =
             match model.modalDialog with
             | TeamPicker _::rest -> { model with modalDialog = rest }
             | rest -> { model with modalDialog = TeamPicker ""::rest }
-        | ToggleShowPast ->
-            { model with showPast = model.showPast |> not }
+        | ToggleShowPast v ->
+            { model with showPast = v }
         | SetCompareDate dt ->
             { model with compareDate = Some dt }
     with err ->
@@ -578,7 +578,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                         | Some y -> style.top y
                         | None -> ()
                         style.left (((paddingTime + asn.startTime) * timeRatio |> int) + startLeft)
-                        style.width (asn.duration * timeRatio - margin |> int)
+                        style.width (asn.duration * timeRatio - margin |> int |> max 0)
                         match asn |> getProgressStatus ctx with
                         | AtRisk percentOverdue ->
                             let percent = (100. - percentOverdue * 100.) |> int
@@ -813,7 +813,7 @@ let viewApp (model: Model) dispatch =
                     teamPickerDiv model dispatch
                     Html.div [
                         let id = "chkShowDetail"
-                        Html.input [prop.type'.checkbox; prop.id id; prop.isChecked model.showDetail; prop.onClick (thunk1 dispatch ToggleDrilldown)]
+                        Html.input [prop.type'.checkbox; prop.id id; prop.isChecked model.showDetail; prop.onChange (ToggleDrilldown >> dispatch)]
                         Html.label [prop.htmlFor id; prop.text "Show detailed fields for selected item"]
                         ]
                     ]
@@ -849,7 +849,7 @@ let viewApp (model: Model) dispatch =
                 | _ -> ()
                 class' Html.span "compareWithPast" [
                     let id = "chkCompareWithPast"
-                    Html.input [prop.type'.checkbox; prop.id id; prop.isChecked model.showPast; prop.onClick (thunk1 dispatch ToggleShowPast)]
+                    Html.input [prop.type'.checkbox; prop.id id; prop.isChecked model.showPast; prop.onChange (ToggleShowPast >> dispatch)]
                     Html.label [prop.htmlFor id; prop.text "Show past"]
                     let onDateChange (dt:System.DateTime) =
                         match queryResult.past with
