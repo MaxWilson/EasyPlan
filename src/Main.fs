@@ -586,7 +586,6 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                         | Warning percentOverdue ->
                             let percent = (100. - percentOverdue * 100.) |> int
                             style.backgroundImage $"linear-gradient(to right, blue, blue {percent}%%, #FEBE10 {percent}%%, #FEBE10 100%%)"
-                            if percent < 30 then style.color.black
                         | _ -> ()
                         ]
                     prop.value (msg item)
