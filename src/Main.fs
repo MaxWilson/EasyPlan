@@ -157,9 +157,9 @@ module Properties =
         // treat work items as less important than P1 bugs and equal to P2
         let pri = getPriority i
 
-        // also respect DueDate as a secondary ordering factor
+        // also respect DueDate as a secondary ordering factor, with no due date as the least-urgent
         let due = getDueDate i
-        pri, due
+        pri, due |> Option.defaultValue System.DateTime.MaxValue
         )
     let getFinalNumber (url: string) =
         let result = System.Text.RegularExpressions.Regex.Match(url, "([0-9]+)$")
