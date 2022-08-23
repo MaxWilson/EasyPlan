@@ -451,7 +451,7 @@ let update msg model =
         model
 
 
-let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (work: WorkItem Assignment list) (dropped: WorkItem list) org dispatch =
+let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (finishedData: QueryData option) org dispatch =
     let deliverables = queryData.deliverables
     let height = 20
     let bucketWidth = 200
@@ -459,13 +459,16 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (wo
     let margin = 10.
     let headerHeight = height
     let timeRatio = (float width/1.<realDay>)
+    let work = queryData.assignments
     let yCoord, (rows : (BucketId * int * (_ -> unit)) list) =
         match org with
         | ByBucket ->
             let rows = work |> List.map (fun w -> w.bucketId) |> List.distinct |> List.sort
             let yCoord (asn: _ Assignment) =
-                let ix = rows |> List.findIndex ((=) asn.bucketId)
-                headerHeight + ix * height
+                match rows |> List.tryFindIndex ((=) asn.bucketId) with
+                | Some ix ->
+                    headerHeight + ix * height |> Some
+                | None -> None
             yCoord, rows |> List.map (fun row -> row, 1, (fun _ -> (queryData.capacityMap row).description |> BucketSelection |> Select |> dispatch))
         | ByDeliverable ->
             let getDeliverableId w = w.underlying |> getDeliverableId
@@ -486,16 +489,18 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (wo
                 |> List.sortBy (fun row -> row.parentId)
             let yCoord (asn: _ Assignment) =
                 let parent = asn |> getDeliverableId
-                let ix = rows |> List.findIndex (fun row -> row.parentId = parent)
-                let rowHeight = asn.resourceRow + (rows |> List.take ix |> List.sumBy (fun wi -> wi.height))
-                rowHeight * height
+                match rows |> List.tryFindIndex (fun row -> row.parentId = parent) with
+                | Some ix ->
+                    let rowHeight = asn.resourceRow + (rows |> List.take ix |> List.sumBy (fun wi -> wi.height))
+                    rowHeight * height |> Some
+                | None -> None
             yCoord, rows |> List.map (fun row -> match deliverables |> Map.tryFind row.parentId with Some workItem -> (getTitle workItem, row.height, row.onClick) | None -> (row.parentId |> toString, 1, row.onClick))
     let msg (item: WorkItem) =
         getTitle item
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
-    let preDroppedHeight = headerHeight + ((height + (work |> List.map (fun item -> yCoord item) |> List.append [0] |> List.max)))
-    let stageHeight = preDroppedHeight + (dropped.Length * height)
+    let preDroppedHeight = headerHeight + ((height + (work |> List.map (fun item -> yCoord item |> Option.defaultValue 0) |> List.append [0] |> List.max)))
+    let stageHeight = preDroppedHeight + (queryData.dropped.Length * height)
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     let startLeft = bucketWidth + 20
     let startTime, paddingTime =
@@ -569,7 +574,9 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (wo
                 Html.input [
                     prop.className "item"
                     prop.style [
-                        style.top (yCoord asn)
+                        match yCoord asn with
+                        | Some y -> style.top y
+                        | None -> ()
                         style.left (((paddingTime + asn.startTime) * timeRatio |> int) + startLeft)
                         style.width (asn.duration * timeRatio - margin |> int)
                         match asn |> getProgressStatus ctx with
@@ -586,7 +593,31 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (wo
                     prop.readOnly true
                     prop.onClick (thunk1 dispatch (Select (AssignmentSelection asn)))
                     ]
-            for ix, item in dropped |> List.mapi tup2 do
+            match finishedData with
+            | None -> ()
+            | Some { assignments = finished } ->
+                for fin in finished do
+                    // show recently-finished items from the past in their original location so we can see recent progress
+                    let isFinished =
+                        queryData.workItems |> List.exists (fun wi -> wi.id = fin.underlying.id && wi |> getRemainingWork = 0.<dayCost>)
+                    match yCoord fin with
+                    | Some y when isFinished ->
+                        let item = fin.underlying
+                        Html.input [
+                            prop.className ["item";"finished"]
+                            prop.style [
+                                match yCoord fin with
+                                | Some y -> style.top y
+                                | None -> ()
+                                style.left (((fin.startTime) * timeRatio |> int) + startLeft)
+                                style.width (fin.duration * timeRatio - margin |> int)
+                                ]
+                            prop.value (msg item)
+                            prop.readOnly true
+                            prop.onClick (thunk1 dispatch (Select (AssignmentSelection fin)))
+                            ]
+                    | _ -> ()
+            for ix, item in queryData.dropped |> List.mapi tup2 do
                 Html.span [
                     prop.className "dropped"
                     prop.style [
@@ -806,10 +837,10 @@ let viewApp (model: Model) dispatch =
             | Ready(Error err) ->
                 viewError err
             | Ready(Ok queryResult) ->
-                let queryData =
+                let queryData, finishedData =
                     match queryResult with
-                    | { past = Some data } when model.showPast -> data
-                    | _ -> queryResult.current
+                    | { past = Some data } when model.showPast -> data, None
+                    | _ -> queryResult.current, queryResult.past
                 let ctx = queryData.ctx
                 let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                 Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
@@ -831,7 +862,7 @@ let viewApp (model: Model) dispatch =
                     ]
                 if model.hasUnsavedChanges then
                     Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
-                viewAssignments ctx queryData queryData.assignments queryData.dropped model.displayOrganization dispatch
+                viewAssignments ctx queryData finishedData model.displayOrganization dispatch
                 viewSelected model ctx model.serverUrlOverride dispatch
         ]
 
