@@ -260,9 +260,9 @@ let tryGetTeamCapacity (ctx: QueryContext) (teamName: string) = promise {
     let! project = projectService.getProject()
     let teamCtx : Core.TeamContext = !! {|
         project = ctx.projectName |> Option.defaultValue project.Value.name
-        //projectId = project.Value.id
+        projectId = ""
         team = teamName
-        //teamId = team.id
+        teamId = ""
         |}
     let client = Client.exports.getClient<WorkClient.WorkRestClient>(unbox WorkClient.exports.WorkRestClient, ctx.projectScopedOptions)
     let! iterations = client.getTeamIterations(teamCtx)
