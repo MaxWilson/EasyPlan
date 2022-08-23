@@ -319,16 +319,16 @@ let tryGetCapacity (ctx: QueryContext) = promise {
     }
 
 let getWorkItems (ctx: QueryContext) (wiql) = promise {
-    let queryForDate (asOf: System.DateTime option) baseline = promise {
-        let! capacityMap = tryGetCapacity ctx
+    let! capacityMap = tryGetCapacity ctx
+    let! client = getWorkClient ctx.options
+    let queryForDate (asOf: System.DateTime option) = promise {
         let query = jsOptions<Wiql>(fun o ->
             o.query <- wiql + match asOf with Some dt -> $""" asof '{dt.ToString("MM-dd-yyyy")}'""" | None -> ""
             )
-        let! client = getWorkClient ctx.options
         let! wiqlResult = client.queryByWiql(query)
-        let doQuery() = promise {
+        let! details = promise {
             if wiqlResult.workItems.Count = 0 then
-                return [], Map.empty
+                return []
             else
                 let! details =
                     match asOf with
@@ -337,22 +337,31 @@ let getWorkItems (ctx: QueryContext) (wiql) = promise {
                     | None ->
                         client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All)
                     |> Promise.map List.ofSeq
-                let deliverableIds = details |> List.map getDeliverableId |> List.distinct
-                let! deliverables = client.getWorkItems(deliverableIds |> List.filter (fun id -> id > 0) |> ResizeArray) |> Promise.map List.ofSeq
-                let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
-                return details, deliverablesById
+                return details
             }
-        let! details, deliverablesById = doQuery()
-        let startDate = defaultArg asOf ctx.effectiveDate
+        return details;
+        }
+
+    let! current = queryForDate None
+    let! past = match ctx.compareDate with None -> promise { return None } | dt -> queryForDate dt |> Promise.map Some
+
+    let deliverableIds = (current @ (past |> Option.defaultValue []))|> List.map getDeliverableId |> List.distinct
+    let! deliverables = promise {
+        if deliverableIds.IsEmpty then
+            return []
+        else
+            return! client.getWorkItems(deliverableIds |> List.filter (fun id -> id > 0) |> ResizeArray) |> Promise.map List.ofSeq
+        }
+    let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
+
+    let result startDate baseline details =
         let ctx = makeAssignmentContext (startDate, details, capacityMap)
         let asn, dropped = Extensions.assignments ctx details
-        return { workItems = details; deliverables = deliverablesById; capacityMap = capacityMap; effectiveDate = startDate; baselineDate = baseline; ctx = ctx; assignments = asn; dropped = dropped }
-        }
-    let! current = queryForDate None (ctx.compareDate)
-    let! past = match ctx.compareDate with None -> promise { return None } | dt -> queryForDate dt (Some ctx.effectiveDate) |> Promise.map Some
+        { workItems = details; deliverables = deliverablesById; capacityMap = capacityMap; effectiveDate = startDate; baselineDate = baseline; ctx = ctx; assignments = asn; dropped = dropped }
+
     return {
-        QueryResult.current = current
-        past = past
+        QueryResult.current = result ctx.effectiveDate ctx.compareDate current
+        past = past |> Option.map (fun past -> result ctx.compareDate.Value (Some ctx.effectiveDate) past)
         }
     }
 
