@@ -6,15 +6,15 @@ Written using [Fable](http://fable.io/), [Elmish](https://fable-elmish.github.io
 
 ## Dev reference of useful commands and URLs
 
-choco install mkcert
-mkcert -install
-mkcert localhost
-npm install -g tfx-cli
-npx tfx-cli extension create
-https://marketplace.visualstudio.com/manage/publishers/maxwilson
-https://aka.ms/vsmarketplace-manage
-https://dev.azure.com/maxw0485/maxw
-npm start
+    choco install mkcert
+    mkcert -install
+    mkcert localhost
+    npm install -g tfx-cli
+    npx tfx-cli extension create
+    https://marketplace.visualstudio.com/manage/publishers/maxwilson
+    https://aka.ms/vsmarketplace-manage
+    https://dev.azure.com/maxw0485/maxw
+    npm start
 
 ## Requirements
 
