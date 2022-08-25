@@ -41,7 +41,8 @@ Then to start development mode with hot module reloading, run:
 ```bash
 npm start
 ```
-This will start the development server after compiling the project, once it is finished, navigate to http://localhost:8080 to view the application .
+
+This will start the development server after compiling the project, once it is finished, navigate to https://dev.azure.com/maxw0485/maxw/_apps/hub/MaxWilson.EasyPlan.EasyPlan (which internally refers to http://localhost:8080) to view the application .
 
 To build the application and make ready for production:
 ```
