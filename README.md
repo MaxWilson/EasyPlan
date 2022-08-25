@@ -48,19 +48,7 @@ In order to use EasyPlan to make cross-tenant ADO queries (i.e. real data from y
 
 To build the application and make ready for production:
 ```
-npm run build
+npm run publishOsgs
 ```
-This command builds the application and puts the generated files into the `deploy` directory (can be overwritten in webpack.config.js).
+This command builds the extension as a VSIX that you can then upload to https://marketplace.visualstudio.com/manage/publishers/maxwilson or elsewhere.
 
-### Tests
-
-The template includes a test project that ready to go which you can either run in the browser in watch mode or run in the console using node.js and mocha. To run the tests in watch mode:
-```
-npm run test:live
-```
-This command starts a development server for the test application and makes it available at http://localhost:8085.
-
-To run the tests using the command line and of course in your CI server, you have to use the mocha test runner which doesn't use the browser but instead runs the code using node.js:
-```
-npm test
-```
