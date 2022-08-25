@@ -30,6 +30,13 @@ To write and edit your code, you can use either VS Code + [Ionide](http://ionide
 
 Before doing anything, start with installing npm dependencies using `npm install`.
 
+Then make sure you have a certificate that can be used by https for localhost:
+
+```bash
+mkcert -install
+mkcert localhost
+```
+
 Then to start development mode with hot module reloading, run:
 ```bash
 npm start
