@@ -42,7 +42,9 @@ Then to start development mode with hot module reloading, run:
 npm start
 ```
 
-This will start the development server after compiling the project, once it is finished, navigate to https://dev.azure.com/maxw0485/maxw/_apps/hub/MaxWilson.EasyPlan.EasyPlan (which internally refers to http://localhost:8080) to view the application .
+This will start the development server after compiling the project, once it is finished, navigate to [EasyPlan in Azure Devops](https://dev.azure.com/maxw0485/maxw/_apps/hub/MaxWilson.EasyPlan.EasyPlan), which internally refers to http://localhost:8080. Every time you make a change, webpack will use hot-module reloading to update your browser with the new code.
+
+In order to use EasyPlan to make cross-tenant ADO queries (i.e. real data from your actual team while you are developing), you will need to create a PAT by following instructions at EasyPlan's Help link.
 
 To build the application and make ready for production:
 ```
