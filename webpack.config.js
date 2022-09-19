@@ -115,6 +115,13 @@ module.exports = {
     },
     // Configuration for webpack-dev-server
     devServer: {
+        server: {
+          type: 'https',
+          options: {
+            key: './localhost-key.pem',
+            cert: './localhost.pem',
+          }
+        },
         static: {
           directory: resolve(CONFIG.assetsDir),
         },
@@ -124,10 +131,6 @@ module.exports = {
         port: CONFIG.devServerPort,
         proxy: CONFIG.devServerProxy,
         hot: true,
-        https: {
-          key: './localhost-key.pem',
-          cert: './localhost.pem',
-        },
     },
     // - babel-loader: transforms JS to old syntax (compatible with old browsers)
     // - sass-loaders: transforms SASS/SCSS into JS
