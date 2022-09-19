@@ -20,7 +20,7 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context or screenshots about the feature request here.
 
 [ ] Team approval-in-principal
-[x] Proof of concept started
+[ ] Proof of concept started
 [ ] UI agreed-upon
 [ ] In development
 [ ] Ready for checkin
