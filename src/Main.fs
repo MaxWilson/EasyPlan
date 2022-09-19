@@ -98,7 +98,7 @@ type Model = {
     modalDialog: ModalDialog list
     showSettings: bool
     showDetail: bool
-    IncludeOnlyMine: bool
+    includeOnlyMine: bool
     compareDate: System.DateTime option
     showPast: bool
     displayOrganization: DisplayOrganization
@@ -108,7 +108,7 @@ type Model = {
     hasUnsavedChanges: bool
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; IncludeOnlyMine = true }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; includeOnlyMine = true }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -235,7 +235,7 @@ let queryContext compareDate (model: Model) : QueryContext =
         explicitTeam = model.selectedTeam
         effectiveDate = System.DateTime.Today
         compareDate = compareDate
-        includeOnlyMine = model.IncludeOnlyMine
+        includeOnlyMine = model.includeOnlyMine
     }
 
 let getWorkClient options = promise {
@@ -257,7 +257,7 @@ let getTeams (project:IProjectInfo) (ctx: QueryContext) = promise {
         return [team]
     | None ->
         let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, ctx.projectScopedOptions)
-        let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=Model.fresh.IncludeOnlyMine)
+        let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=Model.fresh.includeOnlyMine)
         return teams |> Seq.map (fun team -> team.name) |> List.ofSeq
     }
 
@@ -452,7 +452,7 @@ let update msg model =
                 { model with modalDialog = TeamPicker(value')::rest }
             | _ -> model
         | SetMyTeamOnlyPickerFilter value' ->
-           {model with IncludeOnlyMine = value' }
+           {model with includeOnlyMine = value' }
         | SetTeamPicker value' ->
             { model with selectedTeam = value' }
         | ToggleTeamPicker ->
@@ -746,7 +746,7 @@ let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
 let pickTeams(dispatch, model) _ =
     dispatch ToggleTeamPicker
     match model.teamsToChooseFrom with
-    | Ready (Ok (_, includeOnlyMine)) when includeOnlyMine = model.IncludeOnlyMine -> ()
+    | Ready (Ok (_, includeOnlyMine)) when includeOnlyMine = model.includeOnlyMine -> ()
     | _ ->
         asyncOperation dispatch TeamsQuery (fun _ -> promise {
             System.Diagnostics.Debugger.Break()
@@ -770,7 +770,7 @@ let viewTeamPicker (msg: string) (model:Model) dispatch =
                 Html.div [
                     Html.input [prop.value msg; prop.placeholder "Enter search text, e.g. SD365CPI"; prop.onChange (SetTeamPickerFilter >> dispatch)]
                     Html.input [prop.value true; prop.title "Only Mine/All Teams"; prop.onChange(fun v -> dispatch (SetMyTeamOnlyPickerFilter v); pickTeams(dispatch, model)()); prop.type' "checkbox"]
-                    Html.div [prop.value Model.fresh.IncludeOnlyMine]
+                    Html.div [prop.value Model.fresh.includeOnlyMine]
                     Html.div [prop.text $"""Selected: {match model.selectedTeam with Some v -> v.ToString() | None -> "None"}"""]
                     for option in teams |> List.filter (fun option -> option.StartsWith(msg, System.StringComparison.InvariantCultureIgnoreCase)) do
                         Html.div [
