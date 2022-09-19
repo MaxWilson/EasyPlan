@@ -55,6 +55,7 @@ type QueryContext = {
     explicitTeam: string option
     effectiveDate: System.DateTime
     compareDate: System.DateTime option
+    includeOnlyMine: bool
     }
 type ProgressStatus = OK | Warning of float | AtRisk of float
 type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
@@ -71,8 +72,9 @@ type Msg =
     | SetPAT of string
     | SetServerOverrideURL of string
     | SetCompareDate of System.DateTime
-    | TeamsQuery of string list OperationTransition
+    | TeamsQuery of (string list * bool) OperationTransition
     | SetTeamPickerFilter of string
+    | SetMyTeamOnlyPickerFilter of bool
     | SetTeamPicker of string option
     | ToggleTeamPicker
     | ToggleHelp
@@ -90,12 +92,13 @@ type Model = {
     userFacingMessage: string option;
     ready: bool;
     query: QueryResult Deferred
-    teamsToChooseFrom: (string list) Deferred
+    teamsToChooseFrom: (string list * bool) Deferred
     serverUrlOverride: string option
     pat: string option
     modalDialog: ModalDialog list
     showSettings: bool
     showDetail: bool
+    IncludeOnlyMine: bool
     compareDate: System.DateTime option
     showPast: bool
     displayOrganization: DisplayOrganization
@@ -105,7 +108,7 @@ type Model = {
     hasUnsavedChanges: bool
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false; showDetail = false; compareDate = None; showPast = false; selectedTeam = None }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; IncludeOnlyMine = true }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -232,6 +235,7 @@ let queryContext compareDate (model: Model) : QueryContext =
         explicitTeam = model.selectedTeam
         effectiveDate = System.DateTime.Today
         compareDate = compareDate
+        includeOnlyMine = model.IncludeOnlyMine
     }
 
 let getWorkClient options = promise {
@@ -241,8 +245,10 @@ let getWorkClient options = promise {
 // used for picking a selected team on the Settings screen
 let getAllTeams (ctx: QueryContext) = promise {
     let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, ctx.projectScopedOptions)
-    let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=false)
-    return teams |> Seq.map (fun team -> team.name) |> List.ofSeq
+    //System.Console.WriteLine($"ctx.includeOnlyMine: {ctx.includeOnlyMine}")
+    //System.Diagnostics.Debugger.Break()
+    let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine= ctx.includeOnlyMine)
+    return teams |> Seq.map (fun team -> team.name) |> List.ofSeq, ctx.includeOnlyMine
     }
 
 let getTeams (project:IProjectInfo) (ctx: QueryContext) = promise {
@@ -251,7 +257,7 @@ let getTeams (project:IProjectInfo) (ctx: QueryContext) = promise {
         return [team]
     | None ->
         let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, ctx.projectScopedOptions)
-        let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=true)
+        let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=Model.fresh.IncludeOnlyMine)
         return teams |> Seq.map (fun team -> team.name) |> List.ofSeq
     }
 
@@ -445,6 +451,8 @@ let update msg model =
             | TeamPicker(msg)::rest ->
                 { model with modalDialog = TeamPicker(value')::rest }
             | _ -> model
+        | SetMyTeamOnlyPickerFilter value' ->
+           {model with IncludeOnlyMine = value' }
         | SetTeamPicker value' ->
             { model with selectedTeam = value' }
         | ToggleTeamPicker ->
@@ -464,7 +472,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
     let deliverables = queryData.deliverables
     let height = 20
     let bucketWidth = 200
-    let width = 50
+    let width = 70
     let margin = 10.
     let headerHeight = height
     let timeRatio = (float width/1.<realDay>)
@@ -582,6 +590,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                 let item = asn.underlying
                 Html.input [
                     prop.className "item"
+                    prop.title (msg item)
                     prop.style [
                         match yCoord asn with
                         | Some y -> style.top y
@@ -627,13 +636,15 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                     | _ -> ()
             for ix, item in queryData.dropped |> List.mapi tup2 do
                 Html.span [
+                    prop.title (msg item)
                     prop.className "dropped"
                     prop.style [
                         style.top (preDroppedHeight + (height * ix))
                         style.left startLeft
+                        style.width (getRemainingWork(item) * timeRatio/1.0<dayCost/realDay> - margin |> int |> max 0)
                         ]
                     prop.onClick (thunk1 dispatch (Select (WorkItemSelection item)))
-                    prop.text ("Won't be done: " + msg item)
+                    prop.text (msg item + " Won't be done!")
                     ]
             ]
         ]
@@ -732,6 +743,16 @@ let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
             ]
     | None -> Html.div []
 
+let pickTeams(dispatch, model) _ =
+    dispatch ToggleTeamPicker
+    match model.teamsToChooseFrom with
+    | Ready (Ok (_, includeOnlyMine)) when includeOnlyMine = model.IncludeOnlyMine -> ()
+    | _ ->
+        asyncOperation dispatch TeamsQuery (fun _ -> promise {
+            System.Diagnostics.Debugger.Break()
+            return! getAllTeams (queryContext None model)
+        }) |> Promise.start
+
 let viewTeamPicker (msg: string) (model:Model) dispatch =
     Html.div [
         prop.className "teamPicker"
@@ -741,12 +762,15 @@ let viewTeamPicker (msg: string) (model:Model) dispatch =
                 Html.div "Please wait while we retrieve the list of teams..."
             | Ready (Error err) ->
                 Html.div $"Something went wrong while retrieving the list of teams, sorry. Please check that your serverOverrideUrl and PAT are both valid. Error: {err}"
-            | Ready (Ok teams) ->
+            | Ready (Ok (teams, _)) ->
                 Html.div [
                     Html.text "Optional: Choose which team to use for capacity picking, etc. This can help avoid \"Won't be done\" errors if you have work items on a team that you don't own in ADO."
                     ]
+                Html.button [prop.text "OK"; prop.onClick(fun _ -> dispatch ToggleTeamPicker)]
                 Html.div [
                     Html.input [prop.value msg; prop.placeholder "Enter search text, e.g. SD365CPI"; prop.onChange (SetTeamPickerFilter >> dispatch)]
+                    Html.input [prop.value true; prop.title "Only Mine/All Teams"; prop.onChange(fun v -> dispatch (SetMyTeamOnlyPickerFilter v); pickTeams(dispatch, model)()); prop.type' "checkbox"]
+                    Html.div [prop.value Model.fresh.IncludeOnlyMine]
                     Html.div [prop.text $"""Selected: {match model.selectedTeam with Some v -> v.ToString() | None -> "None"}"""]
                     for option in teams |> List.filter (fun option -> option.StartsWith(msg, System.StringComparison.InvariantCultureIgnoreCase)) do
                         Html.div [
@@ -760,17 +784,9 @@ let viewTeamPicker (msg: string) (model:Model) dispatch =
         ]
 
 let teamPickerDiv (model: Model) dispatch =
-    let pickTeams _ =
-        dispatch ToggleTeamPicker
-        match model.teamsToChooseFrom with
-        | Ready (Ok _) -> ()
-        | _ ->
-            asyncOperation dispatch TeamsQuery (fun _ -> promise {
-                return! getAllTeams (queryContext None model)
-            }) |> Promise.start
     Html.div [
         Html.span $"""Team override: {match model.selectedTeam with Some v -> v.ToString() | _ -> "None"}"""
-        Html.button [prop.text "Change team"; prop.onClick pickTeams]
+        Html.button [prop.text "Change team"; prop.onClick (pickTeams(dispatch, model))]
         ]
 
 let viewHelp (model:Model) dispatch =
