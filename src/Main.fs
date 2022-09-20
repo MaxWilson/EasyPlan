@@ -503,7 +503,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                     let rowHeight = asn.resourceRow + (rows |> List.take ix |> List.sumBy (fun wi -> wi.height))
                     rowHeight * height |> Some
                 | None -> None
-            yCoord, rows |> List.map (fun row -> match deliverables |> Map.tryFind row.parentId with Some workItem -> (getTitle workItem, row.height, row.onClick) | None -> (row.parentId |> toString, 1, row.onClick))
+            yCoord, rows |> List.map (fun row -> match deliverables |> Map.tryFind row.parentId with Some workItem -> (getTitle workItem, row.height, row.onClick) | None -> ("Unparented", 1, row.onClick))
     let msg (item: WorkItem) =
         getTitle item
     let date (asn: _ Assignment) msg =
