@@ -520,7 +520,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
     let preDroppedHeight = headerHeight + ((height + (work |> List.map (fun item -> yCoord item |> Option.defaultValue 0) |> List.append [0] |> List.max)))
-    let stageHeight = preDroppedHeight + (queryData.dropped.Length * height)
+    let stageHeight = preDroppedHeight + (queryData.dropped.Length * height) + 20
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     let startLeft = bucketWidth + 20
     let startTime, paddingTime =
@@ -531,7 +531,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
         prop.className "stage"
         prop.style [
             style.width (int stageWidth)
-            style.height stageHeight
+            style.height (stageHeight + 20) // leave room for scrollbars so that we don't have that awkward tiny vertical scroll
             ]
         prop.children [
             let maxDaySpan = paddingTime + if work.IsEmpty then 0.<realDay> else (work |> List.map (fun wi -> (wi.startTime + wi.duration)) |> List.max)
@@ -555,6 +555,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                             style.top 0
                             style.left xPos
                             style.height stageHeight
+                            style.boxSizing.borderBox
                             style.borderLeft(2, borderStyle.solid, color.black)
                             ]
                         ]
