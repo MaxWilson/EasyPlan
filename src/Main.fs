@@ -281,6 +281,17 @@ let tryGetTeamCapacity (ctx: QueryContext) (teamName: string) = promise {
     return capacities, capacityForDay
     }
 
+let normalizeDateRangeToDates (dateRange: Work.DateRange) =
+    // DateRange is normally stored in UTC DateTimeOffsets even though the semantics are those of dates.
+    // E.g. Wednesday (meaning 12:00 a.m. to 11:59 pm.) might be stored only as 12:00 am. Wednesday,
+    // but it will ALSO be stored in UTC team, which could be Tuesday 5 pm. We need to make sure that
+    // gets treated as meaning until Wednesday 11:59 pm.
+    createObj [
+        "start", System.DateTimeOffset(dateRange.start.ToUniversalTime().Date)
+        "end", System.DateTimeOffset(dateRange.``end``.ToUniversalTime().Date).AddDays(1).AddSeconds(-1)
+        ]
+    |> unbox<Work.DateRange>
+
 let tryGetCapacity (ctx: QueryContext) = promise {
     try
         let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
@@ -297,7 +308,7 @@ let tryGetCapacity (ctx: QueryContext) = promise {
                 [
                 for capacity in capacities do
                     if capacity.teamMember.displayName = teamMemberName then
-                        (capacity.activities |> Seq.sumBy(fun activity -> activity.capacityPerDay)), capacity.daysOff
+                        (capacity.activities |> Seq.sumBy(fun activity -> activity.capacityPerDay)), capacity.daysOff |> Seq.map normalizeDateRangeToDates
                 ]
             let capacity = capacitiesAndDaysOff |> Seq.sumBy fst
             let daysOff = capacitiesAndDaysOff |> Seq.map snd |> Seq.flatten |> List.ofSeq
