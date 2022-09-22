@@ -420,9 +420,9 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
 let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryData) =
     queryResult
 
-let saveChanges (model:Model) dispatch =
+let saveChanges (model:Model) dispatch continuation =
     promise {
-        notImpl()
+        continuation()
     } |> Promise.start
 
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read(); selectedTeam = LocalStorage.Team.read() }
@@ -939,7 +939,7 @@ let viewApp (model: Model) dispatch =
                 let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                 Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
                 if model.editedIds.IsEmpty |> not then
-                    Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
+                    Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch (executeQuery model.compareDate))]
                 match model.selectedItem with
                 | Some (AssignmentSelection _) ->
                     Html.button [prop.text "Add dependency"; prop.disabled (model.editMode <> NotEditing); prop.onClick (thunk1 dispatch SelectDependency)]
