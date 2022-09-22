@@ -270,7 +270,7 @@ let getTeams (project:IProjectInfo) (ctx: QueryContext) = promise {
         return teams |> Seq.map (fun team -> team.name) |> List.ofSeq
     }
 
-let tryGetTeamCapacity (relevantIterationPaths: string list) (ctx: QueryContext) (teamName: string) = promise {
+let tryGetTeamIterationsAndCapacity (relevantIterationPaths: string list) (ctx: QueryContext) (teamName: string) = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
     let! project = projectService.getProject()
     let teamCtx : Core.TeamContext = !! {|
@@ -280,18 +280,17 @@ let tryGetTeamCapacity (relevantIterationPaths: string list) (ctx: QueryContext)
         teamId = ""
         |}
     let client = Client.exports.getClient<WorkClient.WorkRestClient>(unbox WorkClient.exports.WorkRestClient, ctx.projectScopedOptions)
-    let! iterations = client.getTeamIterations(teamCtx)
+    let! iterations = client.getTeamIterations(teamCtx) |> Promise.map (Seq.filter (fun iteration -> relevantIterationPaths |> List.exists (iteration.path.StartsWith)) >> Array.ofSeq)
     let capacityForIteration (iteration: Work.TeamSettingsIteration) =
         client.getCapacitiesWithIdentityRef(teamCtx, iteration.id)
-    let! capacities = iterations |> Seq.filter (fun iteration -> relevantIterationPaths |> List.exists (iteration.path.StartsWith)) |> Seq.map capacityForIteration |> Promise.all
-    let capacities = capacities |> Seq.flatten |> Array.ofSeq
+    let! capacities = iterations |> Seq.map capacityForIteration |> Promise.all |> Promise.map (Seq.flatten >> Array.ofSeq)
     let! teamSettings = client.getTeamSettings(teamCtx)
     let capacityForDay (name:string) (dt: System.DateTime) =
         // capacity applies only to working team days, which doesn't include weekends and holidays. Individual days off are tracked separately.
         if teamSettings.workingDays.Contains dt.DayOfWeek then
             capacities |> Array.sumBy(fun c -> if c.teamMember.displayName = name then c.activities |> Seq.sumBy(fun act -> act.capacityPerDay) else 0.)
         else 0.
-    return capacities, capacityForDay
+    return iterations, capacities, capacityForDay
     }
 
 let normalizeDateRangeToDates (dateRange: Work.DateRange) =
@@ -305,15 +304,15 @@ let normalizeDateRangeToDates (dateRange: Work.DateRange) =
         ]
     |> unbox<Work.DateRange>
 
-let tryGetCapacity iterations (ctx: QueryContext) = promise {
+let tryGetIterationsAndCapacity relevantIterationPaths (ctx: QueryContext) = promise {
     try
         let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
         let! project = projectService.getProject()
         let! teams = getTeams project.Value ctx
-        let! capacityByNameAndDate, capacities = promise {
-            let! itemsAndWorkingDays = teams |> Seq.map (tryGetTeamCapacity iterations ctx) |> Promise.Parallel
-            let items, capacityByNameAndDate = itemsAndWorkingDays |> List.ofSeq |> List.unzip
-            return capacityByNameAndDate, items |> Seq.flatten |> Array.ofSeq
+        let! iterations, capacityByNameAndDate, capacities = promise {
+            let! iterationsItemsAndWorkingDays = teams |> Seq.map (tryGetTeamIterationsAndCapacity relevantIterationPaths ctx) |> Promise.Parallel
+            let iterations, items, capacityByNameAndDate = iterationsItemsAndWorkingDays |> List.ofSeq |> List.unzip3
+            return iterations |> Seq.flatten |> Array.ofSeq, capacityByNameAndDate, items |> Seq.flatten |> Array.ofSeq
             }
 
         let capacityForTeamMember (teamMemberName: string) =
@@ -336,10 +335,10 @@ let tryGetCapacity iterations (ctx: QueryContext) = promise {
                 daysOff = daysOff
                 capacityByDate = (fun dt -> capacityByNameAndDate |> List.sumBy (fun capacityFunc -> capacityFunc teamMemberName dt))
                 }
-        return capacityForTeamMember
+        return iterations, capacityForTeamMember
     with _err ->
         printfn "tryGetCapacity failed: %A" _err
-        return fun (teamMemberName:string) -> { description = (sprintf "Error: %A" _err); capacity = 0; daysOff = []; capacityByDate = thunk 0. }
+        return Array.empty, fun (teamMemberName:string) -> { description = (sprintf "Error: %A" _err); capacity = 0; daysOff = []; capacityByDate = thunk 0. }
     }
 
 let getWorkItems (ctx: QueryContext) (wiql) = promise {
@@ -376,15 +375,18 @@ let getWorkItems (ctx: QueryContext) (wiql) = promise {
             return! client.getWorkItems(deliverableIds |> List.filter (fun id -> id > 0) |> ResizeArray) |> Promise.map List.ofSeq
         }
     let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
-    let! capacityMap = tryGetCapacity (current |> List.choose getIterationPath |> List.distinct) ctx
+    let! iterations, capacityMap = tryGetIterationsAndCapacity (current |> List.choose getIterationPath |> List.distinct) ctx
 
     let result startDate baseline details =
         let ctx = makeAssignmentContext (startDate, details, capacityMap)
         let asn, dropped = Extensions.assignments ctx details
         { workItems = details; deliverables = deliverablesById; capacityMap = capacityMap; effectiveDate = startDate; baselineDate = baseline; ctx = ctx; assignments = asn; dropped = dropped }
 
+    let startDate =
+        // when looking at a future iteration, don't start before the iteration starts, but do start partway into the iteration if the iteration is current
+        max ctx.effectiveDate (iterations |> Array.map (fun it -> it.attributes.startDate.ToUniversalTime().Date) |> Array.sort |> Array.tryHead |> Option.defaultValue ctx.effectiveDate)
     return {
-        QueryResult.current = result ctx.effectiveDate ctx.compareDate current
+        QueryResult.current = result startDate ctx.compareDate current
         past = past |> Option.map (fun past -> result ctx.compareDate.Value (Some ctx.effectiveDate) past)
         }
     }
