@@ -69,6 +69,7 @@ type Msg =
     | Message of string
     | SdkInitializationMsg of string OperationTransition
     | Query of QueryResult OperationTransition
+    | SaveChanges of unit OperationTransition
     | SetPAT of string
     | SetServerOverrideURL of string
     | SetCompareDate of System.DateTime
@@ -92,6 +93,7 @@ type Model = {
     userFacingMessage: string option;
     ready: bool;
     query: QueryResult Deferred
+    saveChanges: unit Deferred
     teamsToChooseFrom: (string list) Deferred
     serverUrlOverride: string option
     pat: string option
@@ -107,7 +109,7 @@ type Model = {
     editedIds: Set<int>
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedIds = Set.empty }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; saveChanges = NotStarted; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedIds = Set.empty }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -420,9 +422,15 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
 let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryData) =
     queryResult
 
-let saveChanges (model:Model) dispatch continuation =
+let saveChanges (model:Model) dispatch =
     promise {
-        continuation()
+        // first save changes
+        do! asyncOperation dispatch SaveChanges (fun _ -> Promise.sleep 2000) // fake implementation
+
+        // now do the refresh
+        do! asyncOperation dispatch Query (fun _ ->
+            getWorkItems (queryContext model.compareDate model) model.wiql
+            )
     } |> Promise.start
 
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read(); selectedTeam = LocalStorage.Team.read() }
@@ -432,6 +440,8 @@ let update msg model =
         | Message msg -> { model with userFacingMessage = msg |> Some }
         | Query op ->
             { model with query = receive op; editedIds = Set.empty }
+        | SaveChanges op ->
+            { model with saveChanges = receive op; editedIds = Set.empty }
         | TeamsQuery op ->
             { model with teamsToChooseFrom = receive op }
         | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read() }
@@ -924,40 +934,44 @@ let viewApp (model: Model) dispatch =
                 ]
             Html.button [prop.text "Get work items"; prop.onClick (executeQuery model.compareDate)]
 
-            match model.query with
-            | NotStarted -> ()
+            match model.saveChanges with
             | InProgress ->
-                Html.div [prop.text "Fetching..."]
-            | Ready(Error err) ->
-                viewError err
-            | Ready(Ok queryResult) ->
-                let queryData, finishedData =
-                    match queryResult with
-                    | { past = Some data } when model.showPast -> data, None
-                    | _ -> queryResult.current, queryResult.past
-                let ctx = queryData.ctx
-                let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
-                Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
-                if model.editedIds.IsEmpty |> not then
-                    Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch (executeQuery model.compareDate))]
-                match model.selectedItem with
-                | Some (AssignmentSelection _) ->
-                    Html.button [prop.text "Add dependency"; prop.disabled (model.editMode <> NotEditing); prop.onClick (thunk1 dispatch SelectDependency)]
-                | _ -> ()
-                class' Html.span "compareWithPast" [
-                    let id = "chkCompareWithPast"
-                    Html.input [prop.type'.checkbox; prop.id id; prop.isChecked model.showPast; prop.onChange (ToggleShowPast >> dispatch)]
-                    Html.label [prop.htmlFor id; prop.text "Show past"]
-                    let onDateChange (dt:System.DateTime) =
-                        match queryResult.past with
-                        | Some d when d.effectiveDate = dt -> ()
-                        | _ ->
-                            SetCompareDate dt |> dispatch // asynchronously update the UI
-                            executeQuery (Some dt) () // because async update hasn't occurred yet, pass in dt directly
-                    SimpleDateInput(model.compareDate, model.showPast, onDateChange)
-                    ]
-                viewAssignments ctx queryData finishedData model.displayOrganization dispatch
-                viewSelected model ctx model.serverUrlOverride dispatch
+                Html.div "Saving..."
+            | _ ->
+                match model.query with
+                | NotStarted -> ()
+                | InProgress ->
+                    Html.div [prop.text "Fetching..."]
+                | Ready(Error err) ->
+                    viewError err
+                | Ready(Ok queryResult) ->
+                    let queryData, finishedData =
+                        match queryResult with
+                        | { past = Some data } when model.showPast -> data, None
+                        | _ -> queryResult.current, queryResult.past
+                    let ctx = queryData.ctx
+                    let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
+                    Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
+                    if model.editedIds.IsEmpty |> not then
+                        Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
+                    match model.selectedItem with
+                    | Some (AssignmentSelection _) ->
+                        Html.button [prop.text "Add dependency"; prop.disabled (model.editMode <> NotEditing); prop.onClick (thunk1 dispatch SelectDependency)]
+                    | _ -> ()
+                    class' Html.span "compareWithPast" [
+                        let id = "chkCompareWithPast"
+                        Html.input [prop.type'.checkbox; prop.id id; prop.isChecked model.showPast; prop.onChange (ToggleShowPast >> dispatch)]
+                        Html.label [prop.htmlFor id; prop.text "Show past"]
+                        let onDateChange (dt:System.DateTime) =
+                            match queryResult.past with
+                            | Some d when d.effectiveDate = dt -> ()
+                            | _ ->
+                                SetCompareDate dt |> dispatch // asynchronously update the UI
+                                executeQuery (Some dt) () // because async update hasn't occurred yet, pass in dt directly
+                        SimpleDateInput(model.compareDate, model.showPast, onDateChange)
+                        ]
+                    viewAssignments ctx queryData finishedData model.displayOrganization dispatch
+                    viewSelected model ctx model.serverUrlOverride dispatch
         ]
 
 let view (model:Model) dispatch =
