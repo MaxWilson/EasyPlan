@@ -735,10 +735,16 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
                     | _ -> None, None
                 let dateToString label = function Some (v: System.DateTime) -> $"""{label}: {convertJSDateToString v}""" | None -> $"{label}: N/A"
 
-                let dueDateMsg = $"""[{item |> getOwner}] {dateToString "ETA" ETA} [{getState item}, {getRemainingWork item} remaining] {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
+                let dueDateMsg = $""" {dateToString "ETA" ETA} [{getState item}, {getRemainingWork item} remaining] {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
                 Html.div [
                     if model.editMode = EditMode.EditingSelectedItemDueDate then
+                        Html.span [
+                            prop.className "affordance"
+                            prop.text "Due: "
+                            prop.onClick (thunk1 dispatch (SetEditMode NotEditing))
+                            ]
                         Html.input [
+                            prop.className "affordance"
                             prop.type'.date
                             match due with
                             | Some due ->
@@ -748,6 +754,7 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
                             ]
                     else
                         Html.span [
+                            prop.className "affordance"
                             prop.text (dateToString "Due" due)
                             prop.onClick (thunk1 dispatch (SetEditMode EditingSelectedItemDueDate))
                             ]
