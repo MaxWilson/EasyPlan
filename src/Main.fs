@@ -198,7 +198,7 @@ let makeAssignmentContext (effectiveDate, workItems, capacityMap): _ AssignmentC
     let capacity (ctx: _ AssignmentContext) (bucket: string) (startTime: float<realDay>): float<dayCost/realDay> =
         let capacity = capacityMap bucket
         let dt = ctx.startTime.AddDays (float startTime)
-        if capacity.daysOff |> List.exists (fun range -> range.start.LocalDateTime <= dt && dt <= range.``end``.LocalDateTime ) then 0.0<dayCost/realDay> // no capacity on days off
+        if capacity.daysOff |> List.exists (fun range -> range.start <= dt && dt <= range.``end``) then 0.0<dayCost/realDay> // no capacity on days off
         else capacity.capacityByDate dt * 1.<dayCost/realDay>
 
     let getBucket item =

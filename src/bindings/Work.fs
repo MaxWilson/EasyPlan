@@ -226,9 +226,9 @@ type [<AllowNullLiteral>] CreatePlan =
 
 type [<AllowNullLiteral>] DateRange =
     /// End of the date range.
-    abstract ``end``: DateTimeOffset with get, set
+    abstract ``end``: DateTime with get, set
     /// Start of the date range.
-    abstract start: DateTimeOffset with get, set
+    abstract start: DateTime with get, set
 
 /// Data contract for Data of Delivery View
 type [<AllowNullLiteral>] DeliveryViewData =
