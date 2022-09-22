@@ -36,5 +36,8 @@ let currentLocale =
 let convertJSDateToLocaleString (locale:string) (_ : System.DateTime) : string = jsNative
 let convertJSDateToString (date : System.DateTime) : string = convertJSDateToLocaleString currentLocale date
 
+[<Emit("{...$0}")>]
+let inline shallowClone<'t> (x:'t) : 't = jsNative
+
 let class' ctor (className:string) (elements : _ list) =
     ctor [prop.className className; prop.children elements]

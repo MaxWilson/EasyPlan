@@ -1,5 +1,6 @@
 module Main
 
+open System
 open Feliz
 open Browser.Dom
 open Fable.Core.JsInterop
@@ -57,7 +58,7 @@ type QueryContext = {
     compareDate: System.DateTime option
     }
 type ProgressStatus = OK | Warning of float | AtRisk of float
-type EditMode = NotEditing | SelectingDependency of WorkItem Assignment
+type EditMode = NotEditing | SelectingDependency of WorkItem Assignment | EditingSelectedItemDueDate
 type Selection =
     | AssignmentSelection of WorkItem Assignment
     | WorkItemSelection of WorkItem
@@ -83,7 +84,8 @@ type Msg =
     | Select of Selection
     | SelectDependency
     | CancelDependencySelect
-    | SetHasUnsavedChanges of bool
+    | UpdateDueDate of id:int * dueDate: DateTime
+    | SetEditMode of EditMode
 type Model = {
     userName: string Deferred
     wiql: string
@@ -102,10 +104,10 @@ type Model = {
     selectedItem: Selection option
     selectedTeam: string option
     editMode: EditMode
-    hasUnsavedChanges: bool
+    editedIds: Set<int>
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; hasUnsavedChanges = false; showDetail = false; compareDate = None; showPast = false; selectedTeam = None }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedIds = Set.empty }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -126,6 +128,11 @@ module ResizeArray =
         input |> Seq.map f |> ResizeArray
 
 module Properties =
+    let private clone (wi: WorkItem) =
+        let fieldsCopy = wi.fields |> shallowClone
+        let copy = wi |> shallowClone
+        copy.fields <- fieldsCopy
+        copy
     let get<'t> fieldName (item:WorkItem) =
         match item.fields[fieldName] with
         | Some v ->
@@ -148,11 +155,19 @@ module Properties =
     let getTitle = get<string> "System.Title" >> Option.defaultValue "Untitled"
     let getDeliverableId = get<int option> "System.Parent" >> Option.flatten >> Option.defaultValue 0
     let getWorkItemType = get<string> "System.WorkItemType"
+    let getIterationPath = get<string> "System.IterationPath"
     let getPriority item =
         match get<int> "Microsoft.VSTS.Common.Priority" item with
         | Some pri -> float pri
         | None -> match getWorkItemType item with | Some "Task" | Some "Deliverable" -> 2.0 | _ -> 2.0
-    let getDueDate = get<System.DateTime> "Microsoft.VSTS.Scheduling.DueDate"
+    let getAndSet<'t> fieldName =
+        let getter = get<'t> fieldName
+        let setter (v:'t) (wi: WorkItem) =
+            let wi = wi |> clone
+            wi.fields[fieldName] <- Some v
+            wi
+        getter, setter
+    let getDueDate, setDueDate = getAndSet<System.DateTime> "Microsoft.VSTS.Scheduling.DueDate"
     let getPrioritization = (fun (i:WorkItem) ->
         // treat work items as less important than P1 bugs and equal to P2
         let pri = getPriority i
@@ -255,7 +270,7 @@ let getTeams (project:IProjectInfo) (ctx: QueryContext) = promise {
         return teams |> Seq.map (fun team -> team.name) |> List.ofSeq
     }
 
-let tryGetTeamCapacity (ctx: QueryContext) (teamName: string) = promise {
+let tryGetTeamCapacity (relevantIterationPaths: string list) (ctx: QueryContext) (teamName: string) = promise {
     let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
     let! project = projectService.getProject()
     let teamCtx : Core.TeamContext = !! {|
@@ -266,11 +281,9 @@ let tryGetTeamCapacity (ctx: QueryContext) (teamName: string) = promise {
         |}
     let client = Client.exports.getClient<WorkClient.WorkRestClient>(unbox WorkClient.exports.WorkRestClient, ctx.projectScopedOptions)
     let! iterations = client.getTeamIterations(teamCtx)
-    let inScope (targetDate: System.DateTime) (iteration: Work.TeamSettingsIteration) =
-        iteration.attributes.startDate <= targetDate && targetDate <= iteration.attributes.finishDate
     let capacityForIteration (iteration: Work.TeamSettingsIteration) =
         client.getCapacitiesWithIdentityRef(teamCtx, iteration.id)
-    let! capacities = iterations |> Seq.filter (inScope ctx.effectiveDate) |> Seq.map capacityForIteration |> Promise.all
+    let! capacities = iterations |> Seq.filter (fun iteration -> relevantIterationPaths |> List.exists (iteration.path.StartsWith)) |> Seq.map capacityForIteration |> Promise.all
     let capacities = capacities |> Seq.flatten |> Array.ofSeq
     let! teamSettings = client.getTeamSettings(teamCtx)
     let capacityForDay (name:string) (dt: System.DateTime) =
@@ -292,13 +305,13 @@ let normalizeDateRangeToDates (dateRange: Work.DateRange) =
         ]
     |> unbox<Work.DateRange>
 
-let tryGetCapacity (ctx: QueryContext) = promise {
+let tryGetCapacity iterations (ctx: QueryContext) = promise {
     try
         let! projectService = sdk.getService<IProjectPageService>(CommonServiceIds.ProjectPageService)
         let! project = projectService.getProject()
         let! teams = getTeams project.Value ctx
         let! capacityByNameAndDate, capacities = promise {
-            let! itemsAndWorkingDays = teams |> Seq.map (tryGetTeamCapacity ctx) |> Promise.Parallel
+            let! itemsAndWorkingDays = teams |> Seq.map (tryGetTeamCapacity iterations ctx) |> Promise.Parallel
             let items, capacityByNameAndDate = itemsAndWorkingDays |> List.ofSeq |> List.unzip
             return capacityByNameAndDate, items |> Seq.flatten |> Array.ofSeq
             }
@@ -330,7 +343,6 @@ let tryGetCapacity (ctx: QueryContext) = promise {
     }
 
 let getWorkItems (ctx: QueryContext) (wiql) = promise {
-    let! capacityMap = tryGetCapacity ctx
     let! client = getWorkClient ctx.options
     let queryForDate (asOf: System.DateTime option) = promise {
         let query = jsOptions<Wiql>(fun o ->
@@ -364,6 +376,7 @@ let getWorkItems (ctx: QueryContext) (wiql) = promise {
             return! client.getWorkItems(deliverableIds |> List.filter (fun id -> id > 0) |> ResizeArray) |> Promise.map List.ofSeq
         }
     let deliverablesById = deliverables |> List.collect (fun wi -> [wi.id, wi]) |> Map.ofList
+    let! capacityMap = tryGetCapacity (current |> List.choose getIterationPath |> List.distinct) ctx
 
     let result startDate baseline details =
         let ctx = makeAssignmentContext (startDate, details, capacityMap)
@@ -375,6 +388,17 @@ let getWorkItems (ctx: QueryContext) (wiql) = promise {
         past = past |> Option.map (fun past -> result ctx.compareDate.Value (Some ctx.effectiveDate) past)
         }
     }
+
+// if we already have assignments, but work items have changed in model.query, recompute assignments too
+let recomputeAssignments (model: Model) =
+    match model.query with
+    | Ready(Ok queryResult) ->
+        let recompute (data: QueryData) : QueryData =
+            let ctx = makeAssignmentContext (data.effectiveDate, data.workItems, data.capacityMap)
+            let asn, dropped = Extensions.assignments ctx data.workItems
+            { data with assignments = asn; dropped = dropped }
+        { model with query = { queryResult with current = queryResult.current |> recompute; past = queryResult.past |> Option.map recompute } |> Ok |> Ready }
+    | _ -> model
 
 let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
     match asn.underlying |> getDueDate with
@@ -396,7 +420,7 @@ let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment
 
 let saveChanges (model:Model) dispatch =
     promise {
-        dispatch (SetHasUnsavedChanges false)
+        notImpl()
     } |> Promise.start
 
 let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read(); selectedTeam = LocalStorage.Team.read() }
@@ -405,7 +429,7 @@ let update msg model =
         match msg with
         | Message msg -> { model with userFacingMessage = msg |> Some }
         | Query op ->
-            { model with query = receive op }
+            { model with query = receive op; editedIds = Set.empty }
         | TeamsQuery op ->
             { model with teamsToChooseFrom = receive op }
         | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read() }
@@ -442,15 +466,15 @@ let update msg model =
                 let asn', dropped = Extensions.assignments ctx queryData.workItems
                 // for UX reasons, preserve selection (up to underlying id)
                 let selection' = asn' |> List.tryFind (fun a -> a.underlying.id = asn.underlying.id) |> Option.map (AssignmentSelection)
-                { model with query = (Ready (Ok { queryResult with current = { queryData with ctx = ctx; assignments = asn'; dropped = dropped}})); editMode = EditMode.NotEditing; selectedItem = selection'; hasUnsavedChanges = true }
+                { model with query = (Ready (Ok { queryResult with current = { queryData with ctx = ctx; assignments = asn'; dropped = dropped}})); editMode = EditMode.NotEditing; selectedItem = selection'  }
             | _ ->
-                { model with selectedItem = workItemAssignment |> Some }
-        | SetHasUnsavedChanges v ->
-            { model with hasUnsavedChanges = v }
+                { model with selectedItem = workItemAssignment |> Some; editMode = NotEditing }
         | CancelDependencySelect ->
             { model with editMode = EditMode.NotEditing }
         | SelectDependency ->
             { model with editMode = match model.selectedItem with | Some (AssignmentSelection asn) -> EditMode.SelectingDependency asn | _ -> model.editMode }
+        | SetEditMode v ->
+            { model with editMode = v }
         | SetTeamPickerFilter value' ->
             match model.modalDialog with
             | TeamPicker(msg)::rest ->
@@ -466,6 +490,28 @@ let update msg model =
             { model with showPast = v }
         | SetCompareDate dt ->
             { model with compareDate = Some dt }
+        | UpdateDueDate(id, dueDate) ->
+            let model =
+                {
+                model with
+                    editedIds = model.editedIds |> Set.add id
+                    query =
+                        match model.query with
+                        | Ready(Ok queryResult) ->
+                            let updatedWorkItems = queryResult.current.workItems |> List.map (fun wi -> if wi.id = id then wi |> setDueDate dueDate else wi)
+                            { queryResult with current = { queryResult.current with workItems = updatedWorkItems } } |> Ok |> Ready
+                        | _ -> model.query
+                    editMode = NotEditing
+                }
+                |> recomputeAssignments
+            // attempt to retain same selected item
+            match model.selectedItem, model.query with
+            | Some (AssignmentSelection asn), Ready(Ok queryResult) when asn.underlying.id = id ->
+                { model with selectedItem = queryResult.current.assignments |> List.tryFind (fun asn -> asn.underlying.id = id) |> Option.map AssignmentSelection }
+            | Some (WorkItemSelection item), Ready(Ok queryResult) when item.id = id ->
+                { model with selectedItem = queryResult.current.workItems |> List.tryFind (fun wi -> wi.id = id) |> Option.map WorkItemSelection }
+            | _ ->
+                model
     with err ->
         Browser.Dom.window.alert("Error: " + err.ToString())
         model
@@ -506,7 +552,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                                 let height = work |> List.filter (fun wi -> getDeliverableId wi = parentId) |> List.map (fun wi -> wi.resourceRow) |> List.max
                                 {| workItem = wi; parentId = parentId; height = height; onClick = onClick |})
                 |> List.distinctBy (fun row -> row.parentId)
-                |> List.sortBy (fun row -> row.parentId)
+                |> List.sortBy (fun row -> row.parentId, row.workItem.bucketId)
             let yCoord (asn: _ Assignment) =
                 let parent = asn |> getDeliverableId
                 match rows |> List.tryFindIndex (fun row -> row.parentId = parent) with
@@ -520,7 +566,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
     let date (asn: _ Assignment) msg =
         $"""{ctx.startTime.AddDays(asn.startTime |> float).ToString("MM/dd")} {msg}"""
     let preDroppedHeight = headerHeight + ((height + (work |> List.map (fun item -> yCoord item |> Option.defaultValue 0) |> List.append [0] |> List.max)))
-    let stageHeight = preDroppedHeight + (queryData.dropped.Length * height) + 20
+    let stageHeight = preDroppedHeight + (queryData.dropped.Length * height)
     let stageWidth = (match work with [] -> 0. | _ -> ((work |> List.map (fun w -> w.startTime + w.duration)) |> List.max) * timeRatio + (float width) + 0.)
     let startLeft = bucketWidth + 20
     let startTime, paddingTime =
@@ -530,8 +576,8 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
     Html.div [
         prop.className "stage"
         prop.style [
-            style.width (int stageWidth)
-            style.height (stageHeight + 20) // leave room for scrollbars so that we don't have that awkward tiny vertical scroll
+            style.width (length.vw 90)
+            style.height (length.vh 80) // leave room for scrollbars so that we don't have that awkward tiny vertical scroll
             ]
         prop.children [
             let maxDaySpan = paddingTime + if work.IsEmpty then 0.<realDay> else (work |> List.map (fun wi -> (wi.startTime + wi.duration)) |> List.max)
@@ -651,7 +697,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
         ]
 
 
-let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn: _ Assignment option) linkBase = [
+let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn: _ Assignment option) linkBase dispatch = [
     let whom = getOwner item
     let typ = match item.fields["System.WorkItemType"] with | Some typ -> unbox<string> typ | None -> "None"
     Html.div [
@@ -686,7 +732,26 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
                         ctx.startTime.AddDays((asn.startTime + asn.duration)/1.<realDay>) |> Some, None
                     | _ -> None, None
                 let dateToString label = function Some (v: System.DateTime) -> $"""{label}: {convertJSDateToString v}""" | None -> $"{label}: N/A"
-                emit 0 $"""{dateToString "Due" due} {dateToString "ETA" ETA} [{getState item}, {getRemainingWork item} remaining] {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
+
+                let dueDateMsg = $"""[{item |> getOwner}] {dateToString "ETA" ETA} [{getState item}, {getRemainingWork item} remaining] {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
+                Html.div [
+                    if model.editMode = EditMode.EditingSelectedItemDueDate then
+                        Html.input [
+                            prop.type'.date
+                            match due with
+                            | Some due ->
+                                prop.value due
+                            | None -> ()
+                            prop.onChange (fun (newValue: DateTime) -> UpdateDueDate(item.id, newValue) |> dispatch)
+                            ]
+                    else
+                        Html.span [
+                            prop.text (dateToString "Due" due)
+                            prop.onClick (thunk1 dispatch (SetEditMode EditingSelectedItemDueDate))
+                            ]
+                    Html.span dueDateMsg
+                    ]
+
                 if model.showDetail then
                     emit 0 "-----"
                     emit 0 "Fields:"
@@ -732,14 +797,14 @@ let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
             Html.input [prop.value (getTitle item.underlying); prop.className "selected"; prop.readOnly true; prop.disabled true]
             Html.div [
                 Html.br []
-                yield! viewDetails model ctx item.underlying (Some item) linkBase
+                yield! viewDetails model ctx item.underlying (Some item) linkBase dispatch
                 ]
             ]
     | Some (WorkItemSelection item) ->
         Html.div [
             Html.div [
                 Html.br []
-                yield! viewDetails model ctx item None linkBase
+                yield! viewDetails model ctx item None linkBase dispatch
                 ]
             ]
     | None -> Html.div []
@@ -864,6 +929,8 @@ let viewApp (model: Model) dispatch =
                 let ctx = queryData.ctx
                 let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                 Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
+                if model.editedIds.IsEmpty |> not then
+                    Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
                 match model.selectedItem with
                 | Some (AssignmentSelection _) ->
                     Html.button [prop.text "Add dependency"; prop.disabled (model.editMode <> NotEditing); prop.onClick (thunk1 dispatch SelectDependency)]
@@ -880,8 +947,6 @@ let viewApp (model: Model) dispatch =
                             executeQuery (Some dt) () // because async update hasn't occurred yet, pass in dt directly
                     SimpleDateInput(model.compareDate, model.showPast, onDateChange)
                     ]
-                if model.hasUnsavedChanges then
-                    Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
                 viewAssignments ctx queryData finishedData model.displayOrganization dispatch
                 viewSelected model ctx model.serverUrlOverride dispatch
         ]
