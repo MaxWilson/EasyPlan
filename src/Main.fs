@@ -169,7 +169,8 @@ module Properties =
             wi.fields[fieldName] <- Some v
             wi
         getter, setter
-    let getDueDate, setDueDate = getAndSet<System.DateTime> "Microsoft.VSTS.Scheduling.DueDate"
+    let dueDateField = "Microsoft.VSTS.Scheduling.DueDate"
+    let getDueDate, setDueDate = getAndSet<System.DateTime> dueDateField
     let getPrioritization = (fun (i:WorkItem) ->
         // treat work items as less important than P1 bugs and equal to P2
         let pri = getPriority i
@@ -422,11 +423,38 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
 let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryData) =
     queryResult
 
+let updateWorkItem(client:WorkItemTrackingRestClient,wi:WorkItem) =
+    // per documentation https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/work-items/update?view=azure-devops-rest-6.0&tabs=HTTP
+    // we can't just pass it the work item. We need to create a JSON patch document instead.
+    let jsonPatchDocument =
+        [|
+            createObj [
+                "path" ==> $"/fields/{dueDateField}"
+                "op" ==> "replace"
+                "value" ==> (wi |> getDueDate)
+                ]
+            |]
+        |> unbox<WebApi.JsonPatchDocument>
+    client.updateWorkItem(jsonPatchDocument, wi.id)
+
 let saveChanges (model:Model) dispatch =
     promise {
         // first save changes
-        do! asyncOperation dispatch SaveChanges (fun _ -> Promise.sleep 2000) // fake implementation
-
+        do! asyncOperation dispatch SaveChanges (fun _ ->
+            promise {
+                let ctx = queryContext model.compareDate model
+                let! client = getWorkClient ctx.options
+                let editedWorkItems =
+                    match model.query with
+                    | Ready (Ok queryData) ->
+                        let workItems = queryData.current.workItems |> List.map (fun wi -> wi.id, wi) |> Map.ofList
+                        model.editedIds
+                        |> Seq.choose (fun id -> workItems |> Map.tryFind id)
+                        |> Array.ofSeq
+                    | _ -> Array.empty // if there's no ready query then there's nothing to update
+                let! _ = editedWorkItems |> Array.map (fun wi -> updateWorkItem(client, wi)) |> Promise.all
+                ()
+            })
         // now do the refresh
         do! asyncOperation dispatch Query (fun _ ->
             getWorkItems (queryContext model.compareDate model) model.wiql
