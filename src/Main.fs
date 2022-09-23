@@ -62,7 +62,7 @@ type EditMode = NotEditing | SelectingDependency of WorkItem Assignment | Editin
 type Selection =
     | AssignmentSelection of WorkItem Assignment
     | WorkItemSelection of WorkItem
-    | BucketSelection of txt:string
+    | BucketSelection of bucketId:string * description:string
 type ModalDialog = Help | TeamPicker of input: string
 type Msg =
     | SetWiql of string
@@ -394,10 +394,14 @@ let getWorkItems (ctx: QueryContext) (wiql) = promise {
         }
     }
 
+let (|QueryResult|_|) = function
+    | Ready(Ok (queryResult:QueryResult)) -> queryResult |> Some
+    | _ -> None
+
 // if we already have assignments, but work items have changed in model.query, recompute assignments too
 let recomputeAssignments (model: Model) =
     match model.query with
-    | Ready(Ok queryResult) ->
+    | QueryResult queryResult ->
         let recompute (data: QueryData) : QueryData =
             let ctx = makeAssignmentContext (data.effectiveDate, data.workItems, data.capacityMap)
             let asn, dropped = Extensions.assignments ctx data.workItems
@@ -537,7 +541,7 @@ let update msg model =
                     editedIds = model.editedIds |> Set.add id
                     query =
                         match model.query with
-                        | Ready(Ok queryResult) ->
+                        | QueryResult queryResult ->
                             let updatedWorkItems = queryResult.current.workItems |> List.map (fun wi -> if wi.id = id then wi |> setDueDate dueDate else wi)
                             { queryResult with current = { queryResult.current with workItems = updatedWorkItems } } |> Ok |> Ready
                         | _ -> model.query
@@ -546,9 +550,9 @@ let update msg model =
                 |> recomputeAssignments
             // attempt to retain same selected item
             match model.selectedItem, model.query with
-            | Some (AssignmentSelection asn), Ready(Ok queryResult) when asn.underlying.id = id ->
+            | Some (AssignmentSelection asn), QueryResult queryResult when asn.underlying.id = id ->
                 { model with selectedItem = queryResult.current.assignments |> List.tryFind (fun asn -> asn.underlying.id = id) |> Option.map AssignmentSelection }
-            | Some (WorkItemSelection item), Ready(Ok queryResult) when item.id = id ->
+            | Some (WorkItemSelection item), QueryResult queryResult when item.id = id ->
                 { model with selectedItem = queryResult.current.workItems |> List.tryFind (fun wi -> wi.id = id) |> Option.map WorkItemSelection }
             | _ ->
                 model
@@ -575,7 +579,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                 | Some ix ->
                     headerHeight + ix * height |> Some
                 | None -> None
-            yCoord, rows |> List.map (fun row -> row, 1, (fun _ -> (queryData.capacityMap row).description |> BucketSelection |> Select |> dispatch))
+            yCoord, rows |> List.map (fun row -> row, 1, (fun _ -> BucketSelection(row, (queryData.capacityMap row).description) |> Select |> dispatch))
         | ByDeliverable ->
             let getDeliverableId w = w.underlying |> getDeliverableId
             let getDeliverable deliverableId =
@@ -834,7 +838,21 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
 let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
     let item = model.selectedItem
     match item with
-    | Some (BucketSelection txt) -> Html.div txt
+    | Some (BucketSelection(bucketId, descr)) ->
+        Html.div [
+            Html.h2 bucketId
+            Html.text descr
+            if model.showPast |> not then
+                let updateDueDates _ =
+                    let assignments =
+                        match model.query with
+                        | QueryResult(q) -> q.current.assignments |> List.filter (fun asn -> asn.bucketId = bucketId)
+                        | _ -> []
+                    for asn in assignments do
+                        let eta = ctx.startTime.AddDays((asn.startTime + asn.duration) / 1.0<realDay>)
+                        dispatch (UpdateDueDate(asn.underlying.id, eta.Date.AddDays 1)) // set due date a little bit after the ETA
+                Html.button [prop.text "Update due dates"; prop.onClick updateDueDates]
+            ]
     | Some (AssignmentSelection item) ->
         Html.div [
             let date days =
