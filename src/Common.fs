@@ -19,3 +19,11 @@ module List =
     let every f lst = lst |> List.exists (f >> not) |> not
 module String =
     let join (delimiter: string) (strings: string seq) = String.Join(delimiter, strings)
+let notImpl msg = failwith $"Not implemented yet. Email Max if you want this feature. {msg}"
+
+let inline show (msg:'t) =
+#if DEBUG
+    System.Console.WriteLine msg
+#else
+    ()
+#endif

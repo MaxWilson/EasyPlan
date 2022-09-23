@@ -98,14 +98,10 @@ let assignments (ctx: _ AssignmentContext) (items: 't list) =
     let mutable counter = 0
     let count label =
         counter <- counter + 1
-        printfn $"Counter: {label} {counter}"
     while todo.Length > 0 && counter < 1000 do
         count "cleanup1"
         for item in todo do
-            let deps = item |> ctx.getDependencies
-            printfn $"Cleanup: {item |> ctx.getId} requires {deps}"
-        for item in todo do
-            processItem item        
+            processItem item
     let assignResourceRows assignments =
         let getUnderlying asn = asn.underlying
         let byDeliverable = assignments |> List.groupBy (getUnderlying >> ctx.getDeliverable)
