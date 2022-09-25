@@ -58,12 +58,13 @@ type QueryContext = {
     compareDate: System.DateTime option
     }
 type ProgressStatus = OK | Warning of float | AtRisk of float
-type EditMode = NotEditing | SelectingDependency of WorkItem Assignment | EditingSelectedItemDueDate
+type EditMode = NotEditing | SelectingDependency of WorkItem Assignment | ExplainingDueDateChange | EditingSelectedItemDueDate
 type Selection =
     | AssignmentSelection of WorkItem Assignment
     | WorkItemSelection of WorkItem
     | BucketSelection of bucketId:string * description:string
 type ModalDialog = Help | TeamPicker of input: string
+type Explanation = Explanation of string
 type Msg =
     | SetWiql of string
     | Message of string
@@ -85,7 +86,7 @@ type Msg =
     | Select of Selection
     | SelectDependency
     | CancelDependencySelect
-    | UpdateDueDate of id:int * dueDate: DateTime
+    | UpdateDueDate of id:int * dueDate: DateTime * Explanation
     | SetEditMode of EditMode
 type Model = {
     userName: string Deferred
@@ -106,10 +107,10 @@ type Model = {
     selectedItem: Selection option
     selectedTeam: string option
     editMode: EditMode
-    editedIds: Set<int>
+    editedItems: Map<int, Explanation>
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; saveChanges = NotStarted; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedIds = Set.empty }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; saveChanges = NotStarted; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedItems = Map.empty }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -427,7 +428,7 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
 let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryData) =
     queryResult
 
-let updateWorkItem(client:WorkItemTrackingRestClient,wi:WorkItem) =
+let updateWorkItem(client:WorkItemTrackingRestClient, wi:WorkItem, (Explanation explainTxt)) =
     // per documentation https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/work-items/update?view=azure-devops-rest-6.0&tabs=HTTP
     // we can't just pass it the work item. We need to create a JSON patch document instead.
     let jsonPatchDocument =
@@ -436,6 +437,11 @@ let updateWorkItem(client:WorkItemTrackingRestClient,wi:WorkItem) =
                 "path" ==> $"/fields/{dueDateField}"
                 "op" ==> "replace"
                 "value" ==> (wi |> getDueDate)
+                ]
+            createObj [
+                "path" ==> $"/fields/history"
+                "op" ==> "add"
+                "value" ==> explainTxt
                 ]
             |]
         |> unbox<WebApi.JsonPatchDocument>
@@ -452,11 +458,14 @@ let saveChanges (model:Model) dispatch =
                     match model.query with
                     | Ready (Ok queryData) ->
                         let workItems = queryData.current.workItems |> List.map (fun wi -> wi.id, wi) |> Map.ofList
-                        model.editedIds
-                        |> Seq.choose (fun id -> workItems |> Map.tryFind id)
+                        model.editedItems
+                        |> Map.keys
+                        |> Seq.choose (fun id ->
+                                            let wi = workItems |> Map.tryFind id
+                                            wi |> Option.map (fun wi -> wi, model.editedItems[wi.id]))
                         |> Array.ofSeq
                     | _ -> Array.empty // if there's no ready query then there's nothing to update
-                let! _ = editedWorkItems |> Array.map (fun wi -> updateWorkItem(client, wi)) |> Promise.all
+                let! _ = editedWorkItems |> Array.map (fun (wi, explanation) -> updateWorkItem(client, wi, explanation)) |> Promise.all
                 ()
             })
         // now do the refresh
@@ -471,9 +480,9 @@ let update msg model =
         match msg with
         | Message msg -> { model with userFacingMessage = msg |> Some }
         | Query op ->
-            { model with query = receive op; editedIds = Set.empty }
+            { model with query = receive op; editedItems = Map.empty }
         | SaveChanges op ->
-            { model with saveChanges = receive op; editedIds = Set.empty }
+            { model with saveChanges = receive op; editedItems = Map.empty }
         | TeamsQuery op ->
             { model with teamsToChooseFrom = receive op }
         | SdkInitializationMsg op -> { model with userName = receive op; wiql = Extensions.LocalStorage.Wiql.read() }
@@ -534,11 +543,11 @@ let update msg model =
             { model with showPast = v }
         | SetCompareDate dt ->
             { model with compareDate = Some dt }
-        | UpdateDueDate(id, dueDate) ->
+        | UpdateDueDate(id, dueDate, explanation) ->
             let model =
                 {
                 model with
-                    editedIds = model.editedIds |> Set.add id
+                    editedItems = model.editedItems |> Map.add id explanation
                     query =
                         match model.query with
                         | QueryResult queryResult ->
@@ -779,7 +788,8 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
 
                 let dueDateMsg = $""" {dateToString "ETA" ETA} [{getState item}, {getRemainingWork item} remaining] {match overdueBy with Some v -> $"(overdue by %.2f{v} days)" | None -> "(on time)"}"""
                 Html.div [
-                    if model.editMode = EditMode.EditingSelectedItemDueDate then
+                    match model.editMode with
+                    | EditMode.EditingSelectedItemDueDate ->
                         Html.span [
                             prop.className "affordance"
                             prop.text "Due: "
@@ -792,9 +802,9 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
                             | Some due ->
                                 prop.value due
                             | None -> ()
-                            prop.onChange (fun (newValue: DateTime) -> UpdateDueDate(item.id, newValue) |> dispatch)
+                            prop.onChange (fun (newValue: DateTime) -> UpdateDueDate(item.id, newValue, Explanation "Manually edited through EasyPlan") |> dispatch)
                             ]
-                    else
+                    | _ ->
                         Html.span [
                             prop.className "affordance"
                             prop.text (dateToString "Due" due)
@@ -835,6 +845,26 @@ let viewDetails (model: Model) (ctx: _ AssignmentContext) (item: WorkItem) (asn:
         ]
     ]
 
+[<ReactComponent>]
+let UpdateDueDatesSection (query, bucketId, (ctx: _ AssignmentContext), dispatch) =
+    let explanation, updateExplanation = React.useStateWithUpdater ""
+    let explanationIsValid = System.String.IsNullOrWhiteSpace explanation |> not
+    let updateDueDates _ =
+        if explanationIsValid then
+            let assignments =
+                match query with
+                | QueryResult(q) -> q.current.assignments |> List.filter (fun asn -> asn.bucketId = bucketId)
+                | _ -> []
+            for asn in assignments do
+                let eta = ctx.startTime.AddDays((asn.startTime + asn.duration) / 1.0<realDay>)
+                dispatch (UpdateDueDate(asn.underlying.id, eta.Date.AddDays 1, Explanation explanation)) // set due date a little bit after the ETA
+    Html.div [
+        Html.span "Explanation:"
+        Html.input [prop.className "wideText"; prop.autoFocus true; prop.placeholder "E.g. pushed back due to work on item #12345"; prop.onChange(fun (e:string) -> updateExplanation (thunk e)); prop.onKeyDown (fun e -> if e.code = "Enter" then (e.preventDefault(); updateDueDates()))]
+        Html.button [prop.text "OK"; prop.onClick updateDueDates; prop.disabled (explanationIsValid |> not); prop.onClick (updateDueDates)]
+        ]
+
+
 let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
     let item = model.selectedItem
     match item with
@@ -843,15 +873,13 @@ let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
             Html.h2 bucketId
             Html.text descr
             if model.showPast |> not then
-                let updateDueDates _ =
-                    let assignments =
-                        match model.query with
-                        | QueryResult(q) -> q.current.assignments |> List.filter (fun asn -> asn.bucketId = bucketId)
-                        | _ -> []
-                    for asn in assignments do
-                        let eta = ctx.startTime.AddDays((asn.startTime + asn.duration) / 1.0<realDay>)
-                        dispatch (UpdateDueDate(asn.underlying.id, eta.Date.AddDays 1)) // set due date a little bit after the ETA
-                Html.button [prop.text "Update due dates"; prop.onClick updateDueDates]
+                match model.editMode with
+                | ExplainingDueDateChange ->
+                    UpdateDueDatesSection(model.query, bucketId, ctx, dispatch)
+                | _ ->
+                    Html.div [
+                        Html.button [prop.text "Update due dates"; prop.onClick (thunk1 dispatch (SetEditMode ExplainingDueDateChange))]
+                        ]
             ]
     | Some (AssignmentSelection item) ->
         Html.div [
@@ -998,7 +1026,7 @@ let viewApp (model: Model) dispatch =
                     let ctx = queryData.ctx
                     let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                     Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
-                    if model.editedIds.IsEmpty |> not then
+                    if model.editedItems.IsEmpty |> not then
                         Html.button [prop.text "Save"; prop.onClick (fun _ -> saveChanges model dispatch)]
                     match model.selectedItem with
                     | Some (AssignmentSelection _) ->
