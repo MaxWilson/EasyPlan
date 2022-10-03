@@ -642,6 +642,15 @@ let viewAssignments (model:Model) (ctx: WorkItem AssignmentContext) (queryData: 
             style.width (length.vw 90)
             style.height (length.vh (match model.mainHeight with Small -> 40 | Medium -> 60 | Large -> 80)) // leave room for scrollbars so that we don't have that awkward tiny vertical scroll
             ]
+        prop.onScroll(fun e ->
+            // try to fix the section horizontally by manipulating its left
+            let get id = (window.document.getElementsByClassName id)[0]
+            let left = $"""{(get "stage")?scrollLeft}px"""
+            printfn $"Scrolling to {left}"
+            let buckets = (window.document.getElementsByClassName "bucket")
+            for i in [0..buckets.length-1] do
+                buckets[i]?style?left <- left
+            )
         prop.children [
             let maxDaySpan = paddingTime + if work.IsEmpty then 0.<realDay> else (work |> List.map (fun wi -> (wi.startTime + wi.duration)) |> List.max)
             for x in (0.<realDay>)..1.<realDay>..(maxDaySpan) do
@@ -688,19 +697,24 @@ let viewAssignments (model:Model) (ctx: WorkItem AssignmentContext) (queryData: 
                 | dayOfWeek ->
                     ()
             let mutable rowTop = 0
-            for ix, (row, rowHeight, onclick) in rows |> List.mapi tup2 do
-                Html.input [
-                    prop.className "bucket"
-                    prop.style [
-                        style.top (headerHeight + rowTop * height)
-                        style.left 0
-                        style.width bucketWidth
-                        ]
-                    prop.value row
-                    prop.readOnly true
-                    prop.onClick (fun _ -> onclick dispatch)
+            Html.div [
+                prop.className "leftHeader"
+                prop.children [
+                    for ix, (row, rowHeight, onclick) in rows |> List.mapi tup2 do
+                        Html.input [
+                            prop.className "bucket"
+                            prop.style [
+                                style.top (headerHeight + rowTop * height)
+                                style.left 0
+                                style.width bucketWidth
+                                ]
+                            prop.value row
+                            prop.readOnly true
+                            prop.onClick (fun _ -> onclick dispatch)
+                            ]
+                        rowTop <- rowHeight + rowTop
                     ]
-                rowTop <- rowHeight + rowTop
+                ]
             for asn in work do
                 let item = asn.underlying
                 Html.input [
