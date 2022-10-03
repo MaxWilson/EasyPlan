@@ -41,3 +41,6 @@ let inline shallowClone<'t> (x:'t) : 't = jsNative
 
 let class' ctor (className:string) (elements : _ list) =
     ctor [prop.className className; prop.children elements]
+
+let with' ctor (augment: _ list) (elements: _ list) =
+    ctor (augment@[prop.children elements])

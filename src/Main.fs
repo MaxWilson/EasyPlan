@@ -633,8 +633,8 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
             style.height (length.vh 80) // leave room for scrollbars so that we don't have that awkward tiny vertical scroll
             ]
         prop.children [
+            let mutable rowTop = 0
             Html.div [
-                let mutable rowTop = 0
                 prop.className "leftHeader"
                 prop.children [
                     for ix, (row, rowHeight, onclick) in rows |> List.mapi tup2 do
@@ -652,108 +652,116 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                         rowTop <- rowHeight + rowTop
                         printfn "RowTop is now %d" rowTop
                     ]
-                prop.style [style.height (headerHeight + rowTop * height); style.width bucketWidth]
+                prop.style [style.height (headerHeight + rowTop * height); style.width (bucketWidth + 20)]
                 ]
-            class' Html.div "rightContent" [
-                let maxDaySpan = paddingTime + if work.IsEmpty then 0.<realDay> else (work |> List.map (fun wi -> (wi.startTime + wi.duration)) |> List.max)
-                for x in (0.<realDay>)..1.<realDay>..(maxDaySpan) do
-                    let day = startTime.AddDays(x |> float)
-                    let startX = (startLeft + (x * timeRatio |> int))
-                    Html.div [
-                        prop.className "header"
-                        prop.style [
-                            style.top 0
-                            style.left startX
-                            style.height stageHeight
-                            style.borderLeft(2, borderStyle.solid, color.black)
-                            ]
-                        prop.text $"""{day.ToString("M/d")}"""
-                        ]
-                    let verticalLineAt (xPos: int) =
+            Html.div [
+                prop.className "rightContent"
+                let mutable totalHeight = 0
+                let updateHeight height' =
+                    totalHeight <- totalHeight |> max height'
+                    height'
+                prop.children [
+                    let maxDaySpan = paddingTime + if work.IsEmpty then 0.<realDay> else (work |> List.map (fun wi -> (wi.startTime + wi.duration)) |> List.max)
+                    for x in (0.<realDay>)..1.<realDay>..(maxDaySpan) do
+                        let day = startTime.AddDays(x |> float)
+                        let startX = (startLeft + (x * timeRatio |> int))
                         Html.div [
-                            prop.className "divider"
-                            prop.style [
-                                style.top 0
-                                style.left xPos
-                                style.height stageHeight
-                                style.boxSizing.borderBox
-                                style.borderLeft(2, borderStyle.solid, color.black)
-                                ]
-                            ]
-                    verticalLineAt startX
-                    match day.DayOfWeek |> int with
-                    | 6 | 0 -> // Saturday, Sunday
-                        // draw some blue shade for weekends to visually distinguish them
-                        Html.div [
-                            prop.className "divider"
+                            prop.className "header"
                             prop.style [
                                 style.top 0
                                 style.left startX
                                 style.height stageHeight
-                                style.width width
-                                style.opacity 0.22
-                                style.backgroundColor.blue
+                                style.borderLeft(2, borderStyle.solid, color.black)
                                 ]
+                            prop.text $"""{day.ToString("M/d")}"""
                             ]
-                    | dayOfWeek ->
-                        ()
-                for asn in work do
-                    let item = asn.underlying
-                    Html.input [
-                        prop.className "item"
-                        prop.style [
-                            match yCoord asn with
-                            | Some y -> style.top y
-                            | None -> ()
-                            style.left (((paddingTime + asn.startTime) * timeRatio |> int) + startLeft)
-                            style.width (asn.duration * timeRatio - margin |> int |> max 0)
-                            match asn |> getProgressStatus ctx with
-                            | AtRisk percentOverdue ->
-                                let percent = (100. - percentOverdue * 100.) |> int
-                                style.backgroundImage $"linear-gradient(to right, blue, blue {percent}%%, red {percent}%%, red 100%%)"
-                            | Warning percentOverdue ->
-                                let percent = (100. - percentOverdue * 100.) |> int
-                                style.backgroundImage $"linear-gradient(to right, blue, blue {percent}%%, #FEBE10 {percent}%%, #FEBE10 100%%)"
-                            | _ -> ()
-                            ]
-                        prop.value (msg item)
-                        prop.readOnly true
-                        prop.onClick (thunk1 dispatch (Select (AssignmentSelection asn)))
-                        ]
-                match finishedData with
-                | None -> ()
-                | Some { assignments = finished } ->
-                    for fin in finished do
-                        // show recently-finished items from the past in their original location so we can see recent progress
-                        let isFinished =
-                            queryData.workItems |> List.exists (fun wi -> wi.id = fin.underlying.id && wi |> getRemainingWork = 0.<dayCost>)
-                        match yCoord fin with
-                        | Some y when isFinished ->
-                            let item = fin.underlying
-                            Html.input [
-                                prop.className ["item";"finished"]
+                        let verticalLineAt (xPos: int) =
+                            Html.div [
+                                prop.className "divider"
                                 prop.style [
-                                    match yCoord fin with
-                                    | Some y -> style.top y
-                                    | None -> ()
-                                    style.left (((fin.startTime) * timeRatio |> int) + startLeft)
-                                    style.width (fin.duration * timeRatio - margin |> int)
+                                    style.top 0
+                                    style.left xPos
+                                    style.height stageHeight
+                                    style.boxSizing.borderBox
+                                    style.borderLeft(2, borderStyle.solid, color.black)
                                     ]
-                                prop.value (msg item)
-                                prop.readOnly true
-                                prop.onClick (thunk1 dispatch (Select (AssignmentSelection fin)))
                                 ]
-                        | _ -> ()
-                for ix, item in queryData.dropped |> List.mapi tup2 do
-                    Html.span [
-                        prop.className "dropped"
-                        prop.style [
-                            style.top (preDroppedHeight + (height * ix))
-                            style.left startLeft
+                        verticalLineAt startX
+                        match day.DayOfWeek |> int with
+                        | 6 | 0 -> // Saturday, Sunday
+                            // draw some blue shade for weekends to visually distinguish them
+                            Html.div [
+                                prop.className "divider"
+                                prop.style [
+                                    style.top 0
+                                    style.left startX
+                                    style.height stageHeight
+                                    style.width width
+                                    style.opacity 0.22
+                                    style.backgroundColor.blue
+                                    ]
+                                ]
+                        | dayOfWeek ->
+                            ()
+                    for asn in work do
+                        let item = asn.underlying
+                        Html.input [
+                            prop.className "item"
+                            prop.style [
+                                match yCoord asn with
+                                | Some y -> style.top (y |> updateHeight)
+                                | None -> ()
+                                style.left (((paddingTime + asn.startTime) * timeRatio |> int) + startLeft)
+                                style.width (asn.duration * timeRatio - margin |> int |> max 0)
+                                match asn |> getProgressStatus ctx with
+                                | AtRisk percentOverdue ->
+                                    let percent = (100. - percentOverdue * 100.) |> int
+                                    style.backgroundImage $"linear-gradient(to right, blue, blue {percent}%%, red {percent}%%, red 100%%)"
+                                | Warning percentOverdue ->
+                                    let percent = (100. - percentOverdue * 100.) |> int
+                                    style.backgroundImage $"linear-gradient(to right, blue, blue {percent}%%, #FEBE10 {percent}%%, #FEBE10 100%%)"
+                                | _ -> ()
+                                ]
+                            prop.value (msg item)
+                            prop.readOnly true
+                            prop.onClick (thunk1 dispatch (Select (AssignmentSelection asn)))
                             ]
-                        prop.onClick (thunk1 dispatch (Select (WorkItemSelection item)))
-                        prop.text ("Won't be done: " + msg item)
-                        ]
+                    match finishedData with
+                    | None -> ()
+                    | Some { assignments = finished } ->
+                        for fin in finished do
+                            // show recently-finished items from the past in their original location so we can see recent progress
+                            let isFinished =
+                                queryData.workItems |> List.exists (fun wi -> wi.id = fin.underlying.id && wi |> getRemainingWork = 0.<dayCost>)
+                            match yCoord fin with
+                            | Some y when isFinished ->
+                                let item = fin.underlying
+                                Html.input [
+                                    prop.className ["item";"finished"]
+                                    prop.style [
+                                        match yCoord fin with
+                                        | Some y -> style.top y
+                                        | None -> ()
+                                        style.left (((fin.startTime) * timeRatio |> int) + startLeft)
+                                        style.width (fin.duration * timeRatio - margin |> int)
+                                        ]
+                                    prop.value (msg item)
+                                    prop.readOnly true
+                                    prop.onClick (thunk1 dispatch (Select (AssignmentSelection fin)))
+                                    ]
+                            | _ -> ()
+                    for ix, item in queryData.dropped |> List.mapi tup2 do
+                        Html.span [
+                            prop.className "dropped"
+                            prop.style [
+                                style.top (preDroppedHeight + (height * ix) |> updateHeight)
+                                style.left startLeft
+                                ]
+                            prop.onClick (thunk1 dispatch (Select (WorkItemSelection item)))
+                            prop.text ("Won't be done: " + msg item)
+                            ]
+                    ]
+                prop.style [style.height (totalHeight + height + 100)] // +100 is black magic: I don't know why it needs an extra 50 pixels to avoid creating a y scrollbar
                 ]
             ]
         ]
