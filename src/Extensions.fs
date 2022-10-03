@@ -7,6 +7,7 @@ open System
 
 type Id = int
 type BucketId = string
+type Size = Small | Medium | Large
 type AssignmentContext<'t> = {
     startTime: DateTime // NOT DateTimeOffset because we actually only care about calendar dates, not actual moments in time tied to time zones. My end-of-day doesn't have to match up with your end-of-day as long as we both finish that day.
     buckets: string list
@@ -207,5 +208,14 @@ module LocalStorage =
         let key = "selectedTeam"
         let read (): string option = read key None
         let write (v: string option) = write key v
+    module DayWidth =
+        let key = "dayWidth"
+        let read (): Size = read key Medium
+        let write (v: Size) = write key v
+    module MainHeight =
+        let key = "mainHeight"
+        let read (): Size = read key Medium
+        let write (v: Size) = write key v
+
 
 

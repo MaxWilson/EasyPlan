@@ -80,6 +80,8 @@ type Msg =
     | ToggleTeamPicker
     | ToggleHelp
     | ToggleSettings
+    | SetDayWidth of Size
+    | SetMainHeight of Size
     | ToggleDrilldown of bool
     | ToggleShowPast of bool
     | SetDisplayOrganization of DisplayOrganization
@@ -100,6 +102,8 @@ type Model = {
     pat: string option
     modalDialog: ModalDialog list
     showSettings: bool
+    dayWidth: Size
+    mainHeight: Size
     showDetail: bool
     compareDate: System.DateTime option
     showPast: bool
@@ -110,7 +114,7 @@ type Model = {
     editedItems: Map<int, Explanation>
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; saveChanges = NotStarted; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedItems = Map.empty }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; saveChanges = NotStarted; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; dayWidth = Medium; mainHeight = Medium; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedItems = Map.empty }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -474,7 +478,7 @@ let saveChanges (model:Model) dispatch =
             )
     } |> Promise.start
 
-let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read(); selectedTeam = LocalStorage.Team.read() }
+let init _ = { Model.fresh with pat = LocalStorage.PAT.read(); serverUrlOverride = LocalStorage.ServerUrlOverride.read(); selectedTeam = LocalStorage.Team.read(); dayWidth = LocalStorage.DayWidth.read(); mainHeight = LocalStorage.MainHeight.read() }
 let update msg model =
     try
         match msg with
@@ -503,6 +507,12 @@ let update msg model =
             | rest -> { model with modalDialog = Help::rest }
         | ToggleSettings ->
             { model with showSettings = not model.showSettings }
+        | SetDayWidth sz ->
+            LocalStorage.DayWidth.write sz
+            { model with dayWidth = sz }
+        | SetMainHeight sz ->
+            LocalStorage.MainHeight.write sz
+            { model with mainHeight = sz }
         | ToggleDrilldown v ->
             { model with showDetail = v }
         | SetDisplayOrganization displayOrganization ->
@@ -570,11 +580,11 @@ let update msg model =
         model
 
 
-let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (finishedData: QueryData option) org dispatch =
+let viewAssignments (model:Model) (ctx: WorkItem AssignmentContext) (queryData: QueryData) (finishedData: QueryData option) org dispatch =
     let deliverables = queryData.deliverables
     let height = 20
     let bucketWidth = 200
-    let width = 50
+    let width = match model.dayWidth with Small -> 25 | Medium -> 50 | Large -> 120
     let margin = 10.
     let headerHeight = height
     let timeRatio = (float width/1.<realDay>)
@@ -630,7 +640,7 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
         prop.className "stage"
         prop.style [
             style.width (length.vw 90)
-            style.height (length.vh 80) // leave room for scrollbars so that we don't have that awkward tiny vertical scroll
+            style.height (length.vh (match model.mainHeight with Small -> 40 | Medium -> 60 | Large -> 80)) // leave room for scrollbars so that we don't have that awkward tiny vertical scroll
             ]
         prop.children [
             let maxDaySpan = paddingTime + if work.IsEmpty then 0.<realDay> else (work |> List.map (fun wi -> (wi.startTime + wi.duration)) |> List.max)
@@ -644,6 +654,8 @@ let viewAssignments (ctx: WorkItem AssignmentContext) (queryData: QueryData) (fi
                         style.left startX
                         style.height stageHeight
                         style.borderLeft(2, borderStyle.solid, color.black)
+                        if model.dayWidth = Small then
+                            style.fontSize (length.em 0.6)
                         ]
                     prop.text $"""{day.ToString("M/d")}"""
                     ]
@@ -991,6 +1003,24 @@ let viewApp (model: Model) dispatch =
                     Html.input [prop.valueOrDefault (defaultArg model.pat ""); prop.className "PAT"; prop.placeholder "Personal access token with work scope, generated at e.g. https://dev.azure.com/microsoft/_usersSettings/tokens"; prop.onChange (SetPAT >> dispatch)]
                     teamPickerDiv model dispatch
                     Html.div [
+                        Html.span "Show days as "
+                        for txt, sz in ["Narrow", Small; "Medium", Medium; "Wide", Large] do
+                            let id = "chkWidth" + txt
+                            React.fragment [
+                                Html.input [prop.type'.checkbox; prop.id id; prop.isChecked (model.dayWidth = sz); prop.onClick (fun _ -> SetDayWidth sz |> dispatch)]
+                                Html.label [prop.htmlFor id; prop.text txt]
+                                ]
+                        ]
+                    Html.div [
+                        Html.span "Main viewport height "
+                        for txt, sz in ["Small", Small; "Medium", Medium; "Large", Large] do
+                            let id = "chkHeight" + txt
+                            React.fragment [
+                                Html.input [prop.type'.checkbox; prop.id id; prop.isChecked (model.mainHeight = sz); prop.onClick (fun _ -> SetMainHeight sz |> dispatch)]
+                                Html.label [prop.htmlFor id; prop.text txt]
+                                ]
+                        ]
+                    Html.div [
                         let id = "chkShowDetail"
                         Html.input [prop.type'.checkbox; prop.id id; prop.isChecked model.showDetail; prop.onChange (ToggleDrilldown >> dispatch)]
                         Html.label [prop.htmlFor id; prop.text "Show detailed fields for selected item"]
@@ -1044,7 +1074,7 @@ let viewApp (model: Model) dispatch =
                                 executeQuery (Some dt) () // because async update hasn't occurred yet, pass in dt directly
                         SimpleDateInput(model.compareDate, model.showPast, onDateChange)
                         ]
-                    viewAssignments ctx queryData finishedData model.displayOrganization dispatch
+                    viewAssignments model ctx queryData finishedData model.displayOrganization dispatch
                     viewSelected model ctx model.serverUrlOverride dispatch
         ]
 
