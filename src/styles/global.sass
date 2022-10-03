@@ -17,11 +17,12 @@ label
 	disabled: true
 .stage
 	top: 2px
-	position: relative
 	box-sizing: border-box
 	max-height: 70vh
 	max-width: 90vw
 	overflow-y: auto
+	display: flex
+	flex-direction: row
 	.leftHeader
 		background-color: white
 		z-index: 1
@@ -36,6 +37,9 @@ label
 			cursor: default
 			disabled: true
 	.rightContent
+		width: calc(100% - 220px)
+		overflow-x: auto
+		position: relative
 		.header
 			position: absolute
 			cursor: default
