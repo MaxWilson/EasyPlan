@@ -65,6 +65,9 @@ type Selection =
     | BucketSelection of bucketId:string * description:string
 type ModalDialog = Help | TeamPicker of input: string
 type Explanation = Explanation of string
+type WorkItemDelta =
+    | DueDateChange of DateTime * Explanation
+    | AddDependency of Id * url: string
 type Msg =
     | SetWiql of string
     | Message of string
@@ -111,7 +114,7 @@ type Model = {
     selectedItem: Selection option
     selectedTeam: string option
     editMode: EditMode
-    editedItems: Map<int, Explanation>
+    editedItems: Map<int, WorkItemDelta list>
     }
     with
     static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; saveChanges = NotStarted; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; dayWidth = Medium; mainHeight = Medium; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedItems = Map.empty }
@@ -403,6 +406,18 @@ let (|QueryResult|_|) = function
     | Ready(Ok (queryResult:QueryResult)) -> queryResult |> Some
     | _ -> None
 
+// When we recompute queryData due to e.g. adding a Predecessor link, preserve the currently-selected item by id
+let preserveSelection (model:Model) =
+    match model.selectedItem, model.query with
+    | Some (AssignmentSelection asn), QueryResult queryResult ->
+        let id = asn.underlying.id
+        { model with selectedItem = queryResult.current.assignments |> List.tryFind (fun asn -> asn.underlying.id = id) |> Option.map AssignmentSelection }
+    | Some (WorkItemSelection item), QueryResult queryResult ->
+        let id = item.id
+        { model with selectedItem = queryResult.current.workItems |> List.tryFind (fun wi -> wi.id = id) |> Option.map WorkItemSelection }
+    | _ ->
+        model
+
 // if we already have assignments, but work items have changed in model.query, recompute assignments too
 let recomputeAssignments (model: Model) =
     match model.query with
@@ -413,6 +428,7 @@ let recomputeAssignments (model: Model) =
             { data with assignments = asn; dropped = dropped }
         { model with query = { queryResult with current = queryResult.current |> recompute; past = queryResult.past |> Option.map recompute } |> Ok |> Ready }
     | _ -> model
+    |> preserveSelection
 
 let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
     match asn.underlying |> getDueDate with
@@ -429,27 +445,40 @@ let getProgressStatus (ctx: _ AssignmentContext) (asn: WorkItem Assignment) =
             AtRisk percentOverdue
     | None -> OK
 
-let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryData) =
+let addDependency (target: WorkItem Assignment) (dependency: WorkItem Assignment) (queryResult: QueryData) : QueryData =
     queryResult
 
-let updateWorkItem(client:WorkItemTrackingRestClient, wi:WorkItem, (Explanation explainTxt)) =
+let updateWorkItem(client:WorkItemTrackingRestClient, (id, deltas:WorkItemDelta list)) =
     // per documentation https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/work-items/update?view=azure-devops-rest-6.0&tabs=HTTP
     // we can't just pass it the work item. We need to create a JSON patch document instead.
     let jsonPatchDocument =
         [|
-            createObj [
-                "path" ==> $"/fields/{dueDateField}"
-                "op" ==> "replace"
-                "value" ==> (wi |> getDueDate)
-                ]
-            createObj [
-                "path" ==> $"/fields/history"
-                "op" ==> "add"
-                "value" ==> explainTxt
-                ]
+            for delta in deltas do
+                match delta with
+                | DueDateChange(dueDate, explainTxt) ->
+                    createObj [
+                        "path" ==> $"/fields/{dueDateField}"
+                        "op" ==> "replace"
+                        "value" ==> dueDate
+                        ]
+                    createObj [
+                        "path" ==> $"/fields/history"
+                        "op" ==> "add"
+                        "value" ==> explainTxt
+                        ]
+                | AddDependency (id, url) ->
+                    createObj [
+                        "op" ==> "add"
+                        "path" ==> $"/relations"
+                        "value" ==>
+                            createObj [
+                                "rel" ==> "Predecessor"
+                                "url" ==> url
+                                ]
+                        ]
             |]
         |> unbox<WebApi.JsonPatchDocument>
-    client.updateWorkItem(jsonPatchDocument, wi.id)
+    client.updateWorkItem(jsonPatchDocument, id)
 
 let saveChanges (model:Model) dispatch =
     promise {
@@ -463,13 +492,10 @@ let saveChanges (model:Model) dispatch =
                     | Ready (Ok queryData) ->
                         let workItems = queryData.current.workItems |> List.map (fun wi -> wi.id, wi) |> Map.ofList
                         model.editedItems
-                        |> Map.keys
-                        |> Seq.choose (fun id ->
-                                            let wi = workItems |> Map.tryFind id
-                                            wi |> Option.map (fun wi -> wi, model.editedItems[wi.id]))
+                        |> Seq.map (function KeyValue(k,v) -> k,v)
                         |> Array.ofSeq
                     | _ -> Array.empty // if there's no ready query then there's nothing to update
-                let! _ = editedWorkItems |> Array.map (fun (wi, explanation) -> updateWorkItem(client, wi, explanation)) |> Promise.all
+                let! _ = editedWorkItems |> Array.map (fun delta -> updateWorkItem(client, delta)) |> Promise.all
                 ()
             })
         // now do the refresh
@@ -555,10 +581,9 @@ let update msg model =
         | SetCompareDate dt ->
             { model with compareDate = Some dt }
         | UpdateDueDate(id, dueDate, explanation) ->
-            let model =
-                {
+            {
                 model with
-                    editedItems = model.editedItems |> Map.add id explanation
+                    editedItems = model.editedItems |> Map.change id (function Some lst -> DueDateChange(dueDate, explanation)::lst |> Some | None -> [DueDateChange(dueDate, explanation)] |> Some)
                     query =
                         match model.query with
                         | QueryResult queryResult ->
@@ -567,15 +592,7 @@ let update msg model =
                         | _ -> model.query
                     editMode = NotEditing
                 }
-                |> recomputeAssignments
-            // attempt to retain same selected item
-            match model.selectedItem, model.query with
-            | Some (AssignmentSelection asn), QueryResult queryResult when asn.underlying.id = id ->
-                { model with selectedItem = queryResult.current.assignments |> List.tryFind (fun asn -> asn.underlying.id = id) |> Option.map AssignmentSelection }
-            | Some (WorkItemSelection item), QueryResult queryResult when item.id = id ->
-                { model with selectedItem = queryResult.current.workItems |> List.tryFind (fun wi -> wi.id = id) |> Option.map WorkItemSelection }
-            | _ ->
-                model
+            |> recomputeAssignments
     with err ->
         Browser.Dom.window.alert("Error: " + err.ToString())
         model
@@ -1067,7 +1084,7 @@ let viewApp (model: Model) dispatch =
                 prop.onKeyDown (fun e -> if e.code = "Enter" then executeQuery model.compareDate ())
                 prop.onChange(fun e -> e |> SetWiql |> dispatch)
                 ]
-            Html.button [prop.text "Get work items"; prop.onClick (executeQuery model.compareDate)]
+            Html.button [prop.text (if model.editedItems.IsEmpty then "Get work items" else "Discard changes and refresh"); prop.onClick (executeQuery model.compareDate)]
 
             match model.saveChanges with
             | InProgress ->
