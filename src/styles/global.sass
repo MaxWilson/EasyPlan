@@ -22,43 +22,48 @@ label
 	max-height: 70vh
 	max-width: 90vw
 	overflow-y: auto
-	.header
-		position: absolute
-		cursor: default
-		disabled: true
-	.divider
-		position: absolute
-		cursor: default
-		disabled: true
-	.bucket
-		color: white
-		background-color: black
-		padding-left: 2px
-		height: 1em
-		width: 15em
-		position: absolute
-		cursor: default
-		disabled: true
-	.item
-		color: white
-		background-color: blue
-		padding-left: 2px
-		height: 1em
-		width: 10em
-		position: absolute
-		cursor: default
-	.item.finished
-		background-color: green
-	.dropped
-		color: white
-		background-color: darkred
-		padding-left: 2px
-		height: 1em
-		position: absolute
-		text-overflow: clip
-		border: 1px solid black
-	.item:hover, .dropped:hover, .bucket:hover
-		border-color: lightgrey
+	.leftHeader
+		background-color: white
+		z-index: 1
+		position: relative
+		.bucket
+			color: white
+			background-color: black
+			padding-left: 2px
+			height: 1em
+			width: 15em
+			position: relative
+			cursor: default
+			disabled: true
+	.rightContent
+		.header
+			position: absolute
+			cursor: default
+			disabled: true
+		.divider
+			position: absolute
+			cursor: default
+			disabled: true
+		.item
+			color: white
+			background-color: blue
+			padding-left: 2px
+			height: 1em
+			width: 10em
+			position: absolute
+			cursor: default
+		.item.finished
+			background-color: green
+		.dropped
+			color: white
+			background-color: darkred
+			padding-left: 2px
+			height: 1em
+			position: absolute
+			text-overflow: clip
+			border: 1px solid black
+		.item:hover, .dropped:hover, .bucket:hover
+			border-color: lightgrey
 .menuItem
 	margin-left: 1em
 .selected
