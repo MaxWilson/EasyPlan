@@ -264,7 +264,7 @@ let getWorkClient options = promise {
 // used for picking a selected team on the Settings screen
 let getAllTeams (ctx: QueryContext) = promise {
     let coreClient = Client.exports.getClient<CoreClient.CoreRestClient>(unbox CoreClient.exports.CoreRestClient, ctx.projectScopedOptions)
-    let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=false)
+    let! teams = coreClient.getTeams(ctx.projectName |> Option.defaultValue null, mine=false, top=99999)
     return teams |> Seq.map (fun team -> team.name) |> List.ofSeq
     }
 
@@ -544,6 +544,7 @@ let update msg model =
                 { model with modalDialog = TeamPicker(value')::rest }
             | _ -> model
         | SetTeamPicker value' ->
+            LocalStorage.Team.write value'
             { model with selectedTeam = value' }
         | ToggleTeamPicker ->
             match model.modalDialog with
@@ -928,7 +929,7 @@ let viewSelected (model:Model) (ctx: _ AssignmentContext) linkBase dispatch =
             ]
     | None -> Html.div []
 
-let viewTeamPicker (msg: string) (model:Model) dispatch =
+let viewTeamPicker (searchWord: string) (model:Model) dispatch =
     Html.div [
         prop.className "teamPicker"
         prop.children [
@@ -942,14 +943,30 @@ let viewTeamPicker (msg: string) (model:Model) dispatch =
                     Html.text "Optional: Choose which team to use for capacity picking, etc. This can help avoid \"Won't be done\" errors if you have work items on a team that you don't own in ADO."
                     ]
                 Html.div [
-                    Html.input [prop.value msg; prop.placeholder "Enter search text, e.g. SD365CPI"; prop.onChange (SetTeamPickerFilter >> dispatch)]
-                    Html.div [prop.text $"""Selected: {match model.selectedTeam with Some v -> v.ToString() | None -> "None"}"""]
-                    for option in teams |> List.filter (fun option -> option.StartsWith(msg, System.StringComparison.InvariantCultureIgnoreCase)) do
+                    Html.input [prop.value searchWord; prop.placeholder "Enter search text, e.g. SD365CPI"; prop.onChange (SetTeamPickerFilter >> dispatch)]
+                    let searchWord = searchWord.ToLowerInvariant() // StringComparison.InvariantCultureIgnoreCase doesn't always work in Fable for some reason so normalize to lowercase
+                    Html.div [prop.text $"""Selected team: {match model.selectedTeam with Some v -> v.ToString() | None -> "None"}"""]
+                    let options, tooManyToShow =
+                        teams |> List.filter (fun option -> option.ToLowerInvariant().Contains(searchWord, System.StringComparison.InvariantCultureIgnoreCase))
+                        |> fun options ->
+                            match model.selectedTeam with
+                            | Some selectedTeam ->
+                                if options |> List.exists ((=) selectedTeam) then options
+                                else
+                                    selectedTeam::options
+                            | None -> options
+                            |> List.sort
+                            |> fun options ->
+                                if options.Length > 10 then options |> List.take 10, true
+                                else options, false
+                    for option in options do
                         Html.div [
                             prop.text option
                             if model.selectedTeam = Some option then
                                 prop.className "selected"
                             prop.onClick (fun _ -> dispatch (SetTeamPicker (if model.selectedTeam = Some option then None else Some option)))]
+                    if tooManyToShow then
+                        Html.div [prop.text "...etc. (enter a search query to see more specific results)"]
                     ]
                 Html.button [prop.text "OK"; prop.onClick(fun _ -> dispatch ToggleTeamPicker)]
             ]
