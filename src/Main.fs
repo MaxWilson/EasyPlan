@@ -354,6 +354,25 @@ let tryGetIterationsAndCapacity relevantIterationPaths (ctx: QueryContext) = pro
 
 let getWorkItems (ctx: QueryContext) (wiql) = promise {
     let! client = getWorkClient ctx.options
+    // Avoid errors like 'TFS.WebApi.Exception: VS403474: You requested 203 work items which exceeds the limit of 200' by batching work items manually instead
+    // of relying on built-in client batching.
+    let rec getWorkItemDetails(ids: int ResizeArray, asOf) = promise {
+            let batchSize = min 200 ids.Count
+            let batchIds = ids |> Seq.take batchSize |> ResizeArray
+            let! details =
+                match asOf with
+                | Some asOf ->
+                    client.getWorkItems(batchIds, expand=WorkItemExpand.All, asOf = asOf)
+                | None ->
+                    client.getWorkItems(batchIds, expand=WorkItemExpand.All)
+            let! rest =
+                if batchSize < ids.Count then
+                    getWorkItemDetails(ids |> Seq.skip batchSize |> ResizeArray, asOf)
+                else
+                    promise { return [] }
+            return (details |> List.ofSeq)@rest
+            }
+
     let queryForDate (asOf: System.DateTime option) = promise {
         let query = jsOptions<Wiql>(fun o ->
             o.query <- wiql + match asOf with Some dt -> $""" asof '{dt.ToString("MM-dd-yyyy")}'""" | None -> ""
@@ -363,13 +382,7 @@ let getWorkItems (ctx: QueryContext) (wiql) = promise {
             if wiqlResult.workItems.Count = 0 then
                 return []
             else
-                let! details =
-                    match asOf with
-                    | Some asOf ->
-                        client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All, asOf = asOf)
-                    | None ->
-                        client.getWorkItems(wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), expand=WorkItemExpand.All)
-                    |> Promise.map List.ofSeq
+                let! details = getWorkItemDetails (wiqlResult.workItems |> ResizeArray.map (fun ref -> ref.id), asOf)
                 return details
             }
         return details;
