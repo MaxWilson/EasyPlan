@@ -470,7 +470,7 @@ let updateWorkItem(client:WorkItemTrackingRestClient, (id, deltas:WorkItemDelta 
         [|
             for delta in deltas do
                 match delta with
-                | DueDateChange(dueDate, explainTxt) ->
+                | DueDateChange(dueDate, Explanation explainTxt) ->
                     createObj [
                         "path" ==> $"/fields/{dueDateField}"
                         "op" ==> "replace"
