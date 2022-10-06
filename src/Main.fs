@@ -600,7 +600,9 @@ let update msg model =
         | UpdateDueDate(id, dueDate, explanation) ->
             {
                 model with
-                    editedItems = model.editedItems |> Map.change id (function Some lst -> DueDateChange(dueDate, explanation)::lst |> Some | None -> [DueDateChange(dueDate, explanation)] |> Some)
+                    editedItems =
+                        let notADueDate = function DueDateChange _ -> false | _ -> true
+                        model.editedItems |> Map.change id (function Some lst -> DueDateChange(dueDate, explanation)::(lst |> List.filter notADueDate) |> Some | None -> [DueDateChange(dueDate, explanation)] |> Some)
                     query =
                         match model.query with
                         | QueryResult queryResult ->
@@ -978,7 +980,7 @@ let viewTeamPicker (searchWord: string) (model:Model) dispatch =
                     ]
                 Html.div [
                     Html.input [prop.value searchWord; prop.placeholder "Enter search text, e.g. SD365CPI"; prop.onChange (SetTeamPickerFilter >> dispatch)]
-                    let searchWord = searchWord.ToLowerInvariant() // StringComparison.InvariantCultureIgnoreCase doesn't always work in Fable for some reason so normalize to lowercase
+                    let searchWord = searchWord.ToLowerInvariant() // StringComparison.InvariantCultureIgnoreCase doesn't always work with String.Contains in Fable so normalize to lowercase
                     Html.div [prop.text $"""Selected team: {match model.selectedTeam with Some v -> v.ToString() | None -> "None"}"""]
                     let options, tooManyToShow =
                         teams |> List.filter (fun option -> option.ToLowerInvariant().Contains(searchWord, System.StringComparison.InvariantCultureIgnoreCase))
