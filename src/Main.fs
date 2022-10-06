@@ -87,6 +87,7 @@ type Msg =
     | SetMainHeight of Size
     | ToggleDrilldown of bool
     | ToggleShowPast of bool
+    | ToggleShowDeltas of bool
     | SetDisplayOrganization of DisplayOrganization
     | Select of Selection
     | SelectDependency
@@ -108,6 +109,7 @@ type Model = {
     dayWidth: Size
     mainHeight: Size
     showDetail: bool
+    showDeltas: bool
     compareDate: System.DateTime option
     showPast: bool
     displayOrganization: DisplayOrganization
@@ -117,7 +119,7 @@ type Model = {
     editedItems: Map<int, WorkItemDelta list>
     }
     with
-    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; saveChanges = NotStarted; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; dayWidth = Medium; mainHeight = Medium; showDetail = false; compareDate = None; showPast = false; selectedTeam = None; editedItems = Map.empty }
+    static member fresh = { userName = NotStarted; userFacingMessage = None; ready = true; saveChanges = NotStarted; query = NotStarted; teamsToChooseFrom = NotStarted; wiql = ""; serverUrlOverride = None; pat = None; modalDialog = []; showSettings = false; displayOrganization = ByDeliverable; selectedItem = None; editMode = NotEditing; dayWidth = Medium; mainHeight = Medium; showDetail = false; showDeltas = true; compareDate = None; showPast = false; selectedTeam = None; editedItems = Map.empty }
 
 let asyncOperation dispatch opMsg impl = promise {
     try
@@ -593,6 +595,8 @@ let update msg model =
             { model with showPast = v }
         | SetCompareDate dt ->
             { model with compareDate = Some dt }
+        | ToggleShowDeltas v ->
+            { model with showDeltas = v }
         | UpdateDueDate(id, dueDate, explanation) ->
             {
                 model with
@@ -1113,7 +1117,7 @@ let viewApp (model: Model) dispatch =
                     let queryData, finishedData =
                         match queryResult with
                         | { past = Some data } when model.showPast -> data, None
-                        | _ -> queryResult.current, queryResult.past
+                        | _ -> queryResult.current, (if model.showDeltas then queryResult.past else None)
                     let ctx = queryData.ctx
                     let dest = match model.displayOrganization with | ByBucket -> ByDeliverable | ByDeliverable -> ByBucket
                     Html.button [prop.text $"Switch to {dest} view"; prop.onClick (thunk1 dispatch (SetDisplayOrganization dest))]
@@ -1133,6 +1137,10 @@ let viewApp (model: Model) dispatch =
                             | _ ->
                                 SetCompareDate dt |> dispatch // asynchronously update the UI
                                 executeQuery (Some dt) () // because async update hasn't occurred yet, pass in dt directly
+                        if not model.showPast && queryResult.past.IsSome then // allow user to optionally suppress comparison (because green past items can cover up present)
+                            let id = "chkShowDeltas"
+                            Html.input [prop.type'.checkbox; prop.id id; prop.isChecked model.showDeltas; prop.onChange (ToggleShowDeltas >> dispatch)]
+                            Html.label [prop.htmlFor id; prop.text $"Show completed items since {queryResult.past.Value.effectiveDate |> convertJSDateToString}"]
                         SimpleDateInput(model.compareDate, model.showPast, onDateChange)
                         ]
                     viewAssignments model ctx queryData finishedData model.displayOrganization dispatch
